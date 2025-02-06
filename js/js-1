@@ -1,0 +1,6 @@
+// Function to show a message when the button is clicked
+document.getElementById("showMessageButton").addEventListener("click", function() {
+  const messageElement = document.getElementById("message");
+  messageElement.textContent = "Ну и нахуя ты нажал на кнопку? Чё, вообще нехуем заняться? Сказано же, не нажимай!";
+  messageElement.style.color = "red";
+});
