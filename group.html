@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Состав группы</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const items = document.querySelectorAll(".item");
+            const modal = document.createElement("div");
+            modal.classList.add("modal");
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <img id="modal-img" src="" alt="Фото">
+                    <p id="modal-text"></p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            const modalImg = document.getElementById("modal-img");
+            const modalText = document.getElementById("modal-text");
+            const closeModal = modal.querySelector(".close");
+
+            items.forEach((item, index) => {
+                item.addEventListener("click", function () {
+                    modalImg.src = `images/person${index + 1}.jpg`;
+                    modalText.textContent = item.textContent;
+                    modal.classList.add("show");
+                });
+            });
+
+            closeModal.addEventListener("click", function () {
+                modal.classList.remove("show");
+            });
+
+            modal.addEventListener("click", function (event) {
+                if (event.target === modal) {
+                    modal.classList.remove("show");
+                }
+            });
+
+            // Контракты
+            const contractBtn = document.getElementById("contract-btn");
+            const contractModal = document.getElementById("contract-modal");
+            const closeContractModal = document.getElementById("close-contract");
+
+            contractBtn.addEventListener("click", function () {
+                contractModal.style.display = "flex";
+            });
+
+            closeContractModal.addEventListener("click", function () {
+                contractModal.style.display = "none";
+            });
+
+            contractModal.addEventListener("click", function (event) {
+                if (event.target === contractModal) {
+                    contractModal.style.display = "none";
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <a href="index.html" class="back-arrow">◀ Назад</a>
+    <header>Состав группы и контракты</header>
+    <div class="grid">
+        <div class="item">Azune - Командир ЧВК</div>
+        <div class="item">Quazar - Тактический командир</div>
+        <div class="item">Dok - Медик</div>
+        <div class="item">Reaper - Снайпер</div>
+        <div class="item">Grif - Инженер, гранатометчик</div>
+        <div class="item">Sakuta - Логист</div>
+        <div class="item">Vaz - Логист</div>
+        <div class="item">Quilroy - Инженер</div>
+        <div class="item">Artom - Диверсант. Двойной агент</div>
+        <div class="item">Lexa - Диверсант</div>
+        <div class="item">Bandera - Заместитель Тактического Командира</div>
+        <div class="item">Boogeyman - Диверсант</div>
+    </div>
+
+    <!-- Кнопка для открытия модального окна с контрактами -->
+    <button id="contract-btn">Контракты</button>
+
+    <!-- Модальное окно для контрактов -->
+    <div id="contract-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-contract" class="close">&times;</span>
+            <h2>Выполненные контракты</h2>
+            <ul>
+                <li><strong>Контракт:</strong> Доставщик счастья | <strong>Статус:</strong> Завершен |
+                    <strong>Сложность:</strong> Нормальная | <strong>Оплата:</strong> $2200</li>
+                <li><strong>Контракт:</strong> Что есть зло? | <strong>Статус:</strong> Успешно |
+                    <strong>Сложность:</strong> Сложно | <strong>Оплата:</strong> $4000</li>
+                <li><strong>Контракт:</strong> Заявим о себе! | <strong>Статус:</strong> Провален |
+                    <strong>Сложность:</strong> Высокая | <strong>Оплата:</strong> $12 000</li>
+                <li><strong>Контракт:</strong> Гуманность | <strong>Статус:</strong> Успешно |
+                    <strong>Сложность:</strong> Нормальная | <strong>Оплата:</strong> $5000</li>
+                    <li><strong>Контракт:</strong> Наслаждение Миру! | <strong>Статус:</strong> Успешно |
+                        <strong>Сложность:</strong> Сложно | <strong>Оплата:</strong> $10 000
+                    </li>
+                    <li><strong>Контракт:</strong> Новогодняя ёлка| <strong>Статус:</strong> Успешно |
+                        <strong>Сложность:</strong> Высокая | <strong>Оплата:</strong> $15 000
+                    </li>
+                    <li><strong>Контракт:</strong> Незванные гости | <strong>Статус:</strong> Успешно |
+                        <strong>Сложность:</strong> Легко | <strong>Оплата:</strong> $13 000
+                    </li>
+                    <li><strong>Контракт:</strong> | <strong>Статус:</strong>  |
+                        <strong>Сложность:</strong>  | <strong>Оплата:</strong> 
+                    </li>
+                    <li><strong>Контракт:</strong>  | <strong>Статус:</strong>  |
+                        <strong>Сложность:</strong>  | <strong>Оплата:</strong> 
+                    </li>
+                    <li><strong>Контракт:</strong> | <strong>Статус:</strong>  |
+                        <strong>Сложность:</strong>  | <strong>Оплата:</strong> 
+                    </li>
+                    <li><strong>Контракт:</strong> | <strong>Статус:</strong>  |
+                        <strong>Сложность:</strong>  | <strong>Оплата:</strong> 
+                    </li>
+                    <li><strong>Контракт:</strong>  | <strong>Статус:</strong>  |
+                        <strong>Сложность:</strong> | <strong>Оплата:</strong> 
+                    </li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
