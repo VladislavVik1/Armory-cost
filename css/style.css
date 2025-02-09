@@ -199,3 +199,9 @@ th {
     transform: scale(1.1);
 
 }
+.loss{
+    color: red;
+}
+.success{
+    color: greenyellow;
+}
