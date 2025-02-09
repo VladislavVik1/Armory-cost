@@ -12,12 +12,12 @@
             const modal = document.createElement("div");
             modal.classList.add("modal");
             modal.innerHTML = `
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <img id="modal-img" src="" alt="Фото">
-                    <p id="modal-text"></p>
-                </div>
-            `;
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <img id="modal-img" src="" alt="Фото">
+                        <p id="modal-text"></p>
+                    </div>
+                `;
             document.body.appendChild(modal);
 
             const modalImg = document.getElementById("modal-img");
@@ -60,6 +60,25 @@
                     contractModal.style.display = "none";
                 }
             });
+
+            // Баланс группы
+            const balanceBtn = document.getElementById("balance-btn");
+            const balanceModal = document.getElementById("balance-modal");
+            const closeBalanceModal = document.getElementById("close-balance");
+
+            balanceBtn.addEventListener("click", function () {
+                balanceModal.style.display = "flex";
+            });
+
+            closeBalanceModal.addEventListener("click", function () {
+                balanceModal.style.display = "none";
+            });
+
+            balanceModal.addEventListener("click", function (event) {
+                if (event.target === balanceModal) {
+                    balanceModal.style.display = "none";
+                }
+            });
         });
     </script>
 </head>
@@ -82,10 +101,10 @@
         <div class="item">Boogeyman - Диверсант</div>
     </div>
 
-    <!-- Кнопка для открытия модального окна с контрактами -->
+
     <button id="contract-btn">Контракты</button>
 
-    <!-- Модальное окно для контрактов -->
+
     <div id="contract-modal" class="modal">
         <div class="modal-content">
             <span id="close-contract" class="close">&times;</span>
@@ -126,6 +145,12 @@
             </ul>
         </div>
     </div>
+<div id="balance-modal" class="modal">
+    <div class="modal-content" style="width: 50%; text-align: center; background-color: black;">
+        <span id="close-balance" class="close">&times;</span>
+        <h2 style="color: crimson; font-size: 36px;">250 000$</h2>
+    </div>
+</div>
 </body>
 
 </html>
