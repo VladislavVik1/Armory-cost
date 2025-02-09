@@ -1,7 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,11 +18,9 @@
                 </div>
             `;
             document.body.appendChild(modal);
-
             const modalImg = document.getElementById("modal-img");
             const modalText = document.getElementById("modal-text");
             const closeModal = modal.querySelector(".close");
-
             items.forEach((item, index) => {
                 item.addEventListener("click", function () {
                     modalImg.src = `images/person${index + 1}.jpg`;
@@ -32,37 +28,28 @@
                     modal.classList.add("show");
                 });
             });
-
             closeModal.addEventListener("click", function () {
                 modal.classList.remove("show");
             });
-
             modal.addEventListener("click", function (event) {
                 if (event.target === modal) {
                     modal.classList.remove("show");
                 }
             });
-
-            // Контракты
             const contractBtn = document.getElementById("contract-btn");
             const contractModal = document.getElementById("contract-modal");
             const closeContractModal = document.getElementById("close-contract");
-
             contractBtn.addEventListener("click", function () {
                 contractModal.style.display = "flex";
             });
-
             closeContractModal.addEventListener("click", function () {
                 contractModal.style.display = "none";
             });
-
             contractModal.addEventListener("click", function (event) {
                 if (event.target === contractModal) {
                     contractModal.style.display = "none";
                 }
             });
-
-            // Баланс группы
             const balanceBtn = document.getElementById("balance-btn");
             const balanceModal = document.getElementById("balance-modal");
             const closeBalanceModal = document.getElementById("close-balance");
@@ -70,11 +57,9 @@
             balanceBtn.addEventListener("click", function () {
                 balanceModal.style.display = "flex";
             });
-
             closeBalanceModal.addEventListener("click", function () {
                 balanceModal.style.display = "none";
             });
-
             balanceModal.addEventListener("click", function (event) {
                 if (event.target === balanceModal) {
                     balanceModal.style.display = "none";
@@ -83,7 +68,6 @@
         });
     </script>
 </head>
-
 <body>
     <a href="index.html" class="back-arrow">◀ Назад</a>
     <header>Состав группы и контракты</header>
@@ -101,12 +85,8 @@
         <div class="item">Bandera - Заместитель Тактического Командира</div>
         <div class="item">Boogeyman - Диверсант</div>
     </div>
-
-    <!-- Кнопка для открытия модального окна с контрактами -->
     <button id="contract-btn">Контракты</button>
     <button id="balance-btn">Оставшийся баланс группы</button>
-
-    <!-- Модальное окно для контрактов -->
     <div id="contract-modal" class="modal">
         <div class="modal-content">
             <span id="close-contract" class="close">&times;</span>
@@ -118,7 +98,7 @@
                 <li><strong>Контракт:</strong> Что есть зло? | <strong>Статус:</strong><span class="success">Успешно</span>|
                     <strong>Сложность:</strong> Сложно | <strong>Оплата:</strong> $4000
                 </li>
-                <li><strong>Контракт:</strong> Заявим о себе! | <strong>Статус:</strong><span class="loss">Провален</span> |
+                <li><strong>Контракт:</strong> Заявим о себе! | <strong>Статус:</strong><span class="loss">Провалено</span> |
                     <strong>Сложность:</strong> Высокая | <strong>Оплата:</strong> $12 000
                 </li>
                 <li><strong>Контракт:</strong> Гуманность | <strong>Статус:</strong><span class="success">Успешно</span>|
@@ -151,14 +131,19 @@
             </ul>
         </div>
     </div>
-
-    <!-- Модальное окно для баланса группы -->
     <div id="balance-modal" class="modal">
         <div class="modal-content" style="width: 50%; text-align: center; background-color: black;">
             <span id="close-balance" class="close">&times;</span>
             <h2 style="color: crimson; font-size: 36px;">323 000$</h2>
         </div>
     </div>
-</body>
 
+    <button id="sosal-btn">Сосал?</button>
+    
+    <script>
+        document.getElementById("sosal-btn").addEventListener("click", function () {
+            window.location.href = "video.html";
+        });
+    </script>
+</body>
 </html>
