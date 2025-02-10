@@ -1,82 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Магазин вооружения</title>
     <link rel="stylesheet" href="./css/style.css">
-    <script>
-         function openModal(category) {
-                let content = '';
-                switch (category) {
-                    case 'automats':
-                        content = '<h2>Автоматы</h2><table><tr><th>Автомат</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>АКМ весло</td><td>500</td><td>4000</td></tr><tr><td>АКМС</td><td>550</td><td>4500</td></tr><tr><td>АК-74</td><td>600</td><td>5000</td></tr><tr><td>АКС-74Н</td><td>650</td><td>5600</td></tr><tr><td>АКС-74Н-НПЗ-Планка</td><td>750</td><td>6000</td></tr><tr><td>АКС-74Н(Б-13 Планка)</td><td>800</td><td>6800</td></tr><tr><td>АК-74У</td><td>450</td><td>4000</td></tr><tr><td>АК-74УН</td><td>500</td><td>4500</td></tr><tr><td>АК103-105</td><td>1000</td><td>9000</td></tr><tr><td>АК-103-105 Б13-Зенитка</td><td>1100</td><td>10 000</td></tr><tr><td>ВАЛ</td><td>900</td><td>8000</td></tr><td>Винторез</td><td>930</td><td>8200</td></tr><tr><td>М16А4 ручка транспортировки</td><td>1000</td><td>9000</td></tr><tr><td>М16А4</td><td>1050</td><td>10 00</td></tr><tr><td>М4А1</td><td>1400</td><td>13 000</td></tr><tr><td>ФН-2000</td><td>3000</td><td>24 000</td></tr><tr><td>HK G36KV</td><td>2200</td><td>20 000</td></tr><tr><td>KH2002 CAMA</td><td>2300</td><td>22 000</td></tr><tr><td>MK17+ ВСЕ ВАРИАЦИИ</td><td>1900</td><td>18 000</td></tr><tr><td>MSX</td><td>3000</td><td>30 000</td></tr></table>';
-                        break;
-                    case 'pistols':
-                        content = '<h2>Пистолеты</h2><table><tr><th>Пистолет</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>ПМ</td><td>100</td><td>800</td></tr><tr><td>1911</td><td>200</td><td>1500</td></tr><tr><td>6П9</td><td>150</td><td>1000</td></tr><tr><td>RHINO</td><td>400</td><td>3400</td></tr><tr><td>Glock 17</td><td>600</td><td>5400</td></tr><tr><td>Glock 19</td><td>700</td><td>6500</td></tr><tr><td>Glock 22</td><td>900</td><td>8000</td></tr><tr><td>MP7A2</td><td>1300</td><td>10 000</td></tr><tr><td>TT-33</td><td>1000</td><td>7000</td></tr></table>';
-                        break;
-                    case 'pp':
-                        content = '<h2>Пистолеты-Пулеметы</h2><table><tr><th>Пистолет</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>M3A1</td><td>1200</td><td>10 000</td></tr><tr><td>P90</td><td>3000</td><td>25 000</td></tr><tr><td>ПМ-63</td><td>900</td><td>8500</td></tr><tr><td>Kriss Vector</td><td>800</td><td>7000</td></tr></table>';
-                        break;
-                    case 'heavy':
-                        content = '<h2>Гранатомёты</h2><table><tr><th>Гранатомёт маленький</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>ГП для АК ( кроме АКСУ)</td><td>400</td><td>3500</td></tr><tr><td>Костыль М320</td><td>7000</td><td>67 000</td></tr><tr><td>Подствольный М208</td><td>5000</td><td>45 000</td></tr><tr><td>MGL</td><td>7000</td><td>67 000</td></tr><tr><td></td><td>Трубы и системы</td><td></td></tr><tr><td>АТ4 HEAT</td><td>1500</td><td>-</td></tr><tr><td>AT4 HEDP</td><td>1600</td><td>-</td></tr><tr><td>AT4 HP</td><td>1700</td><td>-</td></tr><tr><td>RPG-7</td><td>3000</td><td>-</td></tr><tr><td>РПГ- 22</td><td>600</td><td>-</td></tr><tr><td>РПГ-26</td><td>700</td><td>-</td></tr><tr><td>РПГ-18</td><td>600</td><td>-</td></tr><tr><td>М72-А7</td><td>800</td><td>-</td></tr><tr><td>ПТУР МЕТИС</td><td>7000</td><td>-</td></tr><tr><td>МПРЛ ЗЕНИТКА</td><td>10 000</td><td>-</td></tr><tr><td>ИГЛА</td><td>10 000</td><td>-</td></tr><tr><td>РШГ</td><td>2000</td><td>-</td></tr><tr><td>СТИНГЕР</td><td>11 000</td><td>-</td></tr><tr><td>ДЖЕВЕЛИН</td><td>20 000</td><td>-</td></tr><tr><td>НЛАВ</td><td>13 000</td><td>-</td></tr><tr><td>КАРЛ ГУСТАВ</td><td>10 000</td><td>-</td></tr></table>';
-                        break;
-                    case 'heavyammo':
-                        content = '<h2>Снаряды</h2><table><tr><th>Снаряд</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>ПГ7-ВЛ</td><td>1400</td><td>-</td></tr><tr><td>ПГ7-ВМ</td><td>1600</td><td>-</td></tr><tr><td>ПГ7-ВР</td><td>2300</td><td>-</td></tr><tr><td>ОГ-7</td><td>1200</td><td>-</td></tr><tr><td>9М135 HEAT</td><td>4000</td><td>-</td></tr><tr><td>9М135 HE</td><td>3000</td><td>-</td></tr><tr><td>9K38</td><td>2000</td><td>-</td></tr><tr><td>HEAT 75MM</td><td>2000</td><td>-</td></tr><tr><td>FGM-148</td><td>5000</td><td>-</td></tr><tr><td>FIM-92F</td><td>1400</td><td>-</td></tr><tr><td>TITAN ROCKET</td><td>2500</td><td>-</td></tr></table>';
-                        break;
-                    case 'sniper':
-                        content = '<h2>Снайперские винтовки</h2><table><tr><th>Винтовка</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>СВД</td><td>1500</td><td>14 000</td></tr><tr><td>СВДМ Планка</td><td>1700</td><td>16 000</td></tr><tr><td>M2000</td><td>5000</td><td>50 000</td></tr><tr><td>BARRET M82A1</td><td>6000</td><td>57 000</td></tr><tr><td>M107</td><td>5600</td><td>55 000</td></tr><tr><td>GM6-Lynx</td><td>4000</td><td>37 000</td></tr><tr><td>М110К</td><td>3000</td><td>27 000</td></tr><tr><td>М110К-1</td><td>3500</td><td>30 000</td></tr><tr><td>М2010</td><td>2000</td><td>18 000</td></tr></table>';
-                        break;
-                    case 'machineguns':
-                        content = '<h2>Пулеметы</h2><table><tr><th>Пулемет</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>ПКM</td><td>1300</td><td>12 000</td></tr><tr><td>ПКП</td><td>1700</td><td>15 000</td></tr><tr><td>M249</td><td>2200</td><td>20 000</td></tr><tr><td>М240(свинья)</td><td>3000</td><td>25 000</td></tr><tr><td>FN-Minimi</td><td>1800</td><td>16 000</td></tr></table>';
-                        break;
-                    case 'grass':
-                        content = '<h2>Пачки, ленты патронов</h2><table><tr><th>Тип</th><th>Цена за 10 пачек $</th></tr><tr><td>Патроны для пистолета</td><td>300</td></tr><tr><td>Россыпь для автомата</td><td>750</td></tr><tr><td>Патроны для винтовки</td><td>1000</td></tr><tr><td>Ленты для пулемета</td><td>1100</td></tr></table>';
-                        break;
-                    case 'scopesholo':
-                        content = '<h2>Прицелы</h2><table><tr><th>Прицел</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>ЕКП 8-18</td><td>200</td><td>2000</td></tr><tr><td>ОКП 7</td><td>300</td><td>3000</td></tr><tr><td>1П87</td><td>400</td><td>4000</td></tr><tr><td>EOTECH XPS3</td><td>700</td><td>7000</td></tr><tr><td>EOTECH XPS3 + MAGN</td><td>1400</td><td>13 000</td></tr><tr><td>EOTECH 553</td><td>800</td><td>8000</td></tr></table>';
-                        break;
-                    case 'scopescal':
-                        content = '<h2>Прицелы</h2><table><tr><th>Прицел</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>RACURS</td><td>400</td><td>4000</td></tr><tr><td>SLIGHT</td><td>300</td><td>3000</td></tr><tr><td>AIMPOINT MICRO T1</td><td>500</td><td>5000</td></tr><tr><td>SIG SAUER ROMEO</td><td>500</td><td>5000</td></tr><tr><td>AIMPOINT 3000</td><td>400</td><td>4000</td></tr><tr><td>AIMPOINT 5000</td><td>500</td><td>5000</td></tr><tr><td>BURRIS FAST FIRE</td><td>300</td><td>3000</td></tr><tr><td>C-MORE RAILWAY</td><td>700</td><td>7000</td></tr><tr><td>DOCTER SLIGHT</td><td>300</td><td>3000</td></tr><tr><td>AIMPOINT MICRO T2</td><td>800</td><td>8000</td></tr><tr><td>LEAP T2</td><td>700</td><td>7000</td></tr><tr><td>LEUPOLD LCO</td><td>900</td><td>9000</td></tr><tr><td>MICRO T1 + MAGNIF</td><td>1500</td><td>14 000</td></tr><tr><td>МАГНИФАЕР +</td><td>700</td><td>7000</td></tr><tr><td>MRDS</td><td>500</td><td>5000</td></tr><tr><td>RX 0 REFLEX</td><td>700</td><td>7000</td></tr><tr><td>ТЕПЛО +</td><td>1500</td><td>13 000</td></tr></table>';
-                        break;
-                    case 'scopesxfour':
-                        content = '<h2>Прицелы</h2><table><tr><th>Прицел</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th></tr><tr><td>AN-PVQ 31A (3X)</td><td>3000</td><td>30 000</td></tr><tr><td>BURRIS XTR 2 + MICRO</td><td>3500</td><td>35 000</td></tr><tr><td>AIMPOINT T2 SKETTIER</td><td>4500</td><td>45 000</td></tr><tr><td>ELAN SPECTER</td><td>3000</td><td>30 000</td></tr><tr><td>SU-230+ PVS1-4</td><td>4000</td><td>40 000</td></tr><tr><td>HENSOLDT</td><td>2500</td><td>25 000</td></tr><tr><td>HENSOLDT + MRDS</td><td>3000</td><td>30 000</td></tr><tr><td>VALADA PITBULL 2</td><td>2500</td><td>25 000</td></tr><tr><td>M145</td><td>2500</td><td>25 000</td></tr><tr><td>M150</td><td>3000</td><td>30 000</td></tr><tr><td>SIG BRAVO 4 (APEX )</td><td>3000</td><td>30 000</td></tr><tr><td>SPECTER DR</td><td>2500</td><td>25 000</td></tr><tr><td>SU-230</td><td>2500</td><td>25 000</td></tr><tr><td>SU-230 + MRDS</td><td>4000</td><td>40 000</td></tr><tr><td>ПСО-1М2</td><td>3000</td><td>19 000</td></tr><tr><td>КОБРА-АК</td><td>2000</td><td>19 000</td></tr><tr><td>АК-ПС</td><td>2500</td><td>23 000</td></tr><tr><td>ПГО7(2,3)</td><td>1500</td><td>13 000</td></tr><tr><td>1ПН-93 (1,2)</td><td>2300</td><td>20 000</td></tr></table>';
-                        break;
-                    case 'scopesxinf':
-                        content = '<h2>Прицелы</h2><table><tr><th>Прицел</th><th>Цена за 1 шт $</th></tr><tr><td>SQBSS 1-8</td><td>13 000</td></tr><tr><td>SQBSS 1-8 + TEPLO</td><td>35 000</td></tr><tr><td>KAHLES ZF95</td><td>12 000</td></tr><tr><td>LEUPOLD M3A ULTRA</td><td>35 000</td></tr><tr><td>LEUPOLD MK4 2X-7X</td><td>30 000</td></tr><tr><td>LEUPOLD MK4 + TEPLO</td><td>45 000</td></tr><tr><td>M8541A 12X</td><td>30 000</td></tr><tr><td>MK4 M3 2.5X - 7X</td><td>20 000</td></tr><tr><td>MK4 M5 4.6X -14X</td><td>25 000</td></tr><tr><td>MOS 2.3X - 5X</td><td>25 000</td></tr><tr><td>ATACR 1-8X</td><td>14 000</td></tr><tr><td>ATACR 2-18X</td><td>20 000</td></tr><tr><td>ATACR 2-18 + TEPLO</td><td>29 000</td></tr><tr><td>NIGHTFORCE 1-8X</td><td>13 000</td></tr><tr><td>NIGHTFORCE 1-8X + T1</td><td>14 000</td></tr><tr><td>NIGHTFORCE 1-8X MRDS</td><td>15 000</td></tr><tr><td>NIGHTFORCE NXS 5.6 - 22.7X</td><td>30 000</td></tr><tr><td>NIGHTFORCE ATACR 7X-35X</td><td>34 000</td></tr><tr><td>NIGHTSTALKER 4X-10X</td><td>90 000</td></tr><tr><td>NVS 5X</td><td>25 000</td></tr><tr><td>NXS 3-15X</td><td>13 000</td></tr><tr><td>NXS 5.5-22X</td><td>18 000</td></tr><tr><td>RAZOR 1.0-10X</td><td>25 000</td></tr><tr><td>RAZOR 1.0-6X</td><td>17 000</td></tr><tr><td>S&B SHORT DOT 1-8X</td><td>18 000</td></tr><tr><td>S&B SHORT DOT 1-8X + MRDS</td><td>20 000</td></tr><tr><td>SPECTER DR 1.5-6X</td><td>14 000</td></tr><tr><td>US-OPTICS MR10 2.9-8.8X</td><td>18 000</td></tr><tr><td>MRDS +</td><td>2000</td></tr><tr><td>AIMPOINT T1 +</td><td>1000</td></tr><tr><td>ТЕПЛАК НА НЕКОТОРЫЕ ПРИЦЕЛЫ</td><td>ДЛЯ КАЖДОГО ПРИЦЕЛА ОТДЕЛЬНО</td></tr></table>';
-                        break;
-                    case 'medicine':
-                        content = '<h2>Медицина</h2><table><tr><th>Предмет</th><th>Цена за 10 шт$</th><th>Физ раствор, кровь, плазма</th><th>Цена за 5 пакетов$</th></tr><tr><td>Повязка</td><td>1000</td><td>250 мл крови</td><td>1200</td></tr><tr><td>Давящая повязка</td><td>1200</td><td>500 мл крови</td><td>2400</td></tr><tr><td>Тампонирующий бинт</td><td>1100</td><td>1000 мл крови</td><td>3600</td></tr><tr><td>Тампонирующий бинь пропитанный целоксом</td><td>1400</td><td>250 мл физ раствора</td><td>1000</td></tr><tr><td>Обезболивающие таблетки</td><td>1500</td><td>500 мл физ раствора</td><td>2000</td></tr><tr><td>Морфин</td><td>5000</td><td>1000 мл физ раствора</td><td>4000</td></tr><tr><td>Норадреналин</td><td>3000</td><td>250 мл плазмы</td><td>1100</td></tr><tr><td>Шины</td><td>3000</td><td>500 мл плазмы</td><td>2000</td></tr><tr><td>Мешки для трупов</td><td>2000</td><td>1000 мл плазмы</td><td>3000</td></tr><tr><td>Турникет type CAT</td><td>1500</td><td></td><td></td></tr></table>';
-                        break;
-                    case 'ammo':
-                        content = '<h2>Патроны, Коробы, Обоймы</h2><table><tr><th>Предмет</th><th>Доп информация</th><th>Цена за 10 магазинов,коробов,обойм $</th></tr><tr><td>5.45 30</td><td>7Н22</td><td>1000</td></tr><tr><td>5.45 45</td><td>7Н22</td><td>5000</td></tr><tr><td>5.45 60</td><td>7Н22</td><td>15 000</td></tr><tr><td>7.62*39 30</td><td>FMJ</td><td>1000</td></tr><tr><td>7.62*39 40</td><td>FMJ</td><td>7000</td></tr><tr><td>7.62*39 75</td><td>FMJ</td><td>20 000</td></tr><tr><td>9*39 10</td><td>СП5</td><td>2000</td></tr><tr><td>9*39 20</td><td>СП5</td><td>5000</td></tr><tr><td>9*39 10</td><td>СП6</td><td>3000</td></tr><tr><td>9*39 20</td><td>СП6</td><td>7000</td></tr><tr><td>5.56 30</td><td>M855</td><td>1300</td></tr><tr><td>5.56 40</td><td>M855</td><td>8000</td></tr><tr><td>5.56 60</td><td>M855A1</td><td>20 000</td></tr><tr><td>.300W (ДЛЯ М2010) 5</td><td>A-MAX</td><td>4000</td></tr><tr><td>7.62*54 КОРОБ 100 </td><td>ЛПС</td><td>10 000</td></tr><tr><td>7.62*54 КОРОБ 100</td><td>БЗ</td><td>40 000</td></tr><tr><td>7.62*54 КОРОБ 100</td><td>ТРАССЕР</td><td>12 000</td></tr><tr><td>7.62*54 СВД 10</td><td>7Н1</td><td>6000</td></tr><tr><td>7.62*54 СВД 10</td><td>7Н14</td><td>7000</td></tr><tr><td>ДЛЯ М110 20</td><td></td><td>9000</td></tr><tr><td>7.62*51 М240 50</td><td></td><td>5000</td></tr><tr><td>7.62*51 М240 100</td><td></td><td>10 000</td></tr><tr><td>7.62*51 М240 200</td><td></td><td>20 000</td></tr><tr><td>7.62*51 (МК17) 20</td><td>FMJ</td><td>3000</td></tr><tr><td>5.56 М249 100</td><td></td><td>2500</td></tr><tr><td>5.56 М249 200</td><td></td><td>7000</td></tr><tr><td>G36 30</td><td></td><td>3400</td></tr><tr><td>6.5 30</td><td></td><td>8000</td></tr><tr><td>12.7*99 10</td><td>A-MAX</td><td>13 000</td></tr><tr><td>12.7*99 10</td><td>API</td><td>28 000</td></tr><tr><td>12.7*99 10</td><td></td><td>12 000</td></tr><tr><td>.408 M2000 7</td><td></td><td>10 000</td></tr><tr><td>40MM 6</td><td>HE</td><td>18 000</td></tr><tr><td>40MM 6</td><td>HET</td><td>20 000</td></tr><tr><td>40MM 6</td><td>HEDP</td><td>25 000</td></tr><tr><td>40MM 6</td><td>LIGHT</td><td>5000</td></tr><tr><td>40MM 6</td><td>SMOKE</td><td>7000</td></tr><tr><td>5.7 P90 50</td><td></td><td>4000</td></tr><tr><td>M1911 7</td><td></td><td>3000</td></tr><tr><td>9*18 8</td><td></td><td>2000</td></tr><tr><td>9*19 17</td><td></td><td>4000</td></tr><tr><td>9*19 20</td><td></td><td>5000</td></tr><tr><td>MP7 40</td><td>FMJ</td><td>9000</td></tr><tr><td>7.62*25 TT</td><td></td><td>3000</td></tr><tr><td>.45ACP 6</td><td></td><td>3000</td></tr><tr><td>300 BLK</td><td></td><td>3000</td></tr></table>';
-                        break;
-                    case 'how_to_pay':
-                        content = '<h2>Оплата</h2><table><tr><th>Валюта</th><th>Цена</th></tr><tr><td>Банкноты</td><td>100 $</td></tr><tr><td>Рулон купюр</td><td>1000 $</td></tr><tr><td>Стопка купюр</td><td>10 000 $</td></tr><tr><td>Гора стопок купюр</td><td>60 000$</td></tr></table>';
-                        break;
-                    case 'repair_cars':
-                        content = '<h2>Капитальный ремонт техники, а так же составляющие для них</h2><table><tr><th>Техника</th><th>Цена за ремонт $</th><th>Запасные детали</th><th>Цена за одну деталь $</th></tr><tr><td>Легкая техника</td><td>1000</td><td>Колёса</td><td>200</td></tr><tr><td>Средняя техника(БТР, БМП...)</td><td>3000</td><td>Траки</td><td>300</td></tr><tr><td>Тяжелая техника</td><td>7000</td><td>Точная настройка ГРАДов, НУРСов ...</td><td>1000</td></tr><tr><td>Ремонт вертолётов СССР</td><td>10 000</td><td>Ремонт НАТО вертолётов</td><td>15 000</td></tr><tr><td>Ремонт самолётов СССР</td><td>15 000</td><td>Ремонт НАТО самолётов</td><td>20 000</td></tr></table>';
-                        break;                        
-                    case 'misc':
-                        content = '<h2>Обвесы, Ночники, Тепловизоры</h2><table><tr><th>Предмет</th><th>Цена за 1 шт$</th></tr><tr><td>Глушители</td><td>6000</td></tr><tr><td>Пламягаситель</td><td>3000</td></tr><tr><td>Ручка переноса огня</td><td>1000</td></tr><tr><td>Сошки</td><td>2000</td></tr><tr><td>PVS-14</td><td>7000</td></tr><tr><td>PVS-31</td><td>15 000</td></tr><tr><td>PVS Panoramic</td><td>42 000</td></tr><tr><td>PVS-31 + thermal imager</td><td>20 000</td></tr><tr><td>PVS Panoramic + thermal imager</td><td>65 000</td></tr><tr><td>Dbal</td><td>50 000</td></tr></table>';
-                        break;
-                    default:
-                        content = '<h2>Раздел в разработке</h2>';
-                }
-                document.getElementById("modal-body").innerHTML = content;
-                document.getElementById("modal").style.display = 'flex';
-            }
-            function closeModal() {
-                document.getElementById("modal").style.display = 'none';
-            }
-            document.addEventListener("click", function (event) {
-                var modal = document.getElementById("modal");
-                if (event.target === modal) {
-                    closeModal();
-                }
-            });
-  </script>
 </head>
+
 <body>
     <a href="index.html" class="back-arrow">◀ Назад</a>
     <header>Магазин вооружения</header>
@@ -98,6 +29,7 @@
         <div class="item" onclick="openModal('misc')">Обвесы, Ночники, Тепловизоры</div>
         <div class="item" onclick="openModal('repair_cars')">Ремонт транспортных средств</div>
         <div class="item" onclick="openModal('how_to_pay')">Способ оплаты</div>
+        <div class="item" onclick="openModal('akcija_kurwa')">Временные товары</div>
     </div>
     <div id="modal" class="modal">
         <div class="modal-content">
@@ -105,5 +37,22 @@
             <div id="modal-body"></div>
         </div>
     </div>
+    <div class="cart">
+        <button class="cart-button" onclick="openCart()">
+            Корзина (0 товаров)
+        </button>
+        <div id="cart-modal" class="cart-modal">
+            <div class="cart-modal-content">
+                <span class="close" onclick="closeCart()">&times;</span>
+                <h2>Ваша корзина</h2>
+                <ul id="cart-items">
+                    <!-- Здесь будут отображаться товары -->
+                </ul>
+                <p id="total-price">Общая сумма: 0 $</p> <!-- Общая сумма -->
+                <button class="snapshot" onclick="checkout()">Скинь скриншот Владу</button>
+            </div>
+        </div>
+    </div>
+        <script src="../js/script-store.js" defer></script>
 </body>
 </html>
