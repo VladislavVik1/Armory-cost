@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Магазин вооружения</title>
     <link rel="stylesheet" href="./css/style.css">
-    <script src="./js/script-store.js" defer></script>
+    <script src="../js/script-store.js" defer></script>
 </head>
 
 <body>
@@ -38,6 +38,19 @@
             <div id="modal-body"></div>
         </div>
     </div>
+    <script src="../js/sale.js"></script>
+<!-- Кнопка для открытия модального окна "Продажа" -->
+<button class="sale-button">Продажа</button>
+
+<!-- Модальное окно -->
+<div id="modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modal-body">
+            <!-- Здесь динамически формируется контент модального окна -->
+        </div>
+    </div>
+</div>
     <div class="cart">
         <button class="cart-button" onclick="openCart()">
             Корзина (0 товаров)

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Состав группы</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
     <a href="index.html" class="back-arrow">◀ Назад</a>
     <header>Состав группы и контракты</header>
+
     <div class="grid">
         <div class="item">Azune - Командир ЧВК</div>
         <div class="item">Quazar - Тактический командир</div>
@@ -23,52 +26,29 @@
         <div class="item">Bandera - Заместитель Тактического Командира</div>
         <div class="item">Boogeyman - Диверсант</div>
     </div>
+
     <button id="contract-btn">Контракты</button>
     <button id="balance-btn">Оставшийся баланс группы</button>
+
     <div id="contract-modal" class="modal">
         <div class="modal-content">
             <span id="close-contract" class="close">&times;</span>
             <h2>Выполненные контракты</h2>
             <ul>
-                <li><strong>Контракт:</strong> Доставщик счастья | <strong>Статус:</strong><span class="success">Успешно</span>  |
-                    <strong>Сложность:</strong> Нормальная | <strong>Оплата:</strong> $2200
-                </li>
-                <li><strong>Контракт:</strong> Что есть зло? | <strong>Статус:</strong><span class="success">Успешно</span>|
-                    <strong>Сложность:</strong> Сложно | <strong>Оплата:</strong> $4000
-                </li>
-                <li><strong>Контракт:</strong> Заявим о себе! | <strong>Статус:</strong><span class="loss">Провалено</span> |
-                    <strong>Сложность:</strong> Высокая | <strong>Оплата:</strong> $12 000
-                </li>
-                <li><strong>Контракт:</strong> Гуманность | <strong>Статус:</strong><span class="success">Успешно</span>|
-                    <strong>Сложность:</strong> Нормальная | <strong>Оплата:</strong> $5000
-                </li>
-                <li><strong>Контракт:</strong> Наслаждение Миру! | <strong>Статус:</strong><span class="success">Успешно</span>|
-                    <strong>Сложность:</strong> Сложно | <strong>Оплата:</strong> $10 000
-                </li>
-                <li><strong>Контракт:</strong> Новогодняя ёлка| <strong>Статус:</strong><span class="success">Успешно</span>|
-                    <strong>Сложность:</strong> Высокая | <strong>Оплата:</strong> $15 000
-                </li>
-                <li><strong>Контракт:</strong> Незванные гости | <strong>Статус:</strong><span class="success">Успешно</span>|
-                    <strong>Сложность:</strong> Легко | <strong>Оплата:</strong> $13 000
-                </li>
-                <li><strong>Контракт:</strong> | <strong>Статус:</strong> |
-                    <strong>Сложность:</strong> | <strong>Оплата:</strong>
-                </li>
-                <li><strong>Контракт:</strong> | <strong>Статус:</strong> |
-                    <strong>Сложность:</strong> | <strong>Оплата:</strong>
-                </li>
-                <li><strong>Контракт:</strong> | <strong>Статус:</strong> |
-                    <strong>Сложность:</strong> | <strong>Оплата:</strong>
-                </li>
-                <li><strong>Контракт:</strong> | <strong>Статус:</strong> |
-                    <strong>Сложность:</strong> | <strong>Оплата:</strong>
-                </li>
-                <li><strong>Контракт:</strong> | <strong>Статус:</strong> |
-                    <strong>Сложность:</strong> | <strong>Оплата:</strong>
-                </li>
+                <li><strong>Контракт:</strong> Доставщик счастья | <strong>Статус:</strong> <span
+                        class="success">Успешно</span> | <strong>Оплата:</strong> $2200</li>
+                <li><strong>Контракт:</strong> Что есть зло? | <strong>Статус:</strong> <span
+                        class="success">Успешно</span> | <strong>Оплата:</strong> $4000</li>
+                <li><strong>Контракт:</strong> Заявим о себе! | <strong>Статус:</strong> <span
+                        class="loss">Провалено</span> | <strong>Оплата:</strong> $12 000</li>
+                <li><strong>Контракт:</strong> Гуманность | <strong>Статус:</strong> <span
+                        class="success">Успешно</span> | <strong>Оплата:</strong> $5000</li>
+                <li><strong>Контракт:</strong> Наслаждение Миру! | <strong>Статус:</strong> <span
+                        class="success">Успешно</span> | <strong>Оплата:</strong> $10 000</li>
             </ul>
         </div>
     </div>
+
     <div id="balance-modal" class="modal">
         <div class="modal-content" style="width: 50%; text-align: center; background-color: black;">
             <span id="close-balance" class="close">&times;</span>
@@ -76,7 +56,58 @@
         </div>
     </div>
 
-    <button id="sosal-btn">Сосал?</button>
-        <script src="./js/script-group.js" defer> </script>
+    <button id="available-contracts-btn" style="width: 70%; font-size: 200%;">Доступные контракты</button>
+
+    <div id="available-contracts-modal" class="modal">
+        <div class="modal-content">
+
+            <!-- Задание 1 -->
+            <div class="available-contract-column" style="background-image: url('./images/task-1.jpg');">
+                <div class="overlay">
+                    <h3>Освобождение пленного</h3>
+                    <p class="difficulty">Сложность: <span class="one">Легко</span></p>
+                    <p class="description">Цель: Освободить бойца группы "Танго".</p>
+
+                    <div class="options">
+                        <p><span class="task-silent">Тихий метод:</span> Инфильтрация, ликвидация охраны и скрытый отход. Ночь</p>
+                        <p><span class="task-assault">Громкий метод:</span> Прямой штурм лагеря с зачисткой противника. Вечер/День
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Задание 2 -->
+            <div class="available-contract-column" style="background-image: url('./images/task-2.jpg');">
+                <div class="overlay">
+                    <h3>Операция: Гоп-стоп</h3>
+                    <p class="difficulty">Сложность: <span class="two">Средняя</span></p>
+                    <p class="description">Цель: Нападение на конвой, охраняемый техникой.</p>
+
+                    <div class="options">
+                        <p><span class="task-silent">Тихий метод:</span>Ночная засада с ПТ-средствами уничтожение техники и эвакуация.</p>
+                        <p><span class="task-assault">Громкий метод:</span> Вечерний штурм с применением гранатомётов и подавления БМП.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Задание 3 -->
+            <div class="available-contract-column" style="background-image: url('./images/task-3.jpg');"><span id="close-available-contracts" class="close">&times;</span>
+                <div class="overlay">
+                    <h3>Ликвидация</h3>
+                    <p class="difficulty">Сложность: <span class="three">Тяжело</span></p>
+                    <p class="description">Цель: Устранение высокопоставленной цели.</p>
+
+                    <div class="options">
+                        <p><span class="task-silent">Тихий метод:</span> Ликвидация ночью снайперским выстрелом или минирование дома.</p>
+                        <p><span class="task-assault">Громкий метод:</span> Дневной штурм с подрывом дома и полной зачисткой территории.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script-group.js" defer></script>
+    <script src="../js/available-contracts.js" defer></script>
 </body>
+
 </html>

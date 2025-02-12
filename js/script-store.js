@@ -1,7 +1,6 @@
-let cart = [];
 
-function addToCart(productName, quantity) {
-    const priceList = {
+// Объект с товарами и их ценами (здесь приведён пример, добавьте остальные по необходимости)
+const priceList = {
         "АКМ весло": { "unitPrice": 500, "bulkPrice": 400 },
         "АКМС": { "unitPrice": 550, "bulkPrice": 450 },
         "АК-74": { "unitPrice": 600, "bulkPrice": 500 },
@@ -282,56 +281,110 @@ function addToCart(productName, quantity) {
         "VAZ": { "unitPrice": 2000, "bulkPrice": 200  },
     };
 
+// Корзина (изначально пустая)
+let cart = localStorage.getItem("cart")
+  ? JSON.parse(localStorage.getItem("cart"))
+  : [];
+// Функция для сохранения корзины в localStorage
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+// =======================
+// Функция addToCart
+// =======================
+function addToCart(productName, quantity) {
     if (!priceList[productName]) {
         alert("Ошибка: Товар не найден!");
         return;
     }
-
-    let bulkQuantity = Math.floor(quantity / 10); // Сколько полных наборов по 10 шт.
-    let remainingQuantity = quantity % 10; // Остаток после наборов по 10 шт.
-
-    let totalPrice = (bulkQuantity * priceList[productName].bulkPrice * 10) + 
+    
+    // Вычисляем стоимость добавляемой партии (для уведомления)
+    let bulkQuantity = Math.floor(quantity / 10);
+    let remainingQuantity = quantity % 10;
+    let totalPrice = (bulkQuantity * priceList[productName].bulkPrice * 10) +
                      (remainingQuantity * priceList[productName].unitPrice);
-
+    
+    // Если товар уже есть в корзине – увеличиваем количество, иначе добавляем новый товар
     const existingProduct = cart.find(item => item.name === productName);
-
     if (existingProduct) {
         existingProduct.quantity += quantity;
-
-        let newBulkQuantity = Math.floor(existingProduct.quantity / 10);
-        let newRemainingQuantity = existingProduct.quantity % 10;
-
-        existingProduct.totalPrice = (newBulkQuantity * priceList[productName].bulkPrice * 10) + 
-                                     (newRemainingQuantity * priceList[productName].unitPrice);
     } else {
         cart.push({
             name: productName,
-            quantity: quantity,
-            totalPrice: totalPrice
+            quantity: quantity
         });
     }
-
-    alert(productName + ' добавлено в корзину');
+    
+    // Сохраняем обновленную корзину в localStorage
+    saveCart();
+    
+    alert(productName + " добавлено в корзину");
     updateCartDisplay();
 }
 
+// =======================
+// Функция updateCartDisplay
+// =======================
 function updateCartDisplay() {
-    const cartItemsList = document.getElementById('cart-items');
-    cartItemsList.innerHTML = '';
+    const cartItemsList = document.getElementById("cart-items");
+    cartItemsList.innerHTML = ""; // Очищаем список товаров
 
     let totalSum = 0;
-    cart.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = `${item.name} (${item.quantity} шт.) - ${item.totalPrice} $`;
+    cart.forEach((item, index) => {
+        // Пересчитываем стоимость товара по текущим ценам
+        let bulkQuantity = Math.floor(item.quantity / 10);
+        let remainingQuantity = item.quantity % 10;
+        let totalPrice = (bulkQuantity * priceList[item.name].bulkPrice * 10) +
+                         (remainingQuantity * priceList[item.name].unitPrice);
+        item.totalPrice = totalPrice;
+        totalSum += totalPrice;
+
+        const li = document.createElement("li");
+        li.setAttribute("data-index", index);
+        li.innerHTML = `
+            ${item.name} (<span class="item-quantity">${item.quantity}</span> шт) – 
+            <span class="item-total">${totalPrice}</span> $
+            <button class="cart-plus">+</button>
+            <button class="cart-minus">–</button>
+            <button class="cart-remove">/</button>
+        `;
         cartItemsList.appendChild(li);
-        totalSum += item.totalPrice;
+
+        li.querySelector(".cart-plus").addEventListener("click", function () {
+            item.quantity++;
+            saveCart();
+            updateCartDisplay();
+        });
+        li.querySelector(".cart-minus").addEventListener("click", function () {
+            if (item.quantity > 1) {
+                item.quantity--;
+            } else {
+                cart.splice(index, 1);
+            }
+            saveCart();
+            updateCartDisplay();
+        });
+        li.querySelector(".cart-remove").addEventListener("click", function () {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartDisplay();
+        });
     });
 
-    document.querySelector('.cart-button').textContent = `Корзина (${cart.length} товаров, ${totalSum} $)`;
-
-    const totalPriceElement = document.getElementById('total-price');
-    totalPriceElement.textContent = `Общая сумма: ${totalSum} $`;
+    // Обновляем информацию на кнопке корзины и элементе общей суммы
+    const cartButton = document.querySelector(".cart-button");
+    if (cartButton) {
+        cartButton.textContent = `Корзина (${cart.length} товаров, ${totalSum} $)`;
+    }
+    const totalPriceElement = document.getElementById("total-price");
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `Общая сумма: ${totalSum} $`;
+    }
 }
+
+// =======================
+// Функции открытия/закрытия корзины и модальных окон
+// =======================
 
 function openCart() {
     document.getElementById('cart-modal').style.display = 'block';
@@ -342,16 +395,11 @@ function closeCart() {
     document.getElementById('cart-modal').style.display = 'none';
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("openAutomats").addEventListener("click", function () {
-        openModal('automats');
-    });
-});
-
+// Пример открытия модального окна с товарами выбранной категории (например, 'automats')
 function openModal(category) {
     let content = '';
     switch (category) {
-                         case 'automats':
+        case 'automats':
                     content = '<h2>Автоматы</h2><table><tr><th>Автомат</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr><tr><td>АКМ весло</td><td>500</td><td>4000</td><td><button onclick="addToCart(\'АКМ весло\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКМ весло\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКМС</td><td>550</td><td>4500</td><td><button onclick="addToCart(\'АКМС\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКМС\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-74</td><td>600</td><td>5000</td><td><button onclick="addToCart(\'АК-74\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-74\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н</td><td>650</td><td>5600</td><td><button onclick="addToCart(\'АКС-74Н\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н-НПЗ-Планка</td><td>750</td><td>6000</td><td><button onclick="addToCart(\'АКС-74Н-НПЗ-Планка\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н-НПЗ-Планка\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н(Б-13 Планка)</td><td>800</td><td>6800</td><td><button onclick="addToCart(\'АКС-74Н(Б-13 Планка)\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н(Б-13 Планка)\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-74У</td><td>450</td><td>4000</td><td><button onclick="addToCart(\'АК-74У\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-74У\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-74УН</td><td>500</td><td>4500</td><td><button onclick="addToCart(\'АК-74УН\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-74УН\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК103-105</td><td>1000</td><td>9000</td><td><button onclick="addToCart(\'АК103-105\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК103-105\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-103-105 Б13-Зенитка</td><td>1100</td><td>10 000</td><td><button onclick="addToCart(\'АК-103-105 Б13-Зенитка\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-103-105 Б13-Зенитка\', 10)">Добавить 10 шт</button></td></tr><tr><td>ВАЛ</td><td>900</td><td>8000</td><td><button onclick="addToCart(\'ВАЛ\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'ВАЛ\', 10)">Добавить 10 шт</button></td></tr><tr><td>Винторез</td><td>930</td><td>8200</td><td><button onclick="addToCart(\'Винторез\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'Винторез\', 10)">Добавить 10 шт</button></td></tr><tr><td>М16А4 ручка транспортировки</td><td>1000</td><td>9000</td><td><button onclick="addToCart(\'М16А4 ручка транспортировки\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М16А4 ручка транспортировки\', 10)">Добавить 10 шт</button></td></tr><tr><td>М16А4</td><td>1050</td><td>10 000</td><td><button onclick="addToCart(\'М16А4\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М16А4\', 10)">Добавить 10 шт</button></td></tr><tr><td>М4А1</td><td>1400</td><td>13 000</td><td><button onclick="addToCart(\'М4А1\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М4А1\', 10)">Добавить 10 шт</button></td></tr><tr><td>ФН-2000</td><td>3000</td><td>24 000</td><td><button onclick="addToCart(\'ФН-2000\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'ФН-2000\', 10)">Добавить 10 шт</button></td></tr><tr><td>HK G36KV</td><td>2200</td><td>20 000</td><td><button onclick="addToCart(\'HK G36KV\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'HK G36KV\', 10)">Добавить 10 шт</button></td></tr><tr><td>KH2002 CAMA</td><td>2300</td><td>22 000</td><td><button onclick="addToCart(\'KH2002 CAMA\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'KH2002 CAMA\', 10)">Добавить 10 шт</button></td></tr><tr><td>MK17+ ВСЕ ВАРИАЦИИ</td><td>1900</td><td>18 000</td><td><button onclick="addToCart(\'MK17+ ВСЕ ВАРИАЦИИ\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'MK17+ ВСЕ ВАРИАЦИИ\', 10)">Добавить 10 шт</button></td></tr><tr><td>MSX</td><td>3000</td><td>30 000</td><td><button onclick="addToCart(\'MSX\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'MSX\', 10)">Добавить 10 шт</button></td></tr></table>';
                     break;
                 case 'pistols':
@@ -1017,6 +1065,7 @@ function closeModal() {
     document.getElementById("modal").style.display = 'none';
 }
 
+// Закрытие модального окна при клике вне его содержимого
 document.addEventListener("click", function (event) {
     var modal = document.getElementById("modal");
     if (event.target === modal) {
