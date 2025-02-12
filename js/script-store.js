@@ -1,10 +1,10 @@
 
 // Объект с товарами и их ценами (здесь приведён пример, добавьте остальные по необходимости)
 const priceList = {
-        "АКМ весло": { "unitPrice": 500, "bulkPrice": 400 },
-        "АКМС": { "unitPrice": 550, "bulkPrice": 450 },
-        "АК-74": { "unitPrice": 600, "bulkPrice": 500 },
-        "АКС-74Н": { "unitPrice": 650, "bulkPrice": 560 },
+                "АКМ весло": { "unitPrice": 500, "bulkPrice": 400 },
+                "АКМС": { "unitPrice": 550, "bulkPrice": 450 },
+                "АК-74": { "unitPrice": 600, "bulkPrice": 500 },
+                "АКС-74Н": { "unitPrice": 650, "bulkPrice": 560 },
                 "АКС-74Н-НПЗ-Планка": { "unitPrice": 750, "bulkPrice": 600 },
                 "АКС-74Н(Б-13 Планка)": { "unitPrice": 800, "bulkPrice": 680 },
                 "АК-74У": { "unitPrice": 450, "bulkPrice": 400 },
@@ -78,7 +78,14 @@ const priceList = {
                 "ГП для АК (кроме АКСУ)": { "unitPrice": 400, "bulkPrice": 350 },
                 "Костыль М320": { "unitPrice": 7000, "bulkPrice": 6700 },
                 "Подствольный М208": { "unitPrice": 5000, "bulkPrice": 4500 },
-                "MGL": { "unitPrice": 7000, "bulkPrice": 6700 },   
+                "MGL": { "unitPrice": 7000, "bulkPrice": 6700 },
+                "M112(4x)": { "unitPrice": 900, "bulkPrice": 900 },  
+                "M112": { "unitPrice": 300, "bulkPrice": 300 },  
+                "TM-62M": { "unitPrice": 500, "bulkPrice": 500 }, 
+                "MИ-8(ФАБ-250)": { "unitPrice": 320000, "bulkPrice": 32000 },
+                "SECRET BOX from Mainland": { "unitPrice": 60000, "bulkPrice": 60000 },
+                "МОН-50(Д)": { "unitPrice": 3000, "bulkPrice": 300 },
+                "МОН-50(10м)": { "unitPrice": 2000, "bulkPrice": 200 },
 
                 // Снаряды
                 "ПГ7-ВЛ": { "unitPrice": 1400, "bulkPrice": null },
@@ -534,7 +541,7 @@ function openModal(category) {
         '</table>';
     break;
                 case 'scopesholo':
-    content = '<h2>Прицелы</h2><table>' +
+    content = '<h2>Прицелы Голографические</h2><table>' +
         '<tr><th>Прицел</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr>' +
         '<tr><td>ЕКП 8-18</td><td>200</td><td>2000</td><td>' +
         '<button onclick="addToCart(\'ЕКП 8-18\', 1)">Добавить 1 шт</button> ' +
@@ -563,7 +570,7 @@ function openModal(category) {
         '</table>';
             break;
                 case 'scopescal':
-    content = '<h2>Прицелы</h2><table>' +
+    content = '<h2>Прицелы Калиматорные</h2><table>' +
         '<tr><th>Прицел</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr>' +
         
         '<tr><td>RACURS</td><td>400</td><td>4000</td><td>' +
@@ -637,7 +644,7 @@ function openModal(category) {
         '</table>';
     break;
                 case 'scopesxfour':
-    content = '<h2>Прицелы</h2><table>' +
+    content = '<h2>Прицелы 1Х-4Х</h2><table>' +
         '<tr><th>Прицел</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr>' +
 
         '<tr><td>AN-PVQ 31A (3X)</td><td>3000</td><td>30 000</td><td>' +
@@ -719,7 +726,7 @@ function openModal(category) {
         '</table>';
     break;
                 case 'scopesxinf':
-    content = '<h2>Прицелы</h2><table>' +
+    content = '<h2>Прицелы Оптические</h2><table>' +
         '<tr><th>Прицел</th><th>Цена за 1 шт $</th><th>Добавить в корзину</th></tr>' +
 
         '<tr><td>SQBSS 1-8</td><td>13 000</td><td>' +
@@ -1031,8 +1038,8 @@ function openModal(category) {
         '</table>';
             break;
                 case 'akcija_kurwa':
-    content = '<h2>Боевая техника</h2><table>' +
-        '<tr><th>Техника</th><th>Цена за 1 шт $</th><th>Добавить в корзину</th></tr>' +
+    content = '<h2>Временные товары</h2><table>' +
+        '<tr><th>Предмет</th><th>Цена за 1 шт $</th><th>Добавить в корзину</th></tr>' +
 
         '<tr><td>Hilux + M2</td><td>50 000</td>' +
         '<td><button onclick="addToCart(\'Hilux + M2\', 1)">Добавить 1 шт</button></td></tr>' +
@@ -1043,14 +1050,36 @@ function openModal(category) {
         '<tr><td>T-72</td><td>160 000</td>' +
         '<td><button onclick="addToCart(\'T-72\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>3rd Platecarrier</td><td>50 000</td>' +
+        '<tr><td>3rd Platecarrier(Плитоноска)</td><td>50 000</td>' +
         '<td><button onclick="addToCart(\'3rd Platecarrier\', 1)">Добавить 20 шт</button></td></tr>' +
 
-        '<tr><td>Silent 5.56</td><td>60 000</td>' +
+        '<tr><td>Silent 5.56(Глушитель)</td><td>60 000</td>' +
         '<td><button onclick="addToCart(\'Silent 5.56\', 1)">Добавить 10 шт</button></td></tr>' +
 
         '<tr><td>T-34</td><td>100 000</td>' +
         '<td><button onclick="addToCart(\'T-34\', 1)">Добавить 1 шт</button></td></tr>' +
+
+        '<tr><td>МОН-50 ДИСТАНЦИОННАЯ(Взрывчатка)</td><td>3000</td>' +
+        '<td><button onclick="addToCart(\'МОН-50(Д)\', 1)">Добавить 1 шт</button></td></tr>' +
+
+        '<tr><td>МОН-50 10 метров(Взрывчатка)</td><td>2000</td>' +
+        '<td><button onclick="addToCart(\'МОН-50(10м)\', 1)">Добавить 1 шт</button></td></tr>' +
+
+        '<tr><td>M112(Взрывчатка)</td><td>300</td><td>' +
+        '<button onclick="addToCart(\'M112\', 1)">Добавить 1 шт</button> ' +
+
+
+        '<tr><td>M112(4x)(Взрывчатка)</td><td>900</td><td>' +
+        '<button onclick="addToCart(\'M112(4x)\', 1)">Добавить 1 шт</button> ' +
+        
+        '<tr><td>TM-62M(Взрывчатка)</td><td>500</td>' +
+        '<td><button onclick="addToCart(\'TM-62M\', 1)">Добавить 1 шт</button></td></tr>' +
+
+        '<tr><td>MИ-8(ФАБ-250)</td><td>320 000</td>' +
+        '<td><button onclick="addToCart(\'MИ-8(ФАБ-250)\', 1)">Добавить 1 шт</button></td></tr>' +
+
+        '<tr><td>SECRET BOX from Mainland</td><td>60 000</td>' +
+        '<td><button onclick="addToCart(\'SECRET BOX from Mainland\', 1)">Добавить 1 шт</button></td></tr>' +
 
         '</table>';
     break;
