@@ -409,3 +409,331 @@ th {
     color: red;
     font-weight: 700;
 }
+
+
+/* ===========================================
+   БАЗОВЫЕ СТИЛИ (Mobile First) – для телефонов
+   =========================================== */
+
+/* Переменные для удобства */
+:root {
+    --font-base: 14px;
+    --font-heading: 18px;
+    --btn-padding: 8px 12px;
+    --modal-padding: 10px;
+    --border-radius: 4px;
+    --primary-bg: #222;
+    --secondary-bg: #444;
+    --hover-bg: #666;
+    --accent-color: #FFD700;
+}
+
+/* Общие стили */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    font-size: var(--font-base);
+    color: white;
+    background: url(../images/bg.jpg) no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Заголовки */
+h2,
+h3 {
+    font-size: var(--font-heading);
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Кнопки */
+.btn,
+button {
+    display: inline-block;
+    padding: var(--btn-padding);
+    margin: 5px;
+    background-color: var(--secondary-bg);
+    color: white;
+    font-size: var(--font-base);
+    border-radius: var(--border-radius);
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn:hover,
+button:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Контейнеры */
+.container {
+    width: 95%;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Сетка элементов */
+.grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 95%;
+    padding: 5px;
+}
+
+.item {
+    background-color: var(--primary-bg);
+    padding: 8px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.item:hover {
+    background-color: #555;
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    /* скрыто по умолчанию */
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Класс для показа модального окна */
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--primary-bg);
+    padding: var(--modal-padding);
+    border: 1px solid white;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    text-align: center;
+    border-radius: var(--border-radius);
+}
+
+.modal-content img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: 5px;
+}
+
+/* Крестик закрытия модальных окон */
+.close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.close:hover,
+.close:focus {
+    transform: scale(1.2);
+    color: red;
+}
+
+/* Кнопка "Назад" */
+.back-arrow {
+    position: fixed;
+    top: 5px;
+    left: 5px;
+    font-size: 20px;
+    color: white;
+    text-decoration: none;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 8px;
+    border-radius: var(--border-radius);
+    z-index: 1000;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.back-arrow:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+/* Статусы */
+.loss {
+    color: red;
+}
+
+.success {
+    color: greenyellow;
+}
+
+/* Кнопка корзины */
+.cart {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    z-index: 100;
+}
+
+.cart-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: var(--btn-padding);
+    font-size: var(--font-base);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    border: none;
+}
+
+.cart-button:hover {
+    background-color: #45a049;
+}
+
+/* Модальное окно "Доступные контракты" */
+#available-contracts-modal .modal-content {
+    width: 90vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border: 2px solid black;
+    overflow: hidden;
+}
+
+.available-contract-column {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.available-contract-column .overlay {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Метки для методов */
+.task-silent {
+    font-size: 16px;
+    color: rgb(60, 180, 0);
+    font-weight: bold;
+}
+
+.task-assault {
+    font-size: 16px;
+    color: red;
+    font-weight: bold;
+}
+
+.move-silent {
+    color: #2a9e00;
+}
+
+.move-assault {
+    color: #f30000;
+    font-weight: 600;
+}
+
+/* Кнопка "Доступные контракты" */
+#available-contracts-btn {
+    width: 90%;
+    font-size: 150%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* ===========================================
+   MEDIA QUERIES – для планшетов (min-width: 768px)
+   =========================================== */
+
+@media (min-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+
+    h2,
+    h3 {
+        font-size: 22px;
+    }
+
+    .btn,
+    button {
+        padding: 10px 16px;
+        font-size: 16px;
+    }
+
+    .container {
+        width: 80%;
+        padding: 15px;
+    }
+
+    .grid {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 80%;
+    }
+
+    .item {
+        flex: 1 1 calc(50% - 10px);
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .modal-content {
+        width: 80%;
+        max-width: 500px;
+    }
+
+    #available-contracts-modal .modal-content {
+        width: 80vw;
+    }
+
+    .available-contract-column {
+        width: 48%;
+        height: 250px;
+        margin-bottom: 10px;
+    }
+
+    #available-contracts-btn {
+        width: 60%;
+        font-size: 180%;
+    }
+}
