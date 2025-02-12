@@ -361,7 +361,6 @@ th {
     height: 100%;
     /* Заполняем всю высоту модального окна */
 }
-
 /* Затемнённый слой для текста */
 .available-contract-column .overlay {
     background: rgba(0, 0, 0, 0.6);
