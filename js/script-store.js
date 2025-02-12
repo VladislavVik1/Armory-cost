@@ -192,12 +192,12 @@ const priceList = {
                 "RX 0 REFLEX": { "unitPrice": 700, "bulkPrice": 700 },
                 "ТЕПЛО +": { "unitPrice": 1500, "bulkPrice": 1300 },
                 // Галографические прицелы                   
-                "ЕКП 8-18": { "unitPrice": 200, "bulkPrice": 2000 },
-                "ОКП 7": { "unitPrice": 300, "bulkPrice": 3000 },
-                "1П87": { "unitPrice": 400, "bulkPrice": 4000 },
-                "EOTECH XPS3": { "unitPrice": 700, "bulkPrice": 7000 },
-                "EOTECH XPS3 + MAGN": { "unitPrice": 1400, "bulkPrice": 13000 },
-                "EOTECH 553": { "unitPrice": 800, "bulkPrice": 8000 },
+                "ЕКП 8-18": { "unitPrice": 200, "bulkPrice": 200 },
+                "ОКП 7": { "unitPrice": 300, "bulkPrice": 300 },
+                "1П87": { "unitPrice": 400, "bulkPrice": 400 },
+                "EOTECH XPS3": { "unitPrice": 700, "bulkPrice": 700 },
+                "EOTECH XPS3 + MAGN": { "unitPrice": 1400, "bulkPrice": 1300 },
+                "EOTECH 553": { "unitPrice": 800, "bulkPrice": 800 },
                 // Оптические прицелы 1х - 4х 
                   "AN-PVQ 31A (3X)": { "unitPrice": 3000, "bulkPrice": 3000 },
                 "BURRIS XTR 2 + MICRO": { "unitPrice": 3500, "bulkPrice": 3500 },
@@ -1099,5 +1099,43 @@ document.addEventListener("click", function (event) {
     var modal = document.getElementById("modal");
     if (event.target === modal) {
         closeModal();
+    }
+});
+document.addEventListener("DOMContentLoaded", function () {
+    let cartModal = document.getElementById("cart-modal"); // Ищем модальное окно корзины
+    let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot"); // Ищем кнопку "Отправить скриншот Владу"
+
+    if (cartModal && sendScreenshotButton) {
+        // Создаем контейнер для комментария
+        let commentContainer = document.createElement("div");
+        commentContainer.style.marginTop = "10px"; // Отступ сверху
+        commentContainer.style.display = "flex";
+        commentContainer.style.flexDirection = "column";
+        commentContainer.style.gap = "5px";
+
+        // Добавляем заголовок
+        let commentLabel = document.createElement("label");
+        commentLabel.textContent = "Комментарий к заказу:";
+        commentLabel.style.fontWeight = "bold";
+
+        // Создаем поле для ввода
+        let commentInput = document.createElement("textarea");
+        commentInput.id = "order-comment";
+        commentInput.placeholder = "Введите ваш комментарий...";
+        commentInput.style.width = "100%";
+        commentInput.style.height = "60px";
+        commentInput.style.padding = "5px";
+        commentInput.style.border = "1px solid #ccc";
+        commentInput.style.borderRadius = "5px";
+        commentInput.style.fontSize = "14px";
+
+        // Добавляем всё в контейнер
+        commentContainer.appendChild(commentLabel);
+        commentContainer.appendChild(commentInput);
+
+        // Вставляем перед кнопкой "Отправить скриншот Владу"
+        sendScreenshotButton.parentNode.insertBefore(commentContainer, sendScreenshotButton);
+    } else {
+        console.error("Не найдена корзина или кнопка 'Отправить скриншот Владу'.");
     }
 });
