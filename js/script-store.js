@@ -1149,40 +1149,34 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function sendOrder() {
-        let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const socket = new WebSocket("ws://localhost:8080"); // Подключаемся к серверу
 
-        if (cartItems.length === 0) {
-            alert("Нет заказов для отправки!");
-            return;
-        }
+socket.onopen = function () {
+    console.log("✅ Подключено к WebSocket серверу");
+};
 
-        let now = new Date();
-        let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+function sendOrder() {
+    let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    let totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-        let commentInput = document.getElementById("order-comment");
-        let userComment = commentInput ? commentInput.value.trim() : "Без комментария";
-
-        let newOrder = {
-            date: formattedDate,
-            items: cartItems,
-            comment: userComment
-        };
-
-        let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
-        storedOrders.push(newOrder);
-        localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
-
-        alert("Заказ успешно отправлен в историю заказов!");
-
-        // Очищаем корзину после отправки
-        localStorage.removeItem("cart");
-
-        // Очищаем комментарий
-        if (commentInput) {
-            commentInput.value = "";
-        }
+    if (cartItems.length === 0) {
+        alert("Корзина пуста!");
+        return;
     }
+
+    let order = {
+        date: new Date().toLocaleString(),
+        items: cartItems,
+        total: totalPrice
+    };
+
+    socket.send(JSON.stringify(order)); // Отправляем заказ на сервер
+
+    localStorage.removeItem("cart"); // Очищаем корзину
+    alert("📦 Заказ отправлен!");
+    window.location.href = "orders.html"; // Переход на страницу заказов
+}
+
 });
 
 // Функция обновления суммы в корзине
@@ -1206,38 +1200,46 @@ updateTotalPrice();
 
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
 
-document.querySelector("#cart-modal button.snapshot").addEventListener("click", function () {
-    let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    if (sendScreenshotButton) {
+        sendScreenshotButton.addEventListener("click", function () {
+            let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
 
-    if (cartItems.length === 0) {
-        alert("Нет заказов для отправки!");
-        return;
+            if (cartItems.length === 0) {
+                alert("Нет заказов для отправки!");
+                return;
+            }
+
+            let now = new Date();
+            let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+            // Получаем общую сумму из корзины
+            let totalPriceElement = document.getElementById("total-price");
+            let totalPrice = totalPriceElement ? parseFloat(totalPriceElement.textContent.replace(/\D/g, '')) : 0;
+
+            // Получаем комментарий к заказу
+            let commentInput = document.getElementById("order-comment");
+            let commentText = commentInput ? commentInput.value : "Без комментария";
+
+            let newOrder = {
+                date: formattedDate,
+                items: cartItems,
+                total: totalPrice.toFixed(2), // Округляем сумму
+                comment: commentText
+            };
+
+            let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
+            storedOrders.push(newOrder);
+            localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+
+            alert("📦 Заказ успешно отправлен в историю заказов!");
+
+            localStorage.removeItem("cart"); // Очищаем корзину
+            window.location.href = "orders.html"; // Переход на страницу заказов
+        });
+    } else {
+        console.warn("❗ Кнопка отправки заказа `.snapshot` не найдена. Код не выполняется.");
     }
-
-    let now = new Date();
-    let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-
-    // Получаем общую сумму из корзины
-    let totalPriceElement = document.getElementById("total-price");
-    let totalPrice = totalPriceElement ? parseFloat(totalPriceElement.textContent.replace(/\D/g, '')) : 0;
-
-    let commentInput = document.getElementById("order-comment");
-    let commentText = commentInput ? commentInput.value : "";
-
-    let newOrder = {
-        date: formattedDate,
-        items: cartItems,
-        total: totalPrice.toFixed(2), // Округляем сумму
-        comment: commentText
-    };
-
-    let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
-    storedOrders.push(newOrder);
-    localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
-
-    alert("Заказ успешно отправлен в историю заказов!");
-
-    localStorage.removeItem("cart"); // Очищаем корзину
-    window.location.href = "orders.html"; // Переход на страницу заказов
 });
