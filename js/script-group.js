@@ -58,6 +58,3 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         });
-          document.getElementById("sosal-btn").addEventListener("click", function () {
-                            window.location.href = "video.html";
-                        });

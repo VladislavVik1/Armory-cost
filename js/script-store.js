@@ -534,10 +534,10 @@ function openModal(category) {
                 case 'grass':
     content = '<h2>Пачки, ленты патронов</h2><table>' +
         '<tr><th>Тип</th><th>Цена за 10 пачек $</th><th>Добавить в корзину</th></tr>' +
-        '<tr><td>Патроны для пистолета</td><td>300</td><td><button onclick="addToCart(\'Патроны для пистолета\', 10)">Добавить 10 шт</button></td></tr>' +
-        '<tr><td>Россыпь для автомата</td><td>750</td><td><button onclick="addToCart(\'Россыпь для автомата\', 10)">Добавить 10 шт</button></td></tr>' +
-        '<tr><td>Патроны для винтовки</td><td>1000</td><td><button onclick="addToCart(\'Патроны для винтовки\', 10)">Добавить 10 шт</button></td></tr>' +
-        '<tr><td>Ленты для пулемета</td><td>1100</td><td><button onclick="addToCart(\'Ленты для пулемета\', 10)">Добавить 10 шт</button></td></tr>' +
+        '<tr><td>Патроны для пистолета</td><td>300</td><td><button onclick="addToCart(\'Патроны для пистолета\', 1)">Добавить 10 пачек патронов</button></td></tr>' +
+        '<tr><td>Патроны для автомата</td><td>750</td><td><button onclick="addToCart(\'Россыпь для автомата\', 1)">Добавить 10 пачек патронов</button></td></tr>' +
+        '<tr><td>Патроны для винтовки</td><td>1000</td><td><button onclick="addToCart(\'Патроны для винтовки\', 1)">Добавить 10 пачек патронов</button></td></tr>' +
+        '<tr><td>Ленты для пулемета</td><td>1100</td><td><button onclick="addToCart(\'Ленты для пулемета\', 1)">Добавить 4 ленты</button></td></tr>' +
         '</table>';
     break;
                 case 'scopesholo':

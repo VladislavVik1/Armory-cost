@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const availableContractsBtn = document.getElementById("available-contracts-btn");
     const availableContractsModal = document.getElementById("available-contracts-modal");
     const closeAvailableContracts = document.getElementById("close-available-contracts");
+    const closeMobileAvailableContracts = document.getElementById("close-mobile-available-contracts");    
 
     // Открытие модального окна "Доступные контракты"
     availableContractsBtn.addEventListener("click", function() {
@@ -12,6 +13,9 @@ document.addEventListener("DOMContentLoaded", function() {
     closeAvailableContracts.addEventListener("click", function() {
         availableContractsModal.style.display = "none";
     });
+    closeMobileAvailableContracts.addEventListener("click", function() {
+        availableContractsModal.style.display = "none";
+    });    
 
     // Закрытие модального окна при клике вне его содержимого
     window.addEventListener("click", function(event) {
