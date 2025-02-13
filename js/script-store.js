@@ -1184,40 +1184,60 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
-document.addEventListener("DOMContentLoaded", function () {
-    let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
 
-    if (sendScreenshotButton) {
-        sendScreenshotButton.addEventListener("click", function (event) {
-            event.preventDefault(); // Предотвращаем стандартное действие ссылки
+// Функция обновления суммы в корзине
+function updateTotalPrice() {
+    let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    let totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    localStorage.setItem("totalPrice", totalPrice); // Сохраняем сумму в localStorage
+    let totalPriceElement = document.getElementById("total-price");
 
-            let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-            if (cartItems.length === 0) {
-                alert("Нет заказов для отправки!");
-                return;
-            }
-
-            let commentInput = document.getElementById("order-comment");
-            let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
-
-            let now = new Date();
-            let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-
-            let newOrder = {
-                date: formattedDate,
-                items: cartItems,
-                comment: commentText
-            };
-
-            let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
-            storedOrders.push(newOrder);
-            localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
-
-            alert("Заказ успешно отправлен в историю заказов!");
-
-            localStorage.removeItem("cart"); // Очищаем корзину
-
-            window.location.href = "orders.html"; // Переход на страницу заказов
-        });
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `Общая сумма: ${totalPrice} $`;
     }
+}
+
+// Обновляем сумму при изменении корзины
+updateTotalPrice();
+
+
+
+
+
+
+
+document.querySelector("#cart-modal button.snapshot").addEventListener("click", function () {
+    let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if (cartItems.length === 0) {
+        alert("Нет заказов для отправки!");
+        return;
+    }
+
+    let now = new Date();
+    let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+    // Получаем общую сумму из корзины
+    let totalPriceElement = document.getElementById("total-price");
+    let totalPrice = totalPriceElement ? parseFloat(totalPriceElement.textContent.replace(/\D/g, '')) : 0;
+
+    let commentInput = document.getElementById("order-comment");
+    let commentText = commentInput ? commentInput.value : "";
+
+    let newOrder = {
+        date: formattedDate,
+        items: cartItems,
+        total: totalPrice.toFixed(2), // Округляем сумму
+        comment: commentText
+    };
+
+    let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
+    storedOrders.push(newOrder);
+    localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+
+    alert("Заказ успешно отправлен в историю заказов!");
+
+    localStorage.removeItem("cart"); // Очищаем корзину
+    window.location.href = "orders.html"; // Переход на страницу заказов
 });

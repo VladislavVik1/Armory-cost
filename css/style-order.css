@@ -42,22 +42,38 @@
      margin-top: 50px;
  }
 
- h2 {
-     color: #FFD700;
-     margin-bottom: 20px;
- }
+.order-container {
+    width: 30%;
+    /* Уменьшаем ширину */
+    margin: 50px auto;
+    /* Центрируем контейнер */
+    background: #2b2b2b;
+    /* Темно-серый цвет, приближенный к черному */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    text-align: left;
+    color: white;
+    /* Черный цвет текста */
+}
 
- .order-container {
-     width: 100%;
-     background: rgba(255, 255, 255, 0.1);
-     padding: 15px;
-     border-radius: 10px;
-     box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.2);
-     text-align: left;
-     max-height: 500px;
-     overflow-y: auto;
- }
 
+
+/* Дополнительно, чтобы кнопка очистки заказов тоже была по центру */
+.clear-orders {
+    display: block;
+    margin: 20px auto;
+    background: red;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.clear-orders:hover {
+    background: darkred;
+}
  .order {
      border-bottom: 1px solid #FFD700;
      padding: 15px;
