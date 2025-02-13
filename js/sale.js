@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Задаем текущую версию дефолтных данных.
   // Если вы изменяете дефолтные значения, увеличьте эту версию (например, "1.1" → "1.2")
-  const currentVersion = "1.1";
+  const currentVersion = "1.3";
 
   // Дефолтный массив товаров для продажи (если в localStorage нет данных или версия отличается)
   const defaultSaleItems = [
