@@ -1149,7 +1149,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    const socket = new WebSocket("ws://104.197.130.15:8080"); // Подключаемся к серверу
+    const socket = new WebSocket("wss://104.197.130.15:8080"); // Подключаемся к серверу
 
 socket.onopen = function () {
     console.log("✅ Подключено к WebSocket серверу");
