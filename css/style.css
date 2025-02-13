@@ -12,13 +12,13 @@ body {
     justify-content: center;
 }
 .order-button {
-    background-color: #87CEEB;
+    background-color: #921212;
     /* Небесно-голубой цвет */
-    color: black;
+    color: rgb(255, 255, 255);
     border: none;
     padding: 15px 30px;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 200;
     border-radius: 10px;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
@@ -27,7 +27,7 @@ body {
 }
 
 .order-button:hover {
-    background-color: #00BFFF;
+    background-color: #9f1111;
     /* Чуть темнее при наведении */
     transform: scale(1.05);
 }
