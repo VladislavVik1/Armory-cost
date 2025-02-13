@@ -75,7 +75,7 @@ const priceList = {
                 "ДЖЕВЕЛИН": { "unitPrice": 20000, "bulkPrice": null },
                 "НЛАВ": { "unitPrice": 13000, "bulkPrice": null },
                 "КАРЛ ГУСТАВ": { "unitPrice": 10000, "bulkPrice": null },
-                "ГП для АК (кроме АКСУ)": { "unitPrice": 400, "bulkPrice": 350 },
+                "ГП для АК ( кроме АКСУ)": { "unitPrice": 400, "bulkPrice": 350 },
                 "Костыль М320": { "unitPrice": 7000, "bulkPrice": 6700 },
                 "Подствольный М208": { "unitPrice": 5000, "bulkPrice": 4500 },
                 "MGL": { "unitPrice": 7000, "bulkPrice": 6700 },
@@ -101,56 +101,56 @@ const priceList = {
                 "TITAN ROCKET": { "unitPrice": 2500, "bulkPrice": null },
 
                 // Патроны
-                "5.45 30": { "unitPrice": 1000, "bulkPrice": 100 },
-                "5.45 45": { "unitPrice": 5000, "bulkPrice": 500 },
-                "5.45 60": { "unitPrice": 15000, "bulkPrice": 1500 },
-                "7.62x39 30": { "unitPrice": 1000, "bulkPrice": 100 },
-                "7.62x39 40": { "unitPrice": 7000, "bulkPrice": 700 },
-                "7.62x39 75": { "unitPrice": 20000, "bulkPrice": 2000 },
-                "9*39 10 СП5": { "unitPrice": 2000, "bulkPrice": 200 },
-                "9*39 20 СП5": { "unitPrice": 5000, "bulkPrice": 500 },
-                "9*39 10 СП6": { "unitPrice": 3000, "bulkPrice": 300 },
-                "9*39 20 СП6": { "unitPrice": 7000, "bulkPrice": 700 },
-                "5.56 30 M855": { "unitPrice": 1300, "bulkPrice": 130 },
-                "5.56 40 M855": { "unitPrice": 8000, "bulkPrice": 800 },
-                "5.56 60 M855A1": { "unitPrice": 20000, "bulkPrice": 2000 },
-                ".300W (ДЛЯ М2010) 5": { "unitPrice": 4000, "bulkPrice": 400 },
-                "7.62*54 КОРОБ 100 ЛПС": { "unitPrice": 10000, "bulkPrice": 1000 },
-                "7.62*54 КОРОБ 100 БЗ": { "unitPrice": 40000, "bulkPrice": 4000 },
-                "7.62*54 КОРОБ 100 ТРАССЕР": { "unitPrice": 12000, "bulkPrice": 1200 },
-                "7.62*54 СВД 10 7Н1": { "unitPrice": 6000, "bulkPrice": 600 },
-                "7.62*54 СВД 10 7Н14": { "unitPrice": 7000, "bulkPrice": 700 },
-                "ДЛЯ М110 20": { "unitPrice": 9000, "bulkPrice": 900 },
-                "7.62x51 М240 50": { "unitPrice": 5000, "bulkPrice": 500 },
-                "7.62x51 М240 100": { "unitPrice": 10000, "bulkPrice": 1000 },
-                "7.62x51 М240 200": { "unitPrice": 20000, "bulkPrice": 2000 },
-                "7.62x51 (МК17) 20": { "unitPrice": 3000, "bulkPrice": 300 },
-                "5.56 М249 100": { "unitPrice": 2500, "bulkPrice": 250 },
-                "5.56 М249 200": { "unitPrice": 7000, "bulkPrice": 700 },
-                "G36 30": { "unitPrice": 3400, "bulkPrice": 340 },
-                "6.5 30": { "unitPrice": 8000, "bulkPrice": 800 },
-                "12.7x99 10": { "unitPrice": 13000, "bulkPrice": 1300 },
-                "12.7x99 10": { "unitPrice": 28000, "bulkPrice": 2800 },
-                "12.7x99 10": { "unitPrice": 12000, "bulkPrice": 1200 },
-                ".408 M2000 7": { "unitPrice": 10000, "bulkPrice": 1000 },
-                "40MM 6 HE": { "unitPrice": 18000, "bulkPrice": 1800 },
-                "40MM 6 HET": { "unitPrice": 20000, "bulkPrice": 2000 },
-                "40MM 6 HEDP": { "unitPrice": 25000, "bulkPrice": 2500 },
-                "40MM 6 LIGHT": { "unitPrice": 5000, "bulkPrice": 500 },
-                "40MM 6 SMOKE": { "unitPrice": 7000, "bulkPrice": 700 },
-                "5.7 P90 50": { "unitPrice": 4000, "bulkPrice": 400 },
-                "M1911 7": { "unitPrice": 3000, "bulkPrice": 300 },
-                "9*18 8": { "unitPrice": 2000, "bulkPrice": 200 },
-                "9*19 17": { "unitPrice": 4000, "bulkPrice": 400 },
-                "9*19 20": { "unitPrice": 5000, "bulkPrice": 500 },
-                "MP7 40 FMJ": { "unitPrice": 9000, "bulkPrice": 900 },
-                "7.62*25 TT": { "unitPrice": 3000, "bulkPrice": 300 },
-                ".45ACP 6": { "unitPrice": 3000, "bulkPrice": 300 },
-                "300 BLK": { "unitPrice": 3000, "bulkPrice": 300 },
-                "Патроны для пистолета": { "unitPrice": 300, "bulkPrice": 30 },
-                "Россыпь для автомата": { "unitPrice": 750, "bulkPrice": 75 },
-                "Патроны для винтовки": { "unitPrice": 1000, "bulkPrice": 100 },
-                "Ленты для пулемета": { "unitPrice": 1100, "bulkPrice": 110 },
+                "5.45 30": { "unitPrice": 100, "bulkPrice": 100 },
+                "5.45 45": { "unitPrice": 500, "bulkPrice": 500 },
+                "5.45 60": { "unitPrice": 1500, "bulkPrice": 1500 },
+                "7.62x39 30": { "unitPrice": 100, "bulkPrice": 100 },
+                "7.62x39 40": { "unitPrice": 700, "bulkPrice": 700 },
+                "7.62x39 75": { "unitPrice": 2000, "bulkPrice": 2000 },
+                "9*39 10 СП5": { "unitPrice": 200, "bulkPrice": 200 },
+                "9*39 20 СП5": { "unitPrice": 500, "bulkPrice": 500 },
+                "9*39 10 СП6": { "unitPrice": 300, "bulkPrice": 300 },
+                "9*39 20 СП6": { "unitPrice": 700, "bulkPrice": 700 },
+                "5.56 30 M855": { "unitPrice": 130, "bulkPrice": 130 },
+                "5.56 40 M855": { "unitPrice": 800, "bulkPrice": 800 },
+                "5.56 60 M855A1": { "unitPrice": 2000, "bulkPrice": 2000 },
+                ".300W (ДЛЯ М2010) 5": { "unitPrice": 400, "bulkPrice": 400 },
+                "7.62*54 КОРОБ 100 ЛПС": { "unitPrice": 1000, "bulkPrice": 1000 },
+                "7.62*54 КОРОБ 100 БЗ": { "unitPrice": 4000, "bulkPrice": 4000 },
+                "7.62*54 КОРОБ 100 ТРАССЕР": { "unitPrice": 1200, "bulkPrice": 1200 },
+                "7.62*54 СВД 10 7Н1": { "unitPrice": 600, "bulkPrice": 600 },
+                "7.62*54 СВД 10 7Н14": { "unitPrice": 700, "bulkPrice": 700 },
+                "ДЛЯ М110 20": { "unitPrice": 900, "bulkPrice": 900 },
+                "7.62x51 М240 50": { "unitPrice": 500, "bulkPrice": 500 },
+                "7.62x51 М240 100": { "unitPrice": 1000, "bulkPrice": 1000 },
+                "7.62x51 М240 200": { "unitPrice": 2000, "bulkPrice": 2000 },
+                "7.62x51 (МК17) 20": { "unitPrice": 300, "bulkPrice": 300 },
+                "5.56 М249 100": { "unitPrice": 250, "bulkPrice": 250 },
+                "5.56 М249 200": { "unitPrice": 700, "bulkPrice": 700 },
+                "G36 30": { "unitPrice": 340, "bulkPrice": 340 },
+                "6.5 30": { "unitPrice": 800, "bulkPrice": 800 },
+                "12.7x99 10": { "unitPrice": 1300, "bulkPrice": 1300 },
+                "12.7x99 10": { "unitPrice": 2800, "bulkPrice": 2800 },
+                "12.7x99 10": { "unitPrice": 1200, "bulkPrice": 1200 },
+                ".408 M2000 7": { "unitPrice": 1000, "bulkPrice": 1000 },
+                "40MM 6 HE": { "unitPrice": 1800, "bulkPrice": 1800 },
+                "40MM 6 HET": { "unitPrice": 2000, "bulkPrice": 2000 },
+                "40MM 6 HEDP": { "unitPrice": 2500, "bulkPrice": 2500 },
+                "40MM 6 LIGHT": { "unitPrice": 500, "bulkPrice": 500 },
+                "40MM 6 SMOKE": { "unitPrice": 700, "bulkPrice": 700 },
+                "5.7 P90 50": { "unitPrice": 400, "bulkPrice": 400 },
+                "M1911 7": { "unitPrice": 300, "bulkPrice": 300 },
+                "9*18 8": { "unitPrice": 200, "bulkPrice": 200 },
+                "9*19 17": { "unitPrice": 400, "bulkPrice": 400 },
+                "9*19 20": { "unitPrice": 500, "bulkPrice": 500 },
+                "MP7 40 FMJ": { "unitPrice": 900, "bulkPrice": 900 },
+                "7.62*25 TT": { "unitPrice": 300, "bulkPrice": 300 },
+                ".45ACP 6": { "unitPrice": 300, "bulkPrice": 300 },
+                "300 BLK": { "unitPrice": 300, "bulkPrice": 300 },
+                "Патроны для пистолета": { "unitPrice": 30, "bulkPrice": 30 },
+                "Россыпь для автомата": { "unitPrice": 75, "bulkPrice": 75 },
+                "Патроны для винтовки": { "unitPrice": 100, "bulkPrice": 100 },
+                "Ленты для пулемета": { "unitPrice": 110, "bulkPrice": 110 },
                 // Медицинские товары                
                  "Повязка": { "unitPrice": 1000, "bulkPrice": 100 },
                 "Давящая повязка": { "unitPrice": 1200, "bulkPrice": 120 },
@@ -1138,4 +1138,37 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         console.error("Не найдена корзина или кнопка 'Отправить скриншот Владу'.");
     }
+});
+
+
+
+
+
+
+
+document.querySelector("#cart-modal button.snapshot").addEventListener("click", function () {
+    let cartItems = JSON.parse(localStorage.getItem("cart")) || []; // Проверяем корзину
+
+    if (cartItems.length === 0) {
+        alert("Нет заказов для отправки!");
+        return;
+    }
+
+    let now = new Date();
+    let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+    let newOrder = {
+        date: formattedDate,
+        items: cartItems,
+        comment: "Отправлено через кнопку 'Отправить скриншот Владу'"
+    };
+
+    let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
+    storedOrders.push(newOrder);
+    localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+
+    alert("Заказ успешно отправлен в историю заказов!");
+
+    // Очищаем корзину после отправки
+    localStorage.removeItem("cart");
 });
