@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Подключение к WebSocket серверу
-const socket = new WebSocket("ws://localhost:8080");
+const socket = new WebSocket("ws://104.197.130.15:8080");
 
 socket.onopen = function () {
     console.log("✅ Подключено к WebSocket серверу");

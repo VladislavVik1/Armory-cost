@@ -1,6 +1,13 @@
-const WebSocket = require("ws");
-const fs = require("fs");
+const fs = require('fs');
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080, host: "0.0.0.0"});
 
+wss.on('connection', function connection(ws) {
+    console.log('📡 Новый клиент подключен');
+    ws.on('message', function incoming(message) {
+        console.log('Получено сообщение:', message);
+    });
+});
 const PORT = 8080;
 const FILE_PATH = "orders.json"; // Файл для хранения заказов
 
