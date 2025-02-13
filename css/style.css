@@ -415,6 +415,9 @@ th {
     body {
         font-size: 14px;
     }
+#close-available-contracts{
+    visibility: hidden;
+}
     header {
         font-size: 20px;
         padding: 15px;
