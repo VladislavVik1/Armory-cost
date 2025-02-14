@@ -107,6 +107,7 @@ function connectWebSocket() {
     };
 }
 
+
 // **Функция загрузки заказов**
 function loadOrders() {
     let orders = JSON.parse(localStorage.getItem("orders")) || [];
