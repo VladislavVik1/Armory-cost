@@ -9,14 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("📡 Отправка `clear_orders` на сервер...");
                 socket.send(JSON.stringify({ type: "clear_orders" }));
 
-                // Ожидаем ответ от сервера (если не приходит - очищаем локально)
+                // Ожидание ответа от сервера (если не приходит — очищаем локально)
                 let clearOrdersTimeout = setTimeout(() => {
                     console.warn("⏳ Сервер не ответил, очистка заказов локально.");
                     localStorage.removeItem("orders");
                     loadOrders();
-                }, 5000); // Увеличено до 5 секунд для стабильности
+                }, 5000); // Ждём 5 секунд
 
-                // Проверяем, пришел ли ответ от сервера
+                // Обработка ответа сервера
                 socket.onmessage = function (event) {
                     try {
                         let data = JSON.parse(event.data);
@@ -40,54 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
-    let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
-    if (sendScreenshotButton) {
-        sendScreenshotButton.addEventListener("click", function () {
-            let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
-            if (cartItems.length === 0) {
-                alert("❌ Корзина пуста! Добавьте товары перед отправкой заказа.");
-                return;
-            }
-
-            let now = new Date();
-            let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-
-            let totalPriceElement = document.getElementById("total-price");
-            let totalPrice = totalPriceElement ? parseFloat(totalPriceElement.textContent.replace(/\D/g, '')) : 0;
-
-            let commentInput = document.getElementById("order-comment");
-            let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
-
-            let newOrder = {
-                type: "new_order",
-                order: {
-                    date: formattedDate,
-                    items: cartItems,
-                    total: totalPrice.toFixed(2),
-                    comment: commentText
-                }
-            };
-
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify(newOrder));
-                console.log("📡 Заказ отправлен через WebSocket:", newOrder);
-            } else {
-                console.warn("⚠ WebSocket не подключен! Заказ сохранён локально.");
-                let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
-                storedOrders.push(newOrder.order);
-                localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
-            }
-
-            alert("📦 Заказ успешно отправлен!");
-
-            localStorage.removeItem("cart");
-            window.location.href = "orders.html";
-        });
-    } else {
-        console.warn("❗ Кнопка отправки заказа `.snapshot` не найдена.");
-    }
 });
 
 // **Глобальная переменная WebSocket**
@@ -98,7 +50,7 @@ function connectWebSocket() {
 
     socket.onopen = function () {
         console.log("✅ Подключено к WebSocket серверу");
-        socket.send(JSON.stringify({ type: "get_orders" }));
+        socket.send(JSON.stringify({ type: "get_orders" })); // Запрос заказов у сервера
     };
 
     socket.onmessage = function (event) {
@@ -106,17 +58,17 @@ function connectWebSocket() {
             let data = JSON.parse(event.data);
             console.log("📩 Получены данные с сервера:", data);
 
-            if (data.type === "orders_cleared") {
-                console.log("🗑 Все заказы были удалены сервером");
-                localStorage.removeItem("orders");
-                loadOrders();
-            } else if (data.type === "init") {
-                localStorage.setItem("orders", JSON.stringify(data.orders));
+            if (data.type === "init") {
+                localStorage.setItem("orders", JSON.stringify(data.orders || []));
                 loadOrders();
             } else if (data.type === "new_order") {
                 let orders = JSON.parse(localStorage.getItem("orders")) || [];
                 orders.push(data.order);
                 localStorage.setItem("orders", JSON.stringify(orders));
+                loadOrders();
+            } else if (data.type === "orders_cleared") {
+                console.log("🗑 Все заказы были удалены сервером");
+                localStorage.removeItem("orders");
                 loadOrders();
             }
         } catch (error) {
@@ -129,7 +81,7 @@ function connectWebSocket() {
     };
 
     socket.onclose = function () {
-        console.log("❌ Соединение с WebSocket сервером закрыто.");
+        console.log("❌ Соединение с WebSocket закрыто. Переподключение...");
         setTimeout(connectWebSocket, 5000);
     };
 }
@@ -144,28 +96,11 @@ function loadOrders() {
         return;
     }
 
-    ordersList.innerHTML = "";
-    if (orders.length === 0) {
-        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
-        return;
-    }
-
-    orders.forEach((order, index) => {
-        let orderDiv = document.createElement("div");
-        orderDiv.classList.add("order");
-
-        let itemsHTML = order.items.map(item =>
-            `<p>${item.name} – ${item.quantity} шт.</p>`
-        ).join("");
-
-        let totalPrice = order.total ? `${order.total} $` : "Сумма не указана";
-
-        orderDiv.innerHTML = `
+    ordersList.innerHTML = orders.length ? orders.map((order, index) => `
+        <div class="order">
             <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-            ${itemsHTML}
-            <p><strong>Общая сумма заказа:</strong> ${totalPrice}</p>
-        `;
-
-        ordersList.appendChild(orderDiv);
-    });
+            ${order.items.map(item => `<p>${item.name} – ${item.quantity} шт.</p>`).join("")}
+            <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
+        </div>
+    `).join("") : "<p style='color: white;'>Заказов пока нет...</p>";
 }
