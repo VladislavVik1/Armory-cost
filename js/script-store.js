@@ -1189,7 +1189,7 @@ function sendOrder() {
     let now = new Date();
     let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    // ✅ Используем `totalPrice` у товаров
+    // ✅ Используем `totalPrice` у товаров, НЕ пересчитываем снова
     let totalSum = cartItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
 
     let commentInput = document.getElementById("order-comment");
@@ -1221,6 +1221,7 @@ function sendOrder() {
     updateCartDisplay();
     window.location.href = "orders.html";
 }
+
 
 
 

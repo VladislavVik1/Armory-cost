@@ -51,6 +51,9 @@ const wss = new WebSocket.Server({ server });
 wss.on("connection", (ws) => {
     console.log("🔗 Новый клиент подключился!");
 
+    // Отправляем клиенту текущие заказы
+    ws.send(JSON.stringify({ type: "init", orders }));
+
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
@@ -59,7 +62,7 @@ wss.on("connection", (ws) => {
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
 
-                // ✅ Используем `total`, переданный с клиента
+                // ✅ Используем `total`, который пришел от клиента (НЕ пересчитываем!)
                 let totalSum = parseFloat(data.order.total) || 0;
 
                 console.log("✅ Итоговая сумма заказа (получена с клиента):", totalSum.toFixed(2));
@@ -67,7 +70,7 @@ wss.on("connection", (ws) => {
                 orders.push(data.order);
                 saveOrders(orders);
 
-                // 📡 Рассылка обновленного списка заказов
+                // 📡 Рассылка обновленного списка заказов всем клиентам
                 broadcastOrders();
             }
         } catch (error) {
@@ -75,6 +78,17 @@ wss.on("connection", (ws) => {
         }
     });
 });
+
+// ✅ Теперь `broadcastOrders` отправляет заказы ВСЕМ клиентам!
+function broadcastOrders() {
+    let message = JSON.stringify({ type: "init", orders });
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(message);
+        }
+    });
+}
+
 
 
 
