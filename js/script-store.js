@@ -304,28 +304,23 @@ function addToCart(productName, quantity) {
         alert("Ошибка: Товар не найден!");
         return;
     }
-    
-    // Вычисляем стоимость добавляемой партии (для уведомления)
+
+    let unitPrice = priceList[productName].unitPrice || 0;
+    let bulkPrice = priceList[productName].bulkPrice || unitPrice;
+
     let bulkQuantity = Math.floor(quantity / 10);
     let remainingQuantity = quantity % 10;
-    let totalPrice = (bulkQuantity * priceList[productName].bulkPrice * 10) +
-                     (remainingQuantity * priceList[productName].unitPrice);
-    
-    // Если товар уже есть в корзине – увеличиваем количество, иначе добавляем новый товар
+    let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
+
     const existingProduct = cart.find(item => item.name === productName);
     if (existingProduct) {
         existingProduct.quantity += quantity;
     } else {
-        cart.push({
-            name: productName,
-            quantity: quantity
-        });
+        cart.push({ name: productName, quantity });
     }
-    
-    // Сохраняем обновленную корзину в localStorage
+
     saveCart();
-    
-    alert(productName + " добавлено в корзину");
+    alert(`${productName} добавлено в корзину`);
     updateCartDisplay();
 }
 
@@ -1158,13 +1153,8 @@ function sendOrder() {
     let now = new Date();
     let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    // Получаем общую сумму заказа
-    let totalPriceElement = document.getElementById("total-price");
-    let totalPrice = totalPriceElement 
-        ? parseFloat(totalPriceElement.textContent.replace(/[^\d.]/g, '')) 
-        : 0;
+    let totalPrice = parseFloat(localStorage.getItem("totalPrice")) || 0;
 
-    // Получаем комментарий к заказу
     let commentInput = document.getElementById("order-comment");
     let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
 
@@ -1178,7 +1168,6 @@ function sendOrder() {
         }
     };
 
-    // Проверяем, подключен ли WebSocket
     if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify(newOrder));
         console.log("📡 Заказ отправлен через WebSocket:", newOrder);
@@ -1233,7 +1222,11 @@ function loadOrders() {
 // Функция обновления суммы в корзине
 function updateTotalPrice() {
     let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-    let totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    let totalPrice = cartItems.reduce((sum, item) => {
+        let itemPrice = priceList[item.name] ? priceList[item.name].unitPrice : 0;
+        return sum + (itemPrice * item.quantity);
+    }, 0);
+
     localStorage.setItem("totalPrice", totalPrice.toFixed(2));
 
     let totalPriceElement = document.getElementById("total-price");
