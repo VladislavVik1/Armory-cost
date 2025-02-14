@@ -59,11 +59,18 @@ wss.on("connection", (ws) => {
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ получен:", data.order);
 
-                // ✅ Пересчитываем итоговую сумму заказа перед сохранением
-                let totalSum = data.order.items.reduce((sum, item) => {
+                // ✅ Проверяем, есть ли товары в заказе
+                if (!data.order.items || !Array.isArray(data.order.items) || data.order.items.length === 0) {
+                    console.warn("⚠ Ошибка: Заказ не содержит товаров!");
+                    return;
+                }
+
+                // ✅ Пересчитываем итоговую сумму заказа
+                let totalSum = 0;
+                data.order.items.forEach((item) => {
                     let itemPrice = item.totalPrice || (priceList[item.name]?.unitPrice || 0) * item.quantity;
-                    return sum + itemPrice;
-                }, 0);
+                    totalSum += itemPrice;
+                });
 
                 data.order.total = totalSum.toFixed(2); // Форматируем сумму в 2 знака после запятой
                 orders.push(data.order);
@@ -71,7 +78,8 @@ wss.on("connection", (ws) => {
 
                 console.log("✅ Итоговая сумма заказа:", data.order.total);
 
-                // 📢 Рассылаем обновленный список заказов всем клиентам
+                // ✅ Проверяем, рассылаются ли данные
+                console.log("📡 Рассылка обновленного списка заказов...");
                 broadcastOrders();
             }
         } catch (error) {
@@ -79,6 +87,7 @@ wss.on("connection", (ws) => {
         }
     });
 });
+
 
 // **Функция рассылки всех заказов всем клиентам**
 function broadcastOrders() {
