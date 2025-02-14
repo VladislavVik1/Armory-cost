@@ -57,11 +57,21 @@ wss.on("connection", (ws) => {
             console.log("📩 Получено сообщение от клиента:", data);
 
             if (data.type === "new_order") {
-                console.log("📦 Новый заказ:", data.order);
+                console.log("📦 Новый заказ получен:", data.order);
+
+                // ✅ Пересчитываем итоговую сумму заказа перед сохранением
+                let totalSum = data.order.items.reduce((sum, item) => {
+                    let itemPrice = item.totalPrice || (priceList[item.name]?.unitPrice || 0) * item.quantity;
+                    return sum + itemPrice;
+                }, 0);
+
+                data.order.total = totalSum.toFixed(2); // Форматируем сумму в 2 знака после запятой
                 orders.push(data.order);
                 saveOrders(orders);
 
-                // 📢 Рассылаем всем клиентам обновленный список заказов
+                console.log("✅ Итоговая сумма заказа:", data.order.total);
+
+                // 📢 Рассылаем обновленный список заказов всем клиентам
                 broadcastOrders();
             }
         } catch (error) {

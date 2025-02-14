@@ -1266,18 +1266,21 @@ function loadOrders() {
 
     ordersList.innerHTML = orders.length
         ? orders
-              .map(
-                  (order, index) => `
-        <div class="order">
-            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-            ${order.items
-                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
-                .join("")}
-            <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
-            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-        </div>
-    `
-              )
+              .map((order, index) => {
+                  let totalSum = parseFloat(order.total) || 0;
+                  let formattedTotal = totalSum.toFixed(2);
+
+                  return `
+                        <div class="order">
+                            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+                            ${order.items
+                                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
+                                .join("")}
+                            <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
+                            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+                        </div>
+                    `;
+              })
               .join("")
         : "<p style='color: white;'>Заказов пока нет...</p>";
 }
