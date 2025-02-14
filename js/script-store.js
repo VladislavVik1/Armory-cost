@@ -103,9 +103,9 @@ const priceList = {
                 "5.45 30": { "unitPrice": 1000, "bulkPrice": 100 },
                 "5.45 45": { "unitPrice": 5000, "bulkPrice": 500 },
                 "5.45 60": { "unitPrice": 15000, "bulkPrice": 1500 },
-                "7.62x39 30": { "unitPrice": 1000, "bulkPrice": 100 },
-                "7.62x39 40": { "unitPrice": 7000, "bulkPrice": 700 },
-                "7.62x39 75": { "unitPrice": 20000, "bulkPrice": 2000 },
+                "7.62*39 30": { "unitPrice": 1000, "bulkPrice": 100 },
+                "7.62*39 40": { "unitPrice": 7000, "bulkPrice": 700 },
+                "7.62*39 75": { "unitPrice": 20000, "bulkPrice": 2000 },
                 "9*39 10 СП5": { "unitPrice": 2000, "bulkPrice": 200 },
                 "9*39 20 СП5": { "unitPrice": 5000, "bulkPrice": 500 },
                 "9*39 10 СП6": { "unitPrice": 3000, "bulkPrice": 300 },
@@ -799,6 +799,7 @@ function openModal(category) {
 
         '<tr><td>5.45 60</td><td>7Н22</td><td>15 000</td><td>' +
         '<button onclick="addToCart(\'5.45 60\', 10)">Добавить 10 шт</button></td></tr>' +
+
         '<tr><td>7.62*39 30</td><td>FMJ</td><td>1000</td><td>' +
         '<button onclick="addToCart(\'7.62*39 30\', 10)">Добавить 10 шт</button></td></tr>' +
 
@@ -1188,15 +1189,13 @@ function sendOrder() {
     let now = new Date();
     let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    // 🔥 Правильный расчёт суммы заказа
+    // Пересчитываем итоговую сумму заказа
     let totalPrice = cartItems.reduce((sum, item) => {
-        let unitPrice = priceList[item.name]?.unitPrice || 0;
-        return sum + unitPrice * item.quantity;
+        let itemPrice = priceList[item.name]?.unitPrice || 0;
+        return sum + itemPrice * item.quantity;
     }, 0);
 
-    // Проверяем, что сумма корректная
-    console.log(`✅ Итоговая сумма заказа: ${totalPrice}`);
-
+    // Получаем комментарий к заказу
     let commentInput = document.getElementById("order-comment");
     let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
 
@@ -1205,9 +1204,9 @@ function sendOrder() {
         order: {
             date: formattedDate,
             items: cartItems,
-            total: parseFloat(totalPrice.toFixed(2)), // 🔥 Преобразуем в число
-            comment: commentText
-        }
+            total: totalPrice.toFixed(2),
+            comment: commentText,  // <-- Добавляем комментарий
+        },
     };
 
     if (socket && socket.readyState === WebSocket.OPEN) {
@@ -1224,10 +1223,8 @@ function sendOrder() {
     localStorage.removeItem("cart");
     saveCart();
     updateCartDisplay();
-    window.location.href = "orders.html";
+    window.location.href = "orders.html";  // Перенаправление на страницу заказов
 }
-
-
 
 
 // =======================
@@ -1266,24 +1263,22 @@ function loadOrders() {
 
     ordersList.innerHTML = orders.length
         ? orders
-              .map((order, index) => {
-                  let totalSum = parseFloat(order.total) || 0;
-                  let formattedTotal = totalSum.toFixed(2);
-
-                  return `
-                        <div class="order">
-                            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-                            ${order.items
-                                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
-                                .join("")}
-                            <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
-                            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-                        </div>
-                    `;
-              })
+              .map(
+                  (order, index) => `
+        <div class="order">
+            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+            ${order.items
+                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
+                .join("")}
+            <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
+            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+        </div>
+    `
+              )
               .join("")
         : "<p style='color: white;'>Заказов пока нет...</p>";
 }
+
 // =======================
 // Подключаем WebSocket при загрузке страницы
 // =======================

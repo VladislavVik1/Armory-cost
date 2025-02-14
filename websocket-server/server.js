@@ -57,7 +57,7 @@ wss.on("connection", (ws) => {
             console.log("📩 Получено сообщение от клиента:", data);
 
             if (data.type === "new_order") {
-                console.log("📦 Новый заказ получен:", data.order);
+                console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
 
                 // ✅ Проверяем, есть ли товары в заказе
                 if (!data.order.items || !Array.isArray(data.order.items) || data.order.items.length === 0) {
@@ -65,8 +65,13 @@ wss.on("connection", (ws) => {
                     return;
                 }
 
-                // ✅ Пересчитываем итоговую сумму заказа (используем уже готовый `totalPrice`)
-                let totalSum = data.order.items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+                // ✅ Пересчитываем сумму только один раз, без удвоений
+                let totalSum = 0;
+                data.order.items.forEach(item => {
+                    let itemTotal = item.totalPrice || 0;  // Используем `totalPrice`, если он есть
+                    console.log(`ℹ️ Товар: ${item.name}, Кол-во: ${item.quantity}, Цена: ${itemTotal}`);
+                    totalSum += itemTotal;
+                });
 
                 data.order.total = totalSum.toFixed(2); // Форматируем сумму в 2 знака после запятой
                 orders.push(data.order);
@@ -82,6 +87,7 @@ wss.on("connection", (ws) => {
         }
     });
 });
+
 
 
 
