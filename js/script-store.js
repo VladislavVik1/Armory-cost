@@ -1207,15 +1207,7 @@ function sendOrder() {
     updateCartDisplay();
     window.location.href = "orders.html";
 }
-// Функция очистки всех заказов
-function clearOrders() {
-    localStorage.removeItem("orders");
-    let ordersList = document.getElementById("orders-list");
-    if (ordersList) {
-        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
-    }
-    alert("✅ Все заказы удалены!");
-}
+
 // Подключение кнопки очистки заказов
 document.addEventListener("DOMContentLoaded", function () {
     let clearOrdersButton = document.querySelector(".clear-orders");
@@ -1295,3 +1287,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+// Функция очистки всех заказов
+function clearOrders() {
+    localStorage.removeItem("orders");
+    let ordersList = document.getElementById("orders-list");
+    if (ordersList) {
+        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
+    }
+    alert("✅ Все заказы удалены!");
+}
