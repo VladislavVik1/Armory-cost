@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// **Глобальная переменная для WebSocket**
+// **Глобальная переменная WebSocket**
 let socket;
 
 function connectWebSocket() {
@@ -18,7 +18,7 @@ function connectWebSocket() {
 
     socket.onopen = function () {
         console.log("✅ Подключено к WebSocket серверу");
-        socket.send(JSON.stringify({ type: "get_orders" }));
+        socket.send(JSON.stringify({ type: "get_orders" })); // Запрос заказов у сервера
     };
 
     socket.onmessage = function (event) {
@@ -26,8 +26,9 @@ function connectWebSocket() {
             let data = JSON.parse(event.data);
             console.log("📩 Получены данные от сервера:", data);
 
-            if (data.type === "init") {
-                localStorage.setItem("orders", JSON.stringify(data.orders || []));
+            if (data.type === "init" && Array.isArray(data.orders)) {
+                console.log("📥 Заказы успешно загружены с сервера");
+                localStorage.setItem("orders", JSON.stringify(data.orders));
                 loadOrders();
             } else if (data.type === "orders_cleared") {
                 console.log("🗑 Все заказы были удалены сервером");
@@ -61,13 +62,13 @@ function clearOrders() {
             loadOrders();
         }, 5000);
 
-        socket.addEventListener("message", function handleClearOrdersResponse(event) {
+        function handleClearOrdersResponse(event) {
             try {
                 let data = JSON.parse(event.data);
                 console.log("📩 Ответ сервера на очистку заказов:", data);
 
                 if (data.type === "orders_cleared") {
-                    console.log("🗑 Все заказы были удалены сервером");
+                    console.log("🗑 Все заказы успешно удалены сервером");
                     clearTimeout(clearOrdersTimeout);
                     localStorage.removeItem("orders");
                     loadOrders();
@@ -76,7 +77,9 @@ function clearOrders() {
             } catch (error) {
                 console.error("❌ Ошибка обработки данных WebSocket:", error);
             }
-        });
+        }
+
+        socket.addEventListener("message", handleClearOrdersResponse);
     } else {
         console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
         localStorage.removeItem("orders");
@@ -100,6 +103,7 @@ function loadOrders() {
             <strong>Заказ №${index + 1}</strong> (${order.date})<br>
             ${order.items.map(item => `<p>${item.name} – ${item.quantity} шт.</p>`).join("")}
             <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
+            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
         </div>
     `).join("") : "<p style='color: white;'>Заказов пока нет...</p>";
 }
