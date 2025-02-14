@@ -1084,30 +1084,28 @@ function updateCartDisplay() {
     if (totalPriceElement) {
         totalPriceElement.textContent = `Общая сумма: ${totalSum} $`;
     }
-}
-
-// =======================
+}// =======================
 // Функции открытия/закрытия корзины и модальных окон
 // =======================
 function openCart() {
-    let cartModal = document.getElementById('cart-modal');
+    let cartModal = document.getElementById("cart-modal");
     if (cartModal) {
-        cartModal.style.display = 'block';
+        cartModal.style.display = "block";
         updateCartDisplay();
     }
 }
 
 function closeCart() {
-    let cartModal = document.getElementById('cart-modal');
+    let cartModal = document.getElementById("cart-modal");
     if (cartModal) {
-        cartModal.style.display = 'none';
+        cartModal.style.display = "none";
     }
 }
 
 function closeModal() {
     let modal = document.getElementById("modal");
     if (modal) {
-        modal.style.display = 'none';
+        modal.style.display = "none";
     }
 }
 
@@ -1162,6 +1160,57 @@ function connectWebSocket() {
 }
 
 // =======================
+// Функция отправки заказа
+// =======================
+function sendOrder() {
+    let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if (cartItems.length === 0) {
+        alert("❌ Корзина пуста! Добавьте товары перед отправкой заказа.");
+        return;
+    }
+
+    let now = new Date();
+    let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+    // Пересчитываем итоговую сумму заказа
+    let totalPrice = cartItems.reduce((sum, item) => {
+        let itemPrice = priceList[item.name]?.unitPrice || 0;
+        return sum + itemPrice * item.quantity;
+    }, 0);
+
+    // Получаем комментарий к заказу
+    let commentInput = document.getElementById("order-comment");
+    let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
+
+    let newOrder = {
+        type: "new_order",
+        order: {
+            date: formattedDate,
+            items: cartItems,
+            total: totalPrice.toFixed(2),
+            comment: commentText,
+        },
+    };
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(newOrder));
+        console.log("📡 Заказ отправлен через WebSocket:", newOrder);
+    } else {
+        console.warn("⚠ WebSocket не подключен! Заказ сохранён локально.");
+        let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
+        storedOrders.push(newOrder.order);
+        localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+    }
+
+    alert("📦 Заказ успешно отправлен!");
+    localStorage.removeItem("cart");
+    saveCart();
+    updateCartDisplay();
+    window.location.href = "orders.html";
+}
+
+// =======================
 // Функция очистки всех заказов
 // =======================
 function clearOrders() {
@@ -1181,6 +1230,36 @@ function clearOrders() {
         loadOrders();
         alert("✅ Все заказы удалены локально.");
     }
+}
+
+// =======================
+// Функция загрузки заказов
+// =======================
+function loadOrders() {
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+    let ordersList = document.getElementById("orders-list");
+
+    if (!ordersList) {
+        console.error("❌ Ошибка: элемент #orders-list не найден!");
+        return;
+    }
+
+    ordersList.innerHTML = orders.length
+        ? orders
+              .map(
+                  (order, index) => `
+        <div class="order">
+            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+            ${order.items
+                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
+                .join("")}
+            <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
+            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+        </div>
+    `
+              )
+              .join("")
+        : "<p style='color: white;'>Заказов пока нет...</p>";
 }
 
 // =======================
