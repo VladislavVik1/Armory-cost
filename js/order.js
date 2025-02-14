@@ -103,17 +103,20 @@ function loadOrders() {
               .map((order, index) => {
                   let totalSum = parseFloat(order.total) || 0; // 🔥 Убеждаемся, что `total` - это число
                   let formattedTotal = totalSum.toFixed(2); // Форматируем
-
+                console.log("🚀 Проверяем заказ:", order);
+                console.log("🧮 Исходная сумма:", order.total);
+                console.log("🔢 Преобразованная сумма:", formattedTotal);
                   return `
-                        <div class="order">
-                            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-                            ${order.items
-                                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
-                                .join("")}
-                            <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
-                            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-                        </div>
-                    `;
+    <div class="order">
+        <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+        ${order.items
+            .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
+            .join("")}
+        <p><strong>Общая сумма заказа:</strong> ${parseFloat(order.total || 0).toFixed(2)} $</p>
+        <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+    </div>
+`;
+
               })
               .join("")
         : "<p style='color: white;'>Заказов пока нет...</p>";
