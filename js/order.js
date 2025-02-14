@@ -100,13 +100,11 @@ function loadOrders() {
 
     ordersList.innerHTML = orders.length
         ? orders
-              .map(
-                  (order, index) => {
-                      // ✅ Преобразуем сумму заказа в число, если она есть
-                      let totalSum = parseFloat(order.total) || 0;
-                      let formattedTotal = totalSum.toFixed(2); // Форматируем сумму
+              .map((order, index) => {
+                  let totalSum = parseFloat(order.total) || 0; // 🔥 Преобразуем в число
+                  let formattedTotal = totalSum.toFixed(2); // Форматируем сумму
 
-                      return `
+                  return `
                         <div class="order">
                             <strong>Заказ №${index + 1}</strong> (${order.date})<br>
                             ${order.items
@@ -116,9 +114,7 @@ function loadOrders() {
                             <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
                         </div>
                     `;
-                  }
-              )
+              })
               .join("")
         : "<p style='color: white;'>Заказов пока нет...</p>";
 }
-
