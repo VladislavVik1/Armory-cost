@@ -1208,13 +1208,6 @@ function sendOrder() {
     window.location.href = "orders.html";
 }
 
-// Подключение кнопки очистки заказов
-document.addEventListener("DOMContentLoaded", function () {
-    let clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", clearOrders);
-    }
-});
 // Функция загрузки заказов
 function loadOrders() {
     let orders = JSON.parse(localStorage.getItem("orders")) || [];
@@ -1269,9 +1262,11 @@ function updateTotalPrice() {
 
 // Подключаем WebSocket при загрузке страницы
 document.addEventListener("DOMContentLoaded", function () {
+    // Подключаем WebSocket и загружаем заказы
     connectWebSocket();
     loadOrders();
 
+    // Обработчик для кнопки отправки заказа
     let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
     if (sendScreenshotButton) {
         sendScreenshotButton.addEventListener("click", sendOrder);
@@ -1279,20 +1274,30 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("❗ Кнопка отправки заказа `.snapshot` не найдена. Код не выполняется.");
     }
 
+    // Обработчик для кнопки очистки заказов
     let clearOrdersButton = document.querySelector(".clear-orders");
     if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", function () {
-            localStorage.removeItem("orders");
-            loadOrders();
-        });
+        clearOrdersButton.addEventListener("click", clearOrders);
+    } else {
+        console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
     }
 });
 // Функция очистки всех заказов
 function clearOrders() {
-    localStorage.removeItem("orders");
-    let ordersList = document.getElementById("orders-list");
-    if (ordersList) {
-        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log("📡 Отправка `clear_orders` на сервер...");
+        socket.send(JSON.stringify({ type: "clear_orders" }));
+        
+        // Если сервер не ответит в течение 5 секунд, очищаем локально
+        setTimeout(() => {
+            console.warn("⏳ Сервер не ответил, очистка заказов локально.");
+            localStorage.removeItem("orders");
+            loadOrders();
+        }, 5000);
+    } else {
+        console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
+        localStorage.removeItem("orders");
+        loadOrders();
+        alert("✅ Все заказы удалены локально.");
     }
-    alert("✅ Все заказы удалены!");
 }
