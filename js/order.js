@@ -21,11 +21,11 @@ function connectWebSocket() {
 
     socket.onmessage = function (event) {
         let data = JSON.parse(event.data);
+        console.log("📩 Получены данные с сервера:", data);
 
         if (data.type === "init") {
-            // Сохраняем все заказы в локальное хранилище
             localStorage.setItem("orders", JSON.stringify(data.orders));
-            loadOrders(); // Обновляем UI
+            loadOrders();
         }
     };
 
@@ -35,11 +35,11 @@ function connectWebSocket() {
 
     socket.onclose = function () {
         console.log("❌ Соединение с WebSocket сервером закрыто.");
-        setTimeout(connectWebSocket, 5000); // Переподключение через 5 секунд
+        setTimeout(connectWebSocket, 5000);
     };
 }
 
-// Функция загрузки заказов на страницу
+// Функция загрузки заказов
 function loadOrders() {
     let orders = JSON.parse(localStorage.getItem("orders")) || [];
     let ordersList = document.getElementById("orders-list");

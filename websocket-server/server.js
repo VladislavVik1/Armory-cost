@@ -45,13 +45,15 @@ wss.on("connection", (ws) => {
         try {
             let data = JSON.parse(message);
             if (data.type === "new_order") {
+                console.log("📩 Получен новый заказ:", data.order);
+
                 // Добавляем новый заказ
                 orders.push(data.order);
 
                 // Сохраняем заказы в файл
                 fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
 
-                // ОТПРАВЛЯЕМ ВЕСЬ СПИСОК ЗАКАЗОВ ВСЕМ КЛИЕНТАМ
+                // Рассылаем всем клиентам
                 broadcastOrders();
                 console.log("📦 Новый заказ добавлен и отправлен всем!");
             }
