@@ -65,21 +65,16 @@ wss.on("connection", (ws) => {
                     return;
                 }
 
-                // ✅ Пересчитываем итоговую сумму заказа
-                let totalSum = 0;
-                data.order.items.forEach((item) => {
-                    let itemPrice = item.totalPrice || (priceList[item.name]?.unitPrice || 0) * item.quantity;
-                    totalSum += itemPrice;
-                });
+                // ✅ Пересчитываем итоговую сумму заказа (используем уже готовый `totalPrice`)
+                let totalSum = data.order.items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
 
                 data.order.total = totalSum.toFixed(2); // Форматируем сумму в 2 знака после запятой
                 orders.push(data.order);
                 saveOrders(orders);
 
-                console.log("✅ Итоговая сумма заказа:", data.order.total);
+                console.log("✅ Итоговая сумма заказа (исправлена):", data.order.total);
 
-                // ✅ Проверяем, рассылаются ли данные
-                console.log("📡 Рассылка обновленного списка заказов...");
+                // 📡 Рассылка обновленного списка заказов
                 broadcastOrders();
             }
         } catch (error) {
@@ -87,6 +82,7 @@ wss.on("connection", (ws) => {
         }
     });
 });
+
 
 
 // **Функция рассылки всех заказов всем клиентам**
