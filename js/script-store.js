@@ -129,9 +129,9 @@ const priceList = {
                 "5.56 М249 200": { "unitPrice": 7000, "bulkPrice": 700 },
                 "G36 30": { "unitPrice": 3400, "bulkPrice": 340 },
                 "6.5 30": { "unitPrice": 8000, "bulkPrice": 800 },
-                "12.7x99 10": { "unitPrice": 13000, "bulkPrice": 1300 },
-                "12.7x99 10": { "unitPrice": 28000, "bulkPrice": 2800 },
-                "12.7x99 10": { "unitPrice": 12000, "bulkPrice": 1200 },
+                "12.7x99 AMAX": { "unitPrice": 13000, "bulkPrice": 1300 },
+                "12.7x99 БЗ": { "unitPrice": 28000, "bulkPrice": 2800 },
+                "12.7x99 Трассер": { "unitPrice": 12000, "bulkPrice": 1200 },
                 ".408 M2000 7": { "unitPrice": 10000, "bulkPrice": 1000 },
                 "40MM 6 HE": { "unitPrice": 18000, "bulkPrice": 1800 },
                 "40MM 6 HET": { "unitPrice": 20000, "bulkPrice": 2000 },
@@ -898,7 +898,6 @@ function openModal(category) {
 
         '<tr><td>5.45 60</td><td>7Н22</td><td>15 000</td><td>' +
         '<button onclick="addToCart(\'5.45 60\', 10)">Добавить 10 шт</button></td></tr>' +
-
         '<tr><td>7.62*39 30</td><td>FMJ</td><td>1000</td><td>' +
         '<button onclick="addToCart(\'7.62*39 30\', 10)">Добавить 10 шт</button></td></tr>' +
 
@@ -947,6 +946,15 @@ function openModal(category) {
         '<tr><td>7.62*54 СВД 10</td><td>7Н14</td><td>7000</td><td>' +
         '<button onclick="addToCart(\'7.62*54 СВД 10 7Н14\', 10)">Добавить 10 шт</button></td></tr>' +
 
+        '<tr><td>12.7x99</td><td>A-MAX</td><td>13 000</td><td>' +
+            '<button onclick="addToCart(\'12.7x99 AMAX\', 10)">Добавить 10 шт</button></td></tr>' +
+            
+        '<tr><td>12.7x99</td><td>Трассер</td><td>12 000</td><td>' +
+            '<button onclick="addToCart(\'12.7x99 Трассер\', 10)">Добавить 10 шт</button></td></tr>' +
+            
+        '<tr><td>12.7x99</td><td>БЗ</td><td>28 000</td><td>' +
+            '<button onclick="addToCart(\'12.7x99 БЗ\', 10)">Добавить 10 шт</button></td></tr>' +
+            
         '<tr><td>40MM 6</td><td>HE</td><td>18 000</td><td>' +
         '<button onclick="addToCart(\'40MM 6 HE\', 10)">Добавить 10 шт</button></td></tr>' +
 
@@ -1153,8 +1161,19 @@ function sendOrder() {
     let now = new Date();
     let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    let totalPrice = parseFloat(localStorage.getItem("totalPrice")) || 0;
+    // Пересчитываем итоговую сумму заказа
+    let totalPrice = cartItems.reduce((sum, item) => {
+        let itemPrice = priceList[item.name] ? priceList[item.name].unitPrice : 0;
+        return sum + (itemPrice * item.quantity);
+    }, 0);
 
+    // Обновляем отображение общей суммы
+    let totalPriceElement = document.getElementById("total-price");
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `Общая сумма: ${totalPrice.toFixed(2)} $`;
+    }
+
+    // Получаем комментарий к заказу
     let commentInput = document.getElementById("order-comment");
     let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
 
@@ -1168,6 +1187,7 @@ function sendOrder() {
         }
     };
 
+    // Проверяем, подключен ли WebSocket
     if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify(newOrder));
         console.log("📡 Заказ отправлен через WebSocket:", newOrder);
@@ -1180,9 +1200,26 @@ function sendOrder() {
 
     alert("📦 Заказ успешно отправлен!");
     localStorage.removeItem("cart");
+    saveCart();
+    updateCartDisplay();
     window.location.href = "orders.html";
 }
-
+// Функция очистки всех заказов
+function clearOrders() {
+    localStorage.removeItem("orders");
+    let ordersList = document.getElementById("orders-list");
+    if (ordersList) {
+        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
+    }
+    alert("✅ Все заказы удалены!");
+}
+// Подключение кнопки очистки заказов
+document.addEventListener("DOMContentLoaded", function () {
+    let clearOrdersButton = document.querySelector(".clear-orders");
+    if (clearOrdersButton) {
+        clearOrdersButton.addEventListener("click", clearOrders);
+    }
+});
 // Функция загрузки заказов
 function loadOrders() {
     let orders = JSON.parse(localStorage.getItem("orders")) || [];
