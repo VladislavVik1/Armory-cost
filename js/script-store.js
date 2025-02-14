@@ -1155,7 +1155,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
 // Глобальная переменная для WebSocket
 let socket;
 
@@ -1174,7 +1173,7 @@ function connectWebSocket() {
             console.log("📩 Получены данные с сервера:", data);
 
             if (data.type === "init") {
-                localStorage.setItem("orders", JSON.stringify(data.orders));
+                localStorage.setItem("orders", JSON.stringify(data.orders || []));
                 loadOrders();
             } else if (data.type === "new_order") {
                 let orders = JSON.parse(localStorage.getItem("orders")) || [];
@@ -1209,7 +1208,13 @@ function sendOrder() {
     let now = new Date();
     let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    let totalPrice = parseFloat(localStorage.getItem("totalPrice")) || 0;
+    // Получаем общую сумму заказа
+    let totalPriceElement = document.getElementById("total-price");
+    let totalPrice = totalPriceElement 
+        ? parseFloat(totalPriceElement.textContent.replace(/[^\d.]/g, '')) 
+        : 0;
+
+    // Получаем комментарий к заказу
     let commentInput = document.getElementById("order-comment");
     let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
 
@@ -1223,7 +1228,8 @@ function sendOrder() {
         }
     };
 
-    if (socket.readyState === WebSocket.OPEN) {
+    // Проверяем, подключен ли WebSocket
+    if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify(newOrder));
         console.log("📡 Заказ отправлен через WebSocket:", newOrder);
     } else {
@@ -1285,3 +1291,24 @@ function updateTotalPrice() {
         totalPriceElement.textContent = `Общая сумма: ${totalPrice.toFixed(2)} $`;
     }
 }
+
+// Подключаем WebSocket при загрузке страницы
+document.addEventListener("DOMContentLoaded", function () {
+    connectWebSocket();
+    loadOrders();
+
+    let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
+    if (sendScreenshotButton) {
+        sendScreenshotButton.addEventListener("click", sendOrder);
+    } else {
+        console.warn("❗ Кнопка отправки заказа `.snapshot` не найдена. Код не выполняется.");
+    }
+
+    let clearOrdersButton = document.querySelector(".clear-orders");
+    if (clearOrdersButton) {
+        clearOrdersButton.addEventListener("click", function () {
+            localStorage.removeItem("orders");
+            loadOrders();
+        });
+    }
+});
