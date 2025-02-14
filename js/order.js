@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Подключение к WebSocket серверу
-const socket = new WebSocket("wss://104.197.130.15:8080");
+const socket = new WebSocket("wss://pmk-eagles.shop:8080");
 
 socket.onopen = function () {
     console.log("✅ Подключено к WebSocket серверу");
