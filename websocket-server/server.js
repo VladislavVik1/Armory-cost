@@ -99,3 +99,59 @@ function broadcastOrders() {
 server.listen(PORT, () => {
     console.log(`✅ WebSocket сервер работает на wss://pmk-eagles.shop:${PORT}`);
 });
+
+
+
+
+const WebSocket = require("ws");
+
+const wss = new WebSocket.Server({ port: 8080 });
+
+// Храним заказы в памяти (если нет базы данных)
+let orders = [];
+
+wss.on("connection", (ws) => {
+    console.log("✅ Клиент подключился");
+
+    ws.on("message", (message) => {
+        try {
+            const data = JSON.parse(message);
+            console.log("📩 Сообщение от клиента:", data);
+
+            if (data.type === "get_orders") {
+                ws.send(JSON.stringify({ type: "init", orders }));
+            }
+
+            if (data.type === "new_order") {
+                orders.push(data.order);
+                wss.clients.forEach(client => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify({ type: "new_order", order: data.order }));
+                    }
+                });
+            }
+
+            // Обработчик очистки заказов
+            if (data.type === "clear_orders") {
+                console.log("🗑 Получен запрос на очистку заказов");
+                orders = []; // Очищаем список заказов
+
+                // Рассылаем всем клиентам, что заказы удалены
+                wss.clients.forEach(client => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify({ type: "orders_cleared" }));
+                    }
+                });
+
+                console.log("✅ Заказы успешно удалены и отправлены клиентам");
+            }
+
+        } catch (error) {
+            console.error("❌ Ошибка обработки сообщения:", error);
+        }
+    });
+
+    ws.on("close", () => {
+        console.log("❌ Клиент отключился");
+    });
+});

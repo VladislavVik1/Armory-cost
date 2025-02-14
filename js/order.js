@@ -146,26 +146,3 @@ function loadOrders() {
 
 
 
-
-document.addEventListener("DOMContentLoaded", function () {
-    let clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", function () {
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: "clear_orders" }));
-                console.log("🗑 Запрос на очистку заказов отправлен серверу");
-
-                // Таймер на случай, если сервер не отвечает
-                setTimeout(() => {
-                    console.warn("⏳ Сервер не ответил, очистка локально.");
-                    localStorage.removeItem("orders");
-                    loadOrders();
-                }, 5000);
-            } else {
-                console.warn("⚠ WebSocket не подключен! Очистка локально.");
-                localStorage.removeItem("orders");
-                loadOrders();
-            }
-        });
-    }
-});
