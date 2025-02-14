@@ -1105,56 +1105,6 @@ document.addEventListener("click", function (event) {
 
 
 
-
-document.addEventListener("DOMContentLoaded", function () {
-    let cartModal = document.getElementById("cart-modal"); // Ищем модальное окно корзины
-
-    function addCommentField() {
-        let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot"); // Ищем кнопку
-
-        if (sendScreenshotButton && !document.getElementById("order-comment")) {
-            let commentContainer = document.createElement("div");
-            commentContainer.style.marginTop = "10px"; 
-            commentContainer.style.display = "flex";
-            commentContainer.style.flexDirection = "column";
-            commentContainer.style.gap = "5px";
-
-            let commentLabel = document.createElement("label");
-            commentLabel.textContent = "Комментарий к заказу:";
-            commentLabel.style.fontWeight = "bold";
-
-            let commentInput = document.createElement("textarea");
-            commentInput.id = "order-comment";
-            commentInput.placeholder = "Введите ваш комментарий...";
-            commentInput.style.width = "100%";
-            commentInput.style.height = "60px";
-            commentInput.style.padding = "5px";
-            commentInput.style.border = "1px solid #ccc";
-            commentInput.style.borderRadius = "5px";
-            commentInput.style.fontSize = "14px";
-
-            commentContainer.appendChild(commentLabel);
-            commentContainer.appendChild(commentInput);
-            sendScreenshotButton.parentNode.insertBefore(commentContainer, sendScreenshotButton);
-        }
-    }
-document.addEventListener("DOMContentLoaded", function () {
-    connectWebSocket();
-    updateTotalPrice();
-
-    let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
-    if (sendScreenshotButton) {
-        sendScreenshotButton.addEventListener("click", sendOrder);
-    }
-
-    let clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", function () {
-            localStorage.removeItem("orders");
-            loadOrders();
-        });
-    }
-});
 // Глобальная переменная для WebSocket
 let socket;
 
