@@ -74,28 +74,20 @@ function connectWebSocket() {
         socket.send(JSON.stringify({ type: "get_orders" }));
     };
 
-    socket.onmessage = function (event) {
-        try {
-            let data = JSON.parse(event.data);
-            console.log("📩 Получены данные с сервера:", data);
+socket.onmessage = function (event) {
+    try {
+        let data = JSON.parse(event.data);
+        console.log("📩 Получены данные с сервера:", data); // Должно появиться `orders_cleared`
 
-            if (data.type === "init") {
-                localStorage.setItem("orders", JSON.stringify(data.orders));
-                loadOrders();
-            } else if (data.type === "new_order") {
-                let orders = JSON.parse(localStorage.getItem("orders")) || [];
-                orders.push(data.order);
-                localStorage.setItem("orders", JSON.stringify(orders));
-                loadOrders();
-            } else if (data.type === "orders_cleared") {
-                console.log("🗑 Все заказы были удалены сервером");
-                localStorage.removeItem("orders");
-                loadOrders();
-            }
-        } catch (error) {
-            console.error("❌ Ошибка обработки данных WebSocket:", error);
+        if (data.type === "orders_cleared") {
+            console.log("🗑 Все заказы были удалены сервером");
+            localStorage.removeItem("orders");
+            loadOrders();
         }
-    };
+    } catch (error) {
+        console.error("❌ Ошибка обработки данных WebSocket:", error);
+    }
+};
 
     socket.onerror = function (error) {
         console.error("⚠️ Ошибка WebSocket:", error);
