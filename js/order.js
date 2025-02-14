@@ -101,8 +101,8 @@ function loadOrders() {
     ordersList.innerHTML = orders.length
         ? orders
               .map((order, index) => {
-                  let totalSum = parseFloat(order.total) || 0; // 🔥 Преобразуем в число
-                  let formattedTotal = totalSum.toFixed(2); // Форматируем сумму
+                  let totalSum = parseFloat(order.total) || 0; // 🔥 Убеждаемся, что `total` - это число
+                  let formattedTotal = totalSum.toFixed(2); // Форматируем
 
                   return `
                         <div class="order">
@@ -118,3 +118,4 @@ function loadOrders() {
               .join("")
         : "<p style='color: white;'>Заказов пока нет...</p>";
 }
+

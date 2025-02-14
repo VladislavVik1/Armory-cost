@@ -1188,11 +1188,14 @@ function sendOrder() {
     let now = new Date();
     let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    // 🔥 Исправление: Рассчитываем сумму правильно, без лишних преобразований
+    // 🔥 Правильный расчёт суммы заказа
     let totalPrice = cartItems.reduce((sum, item) => {
         let unitPrice = priceList[item.name]?.unitPrice || 0;
         return sum + unitPrice * item.quantity;
     }, 0);
+
+    // Проверяем, что сумма корректная
+    console.log(`✅ Итоговая сумма заказа: ${totalPrice}`);
 
     let commentInput = document.getElementById("order-comment");
     let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
@@ -1202,7 +1205,7 @@ function sendOrder() {
         order: {
             date: formattedDate,
             items: cartItems,
-            total: totalPrice.toFixed(2), // 🔥 Сохраняем сумму в правильном формате
+            total: parseFloat(totalPrice.toFixed(2)), // 🔥 Преобразуем в число
             comment: commentText
         }
     };
@@ -1223,6 +1226,7 @@ function sendOrder() {
     updateCartDisplay();
     window.location.href = "orders.html";
 }
+
 
 
 
