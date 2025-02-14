@@ -8,8 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
             if (socket && socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: "clear_orders" }));
                 console.log("🗑 Запрос на очистку заказов отправлен серверу");
+
+                // Если сервер не ответит в течение 5 секунд, очистка произойдет локально
+                setTimeout(() => {
+                    console.warn("⏳ Сервер не ответил, очистка заказов локально.");
+                    localStorage.removeItem("orders");
+                    loadOrders();
+                }, 5000);
             } else {
                 console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
+                localStorage.removeItem("orders");
+                loadOrders();
+                alert("✅ Все заказы удалены локально.");
             }
         });
     }
@@ -74,20 +84,28 @@ function connectWebSocket() {
         socket.send(JSON.stringify({ type: "get_orders" }));
     };
 
-socket.onmessage = function (event) {
-    try {
-        let data = JSON.parse(event.data);
-        console.log("📩 Получены данные с сервера:", data); // Должно появиться `orders_cleared`
+    socket.onmessage = function (event) {
+        try {
+            let data = JSON.parse(event.data);
+            console.log("📩 Получены данные с сервера:", data);
 
-        if (data.type === "orders_cleared") {
-            console.log("🗑 Все заказы были удалены сервером");
-            localStorage.removeItem("orders");
-            loadOrders();
+            if (data.type === "orders_cleared") {
+                console.log("🗑 Все заказы были удалены сервером");
+                localStorage.removeItem("orders");
+                loadOrders();
+            } else if (data.type === "init") {
+                localStorage.setItem("orders", JSON.stringify(data.orders));
+                loadOrders();
+            } else if (data.type === "new_order") {
+                let orders = JSON.parse(localStorage.getItem("orders")) || [];
+                orders.push(data.order);
+                localStorage.setItem("orders", JSON.stringify(orders));
+                loadOrders();
+            }
+        } catch (error) {
+            console.error("❌ Ошибка обработки данных WebSocket:", error);
         }
-    } catch (error) {
-        console.error("❌ Ошибка обработки данных WebSocket:", error);
-    }
-};
+    };
 
     socket.onerror = function (error) {
         console.error("⚠️ Ошибка WebSocket:", error);
@@ -98,7 +116,6 @@ socket.onmessage = function (event) {
         setTimeout(connectWebSocket, 5000);
     };
 }
-
 
 // **Функция загрузки заказов**
 function loadOrders() {
@@ -135,6 +152,3 @@ function loadOrders() {
         ordersList.appendChild(orderDiv);
     });
 }
-
-
-

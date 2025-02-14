@@ -295,106 +295,8 @@ let cart = localStorage.getItem("cart")
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
-// =======================
-// Функция addToCart
-// =======================
-function addToCart(productName, quantity) {
-    if (!priceList[productName]) {
-        alert("Ошибка: Товар не найден!");
-        return;
-    }
 
-    let unitPrice = priceList[productName].unitPrice || 0;
-    let bulkPrice = priceList[productName].bulkPrice || unitPrice;
 
-    let bulkQuantity = Math.floor(quantity / 10);
-    let remainingQuantity = quantity % 10;
-    let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
-
-    const existingProduct = cart.find(item => item.name === productName);
-    if (existingProduct) {
-        existingProduct.quantity += quantity;
-    } else {
-        cart.push({ name: productName, quantity });
-    }
-
-    saveCart();
-    alert(`${productName} добавлено в корзину`);
-    updateCartDisplay();
-}
-
-// =======================
-// Функция updateCartDisplay
-// =======================
-function updateCartDisplay() {
-    const cartItemsList = document.getElementById("cart-items");
-    cartItemsList.innerHTML = ""; // Очищаем список товаров
-
-    let totalSum = 0;
-    cart.forEach((item, index) => {
-        // Пересчитываем стоимость товара по текущим ценам
-        let bulkQuantity = Math.floor(item.quantity / 10);
-        let remainingQuantity = item.quantity % 10;
-        let totalPrice = (bulkQuantity * priceList[item.name].bulkPrice * 10) +
-                         (remainingQuantity * priceList[item.name].unitPrice);
-        item.totalPrice = totalPrice;
-        totalSum += totalPrice;
-
-        const li = document.createElement("li");
-        li.setAttribute("data-index", index);
-        li.innerHTML = `
-            ${item.name} (<span class="item-quantity">${item.quantity}</span> шт) – 
-            <span class="item-total">${totalPrice}</span> $
-            <button class="cart-plus">+</button>
-            <button class="cart-minus">–</button>
-            <button class="cart-remove">/</button>
-        `;
-        cartItemsList.appendChild(li);
-
-        li.querySelector(".cart-plus").addEventListener("click", function () {
-            item.quantity++;
-            saveCart();
-            updateCartDisplay();
-        });
-        li.querySelector(".cart-minus").addEventListener("click", function () {
-            if (item.quantity > 1) {
-                item.quantity--;
-            } else {
-                cart.splice(index, 1);
-            }
-            saveCart();
-            updateCartDisplay();
-        });
-        li.querySelector(".cart-remove").addEventListener("click", function () {
-            cart.splice(index, 1);
-            saveCart();
-            updateCartDisplay();
-        });
-    });
-
-    // Обновляем информацию на кнопке корзины и элементе общей суммы
-    const cartButton = document.querySelector(".cart-button");
-    if (cartButton) {
-        cartButton.textContent = `Корзина (${cart.length} товаров, ${totalSum} $)`;
-    }
-    const totalPriceElement = document.getElementById("total-price");
-    if (totalPriceElement) {
-        totalPriceElement.textContent = `Общая сумма: ${totalSum} $`;
-    }
-}
-
-// =======================
-// Функции открытия/закрытия корзины и модальных окон
-// =======================
-
-function openCart() {
-    document.getElementById('cart-modal').style.display = 'block';
-    updateCartDisplay();
-}
-
-function closeCart() {
-    document.getElementById('cart-modal').style.display = 'none';
-}
 
 // Пример открытия модального окна с товарами выбранной категории (например, 'automats')
 function openModal(category) {
@@ -1091,6 +993,108 @@ function openModal(category) {
     document.getElementById("modal-body").innerHTML = content;
     document.getElementById("modal").style.display = 'flex';
 }
+// =======================
+// Функция addToCart
+// =======================
+function addToCart(productName, quantity) {
+    if (!priceList[productName]) {
+        alert("Ошибка: Товар не найден!");
+        return;
+    }
+
+    let unitPrice = priceList[productName].unitPrice || 0;
+    let bulkPrice = priceList[productName].bulkPrice || unitPrice;
+
+    let bulkQuantity = Math.floor(quantity / 10);
+    let remainingQuantity = quantity % 10;
+    let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
+
+    const existingProduct = cart.find(item => item.name === productName);
+    if (existingProduct) {
+        existingProduct.quantity += quantity;
+    } else {
+        cart.push({ name: productName, quantity });
+    }
+
+    saveCart();
+    alert(`${productName} добавлено в корзину`);
+    updateCartDisplay();
+}
+
+// =======================
+// Функция updateCartDisplay
+// =======================
+function updateCartDisplay() {
+    const cartItemsList = document.getElementById("cart-items");
+    cartItemsList.innerHTML = ""; // Очищаем список товаров
+
+    let totalSum = 0;
+    cart.forEach((item, index) => {
+        // Пересчитываем стоимость товара по текущим ценам
+        let bulkQuantity = Math.floor(item.quantity / 10);
+        let remainingQuantity = item.quantity % 10;
+        let totalPrice = (bulkQuantity * priceList[item.name].bulkPrice * 10) +
+                         (remainingQuantity * priceList[item.name].unitPrice);
+        item.totalPrice = totalPrice;
+        totalSum += totalPrice;
+
+        const li = document.createElement("li");
+        li.setAttribute("data-index", index);
+        li.innerHTML = `
+            ${item.name} (<span class="item-quantity">${item.quantity}</span> шт) – 
+            <span class="item-total">${totalPrice}</span> $
+            <button class="cart-plus">+</button>
+            <button class="cart-minus">–</button>
+            <button class="cart-remove">/</button>
+        `;
+        cartItemsList.appendChild(li);
+
+        li.querySelector(".cart-plus").addEventListener("click", function () {
+            item.quantity++;
+            saveCart();
+            updateCartDisplay();
+        });
+        li.querySelector(".cart-minus").addEventListener("click", function () {
+            if (item.quantity > 1) {
+                item.quantity--;
+            } else {
+                cart.splice(index, 1);
+            }
+            saveCart();
+            updateCartDisplay();
+        });
+        li.querySelector(".cart-remove").addEventListener("click", function () {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartDisplay();
+        });
+    });
+
+    // Обновляем информацию на кнопке корзины и элементе общей суммы
+    const cartButton = document.querySelector(".cart-button");
+    if (cartButton) {
+        cartButton.textContent = `Корзина (${cart.length} товаров, ${totalSum} $)`;
+    }
+    const totalPriceElement = document.getElementById("total-price");
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `Общая сумма: ${totalSum} $`;
+    }
+}
+
+// =======================
+// Функции открытия/закрытия корзины и модальных окон
+// =======================
+
+function openCart() {
+    document.getElementById('cart-modal').style.display = 'block';
+    updateCartDisplay();
+}
+
+function closeCart() {
+    document.getElementById('cart-modal').style.display = 'none';
+}
+
+
 
 function closeModal() {
     document.getElementById("modal").style.display = 'none';
