@@ -1208,35 +1208,45 @@ document.addEventListener("DOMContentLoaded", function () {
             let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
 
             if (cartItems.length === 0) {
-                alert("Нет заказов для отправки!");
+                alert("❌ Корзина пуста! Добавьте товары перед отправкой заказа.");
                 return;
             }
 
             let now = new Date();
             let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-            // Получаем общую сумму из корзины
+            // Получаем общую сумму заказа
             let totalPriceElement = document.getElementById("total-price");
             let totalPrice = totalPriceElement ? parseFloat(totalPriceElement.textContent.replace(/\D/g, '')) : 0;
 
             // Получаем комментарий к заказу
             let commentInput = document.getElementById("order-comment");
-            let commentText = commentInput ? commentInput.value : "Без комментария";
+            let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
 
             let newOrder = {
-                date: formattedDate,
-                items: cartItems,
-                total: totalPrice.toFixed(2), // Округляем сумму
-                comment: commentText
+                type: "new_order",
+                order: {
+                    date: formattedDate,
+                    items: cartItems,
+                    total: totalPrice.toFixed(2), // Округляем сумму
+                    comment: commentText
+                }
             };
 
-            let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
-            storedOrders.push(newOrder);
-            localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+            // Проверяем, подключен ли WebSocket
+            if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify(newOrder)); // Отправляем заказ на сервер WebSocket
+                console.log("📡 Заказ отправлен через WebSocket:", newOrder);
+            } else {
+                console.warn("⚠ WebSocket не подключен! Заказ сохранён локально.");
+                let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
+                storedOrders.push(newOrder.order);
+                localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+            }
 
-            alert("📦 Заказ успешно отправлен в историю заказов!");
+            alert("📦 Заказ успешно отправлен!");
 
-            localStorage.removeItem("cart"); // Очищаем корзину
+            localStorage.removeItem("cart"); // Очищаем корзину после отправки
             window.location.href = "orders.html"; // Переход на страницу заказов
         });
     } else {

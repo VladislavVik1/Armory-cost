@@ -11,21 +11,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Глобальная переменная для WebSocket
+let socket;
+
 // Функция подключения к WebSocket
 function connectWebSocket() {
-    const socket = new WebSocket("wss://pmk-eagles.shop:8080");
+    socket = new WebSocket("wss://pmk-eagles.shop:8080");
 
     socket.onopen = function () {
         console.log("✅ Подключено к WebSocket серверу");
+        socket.send(JSON.stringify({ type: "get_orders" })); // Запрашиваем заказы у сервера
     };
 
     socket.onmessage = function (event) {
-        let data = JSON.parse(event.data);
-        console.log("📩 Получены данные с сервера:", data);
+        try {
+            let data = JSON.parse(event.data);
+            console.log("📩 Получены данные с сервера:", data);
 
-        if (data.type === "init") {
-            localStorage.setItem("orders", JSON.stringify(data.orders));
-            loadOrders();
+            if (data.type === "init") {
+                localStorage.setItem("orders", JSON.stringify(data.orders));
+                loadOrders();
+            } else if (data.type === "new_order") {
+                let orders = JSON.parse(localStorage.getItem("orders")) || [];
+                orders.push(data.order);
+                localStorage.setItem("orders", JSON.stringify(orders));
+                loadOrders(); // Обновляем заказы на странице
+            }
+        } catch (error) {
+            console.error("❌ Ошибка обработки данных WebSocket:", error);
         }
     };
 
@@ -35,7 +48,7 @@ function connectWebSocket() {
 
     socket.onclose = function () {
         console.log("❌ Соединение с WebSocket сервером закрыто.");
-        setTimeout(connectWebSocket, 5000);
+        setTimeout(connectWebSocket, 5000); // Переподключение через 5 секунд
     };
 }
 
