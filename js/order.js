@@ -1,56 +1,61 @@
 document.addEventListener("DOMContentLoaded", function () {
+    connectWebSocket();
     loadOrders();
 
     let clearOrdersButton = document.querySelector(".clear-orders");
     if (clearOrdersButton) {
         clearOrdersButton.addEventListener("click", function () {
-            localStorage.removeItem("orders"); // Очищаем заказы, полученные через WebSocket
-            localStorage.removeItem("sentOrders"); // Очищаем локальные заказы пользователя
-            loadOrders(); // Обновляем отображение
+            localStorage.removeItem("orders");
+            loadOrders();
         });
     }
 });
 
-// Подключение к WebSocket серверу
-const socket = new WebSocket("wss://pmk-eagles.shop:8080");
+// Функция подключения к WebSocket
+function connectWebSocket() {
+    const socket = new WebSocket("wss://pmk-eagles.shop:8080");
 
-socket.onopen = function () {
-    console.log("✅ Подключено к WebSocket серверу");
-};
+    socket.onopen = function () {
+        console.log("✅ Подключено к WebSocket серверу");
+    };
 
-// Обработка входящих сообщений от сервера
-socket.onmessage = function (event) {
-    let data = JSON.parse(event.data);
+    socket.onmessage = function (event) {
+        let data = JSON.parse(event.data);
 
-    if (data.type === "init") {
-        localStorage.setItem("orders", JSON.stringify(data.orders));
-    } else if (data.type === "new_order") {
-        let orders = JSON.parse(localStorage.getItem("orders")) || [];
-        orders.push(data.order);
-        localStorage.setItem("orders", JSON.stringify(orders));
-    }
+        if (data.type === "init") {
+            // Сохраняем все заказы в локальное хранилище
+            localStorage.setItem("orders", JSON.stringify(data.orders));
+            loadOrders(); // Обновляем UI
+        }
+    };
 
-    loadOrders(); // Перерисовываем заказы
-};
+    socket.onerror = function (error) {
+        console.error("⚠️ Ошибка WebSocket:", error);
+    };
 
+    socket.onclose = function () {
+        console.log("❌ Соединение с WebSocket сервером закрыто.");
+        setTimeout(connectWebSocket, 5000); // Переподключение через 5 секунд
+    };
+}
+
+// Функция загрузки заказов на страницу
 function loadOrders() {
-    let sentOrders = JSON.parse(localStorage.getItem("sentOrders")) || []; // Заказы пользователя
-    let receivedOrders = JSON.parse(localStorage.getItem("orders")) || []; // Заказы через WebSocket
-    let allOrders = [...sentOrders, ...receivedOrders]; // Объединяем заказы
-
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
     let ordersList = document.getElementById("orders-list");
+
     if (!ordersList) {
-        console.error("❌ Элемент #orders-list не найден!");
+        console.error("❌ Ошибка: элемент #orders-list не найден!");
         return;
     }
 
     ordersList.innerHTML = "";
-    if (allOrders.length === 0) {
+    if (orders.length === 0) {
         ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
         return;
     }
 
-    allOrders.forEach((order, index) => {
+    orders.forEach((order, index) => {
         let orderDiv = document.createElement("div");
         orderDiv.classList.add("order");
 

@@ -1,79 +1,80 @@
-document.addEventListener("DOMContentLoaded", function () {
-    connectWebSocket();
-    loadOrders();
+const fs = require('fs');
+const https = require('https');
+const WebSocket = require('ws');
 
-    let clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", function () {
-            localStorage.removeItem("orders");
-            loadOrders();
-        });
-    }
+// SSL-сертификаты
+const SSL_CERT_PATH = '/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem';
+const SSL_KEY_PATH = '/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem';
+
+// Проверяем существование сертификатов
+if (!fs.existsSync(SSL_CERT_PATH) || !fs.existsSync(SSL_KEY_PATH)) {
+    console.error("❌ Ошибка: SSL сертификаты не найдены!");
+    process.exit(1);
+}
+
+// Создаём HTTPS-сервер
+const server = https.createServer({
+    cert: fs.readFileSync(SSL_CERT_PATH),
+    key: fs.readFileSync(SSL_KEY_PATH),
 });
 
-function connectWebSocket() {
-    const socket = new WebSocket("wss://pmk-eagles.shop:8080");
+const PORT = 8080;
+const FILE_PATH = "orders.json"; // Файл хранения заказов
 
-    socket.onopen = function () {
-        console.log("✅ Подключено к WebSocket серверу");
-    };
-
-    socket.onmessage = function (event) {
-        let data = JSON.parse(event.data);
-
-        if (data.type === "init") {
-            // Сохраняем все заказы при загрузке
-            localStorage.setItem("orders", JSON.stringify(data.orders));
-        } else if (data.type === "new_order") {
-            // Добавляем новый заказ в хранилище
-            let orders = JSON.parse(localStorage.getItem("orders")) || [];
-            orders.push(data.order);
-            localStorage.setItem("orders", JSON.stringify(orders));
-        }
-
-        loadOrders(); // Перерисовываем список заказов
-    };
-
-    socket.onerror = function (error) {
-        console.error("⚠️ Ошибка WebSocket:", error);
-    };
-
-    socket.onclose = function () {
-        console.log("❌ Соединение с WebSocket сервером закрыто.");
-    };
+// Загружаем заказы из файла
+let orders = [];
+if (fs.existsSync(FILE_PATH)) {
+    try {
+        orders = JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
+    } catch (err) {
+        console.error("❌ Ошибка загрузки orders.json:", err);
+    }
 }
 
-function loadOrders() {
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
-    let ordersList = document.getElementById("orders-list");
+// Создаём WebSocket-сервер
+const wss = new WebSocket.Server({ server });
 
-    if (!ordersList) {
-        console.error("❌ Ошибка: элемент #orders-list не найден!");
-        return;
-    }
+wss.on("connection", (ws) => {
+    console.log("🔗 Новый клиент подключён!");
 
-    ordersList.innerHTML = "";
-    if (orders.length === 0) {
-        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
-        return;
-    }
+    // Отправляем текущие заказы клиенту
+    ws.send(JSON.stringify({ type: "init", orders }));
 
-    orders.forEach((order, index) => {
-        let orderDiv = document.createElement("div");
-        orderDiv.classList.add("order");
+    // Обрабатываем входящие сообщения
+    ws.on("message", (message) => {
+        try {
+            let data = JSON.parse(message);
+            if (data.type === "new_order") {
+                // Добавляем новый заказ
+                orders.push(data.order);
 
-        let itemsHTML = order.items.map(item =>
-            `<p>${item.name} – ${item.quantity} шт.</p>`
-        ).join("");
+                // Сохраняем заказы в файл
+                fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
 
-        let totalPrice = order.total ? `${order.total} $` : "Сумма не указана";
+                // ОТПРАВЛЯЕМ ВЕСЬ СПИСОК ЗАКАЗОВ ВСЕМ КЛИЕНТАМ
+                broadcastOrders();
+                console.log("📦 Новый заказ добавлен и отправлен всем!");
+            }
+        } catch (error) {
+            console.error("❌ Ошибка обработки заказа:", error);
+        }
+    });
 
-        orderDiv.innerHTML = `
-            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-            ${itemsHTML}
-            <p><strong>Общая сумма заказа:</strong> ${totalPrice}</p>
-        `;
+    ws.on("close", () => {
+        console.log("❌ Клиент отключился.");
+    });
+});
 
-        ordersList.appendChild(orderDiv);
+// Функция для отправки заказов всем подключённым клиентам
+function broadcastOrders() {
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ type: "init", orders }));
+        }
     });
 }
+
+// Запускаем сервер
+server.listen(PORT, () => {
+    console.log(`✅ WebSocket сервер работает на wss://pmk-eagles.shop:${PORT}`);
+});
