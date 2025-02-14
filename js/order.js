@@ -5,8 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let clearOrdersButton = document.querySelector(".clear-orders");
     if (clearOrdersButton) {
         clearOrdersButton.addEventListener("click", function () {
-            localStorage.removeItem("orders");
-            loadOrders();
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ type: "clear_orders" }));
+                console.log("🗑 Запрос на очистку заказов отправлен серверу");
+            } else {
+                console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
+            }
         });
     }
 
@@ -82,6 +86,10 @@ function connectWebSocket() {
                 let orders = JSON.parse(localStorage.getItem("orders")) || [];
                 orders.push(data.order);
                 localStorage.setItem("orders", JSON.stringify(orders));
+                loadOrders();
+            } else if (data.type === "orders_cleared") {
+                console.log("🗑 Все заказы были удалены сервером");
+                localStorage.removeItem("orders");
                 loadOrders();
             }
         } catch (error) {
