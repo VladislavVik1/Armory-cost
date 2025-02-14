@@ -49,31 +49,23 @@ let orders = loadOrders();
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
-    console.log("🔗 Новый клиент подключён!");
-
-    // Отправка текущих заказов новому клиенту
-    ws.send(JSON.stringify({ type: "init", orders }));
+    console.log("🔗 Новый клиент подключился!");
 
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
             console.log("📩 Получено сообщение от клиента:", data);
 
-            if (data.type === "new_order") {
-                console.log("📦 Новый заказ:", data.order);
-                orders.push(data.order);
-                saveOrders(orders);
-                broadcastOrders();
-            } else if (data.type === "clear_orders") {
+            if (data.type === "clear_orders") {
                 console.log("🗑 Запрос на очистку заказов получен!");
 
-                // Очищаем заказы
+                // Очищаем заказы в памяти и файле
                 orders = [];
                 saveOrders([]);
 
                 console.log("✅ Отправляем orders_cleared клиентам");
-                
-                // Рассылаем всем клиентам
+
+                // Рассылаем всем клиентам сообщение об удалении заказов
                 broadcastMessage({ type: "orders_cleared" });
 
                 console.log("✅ Все заказы успешно удалены!");
@@ -82,11 +74,8 @@ wss.on("connection", (ws) => {
             console.error("❌ Ошибка обработки сообщения:", error);
         }
     });
-
-    ws.on("close", () => {
-        console.log("❌ Клиент отключился.");
-    });
 });
+
 
 // **Функция рассылки всех заказов всем клиентам**
 function broadcastOrders() {
