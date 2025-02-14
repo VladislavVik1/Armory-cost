@@ -282,7 +282,7 @@ const priceList = {
         "Hilux + M2": { "unitPrice": 50000, "bulkPrice": 5000  },
         "T-72": { "unitPrice": 160000, "bulkPrice": 16000  },
         "T-34": { "unitPrice": 100000, "bulkPrice": 10000  },
-        "3rd Platecarrier": { "unitPrice": 50000, "bulkPrice": 5000  },
+        "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000  },
         "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
         "VAZ": { "unitPrice": 2000, "bulkPrice": 200  },
     };
@@ -955,7 +955,7 @@ function openModal(category) {
         '<tr><td>T-72</td><td>160 000</td>' +
         '<td><button onclick="addToCart(\'T-72\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>3rd Platecarrier(Плитоноска)</td><td>50 000</td>' +
+        '<tr><td>3rd PACK</td><td>100 000</td>' +
         '<td><button onclick="addToCart(\'3rd Platecarrier\', 1)">Добавить 20 шт</button></td></tr>' +
 
         '<tr><td>Silent 5.56(Глушитель)</td><td>60 000</td>' +
