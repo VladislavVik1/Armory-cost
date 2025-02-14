@@ -8,9 +8,9 @@ const SSL_CERT_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem";
 const SSL_KEY_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem";
 const PORT = 8080;
 
-// **Проверяем наличие SSL-сертификатов**
+// **Проверяем наличие SSL сертификатов**
 if (!fs.existsSync(SSL_CERT_PATH) || !fs.existsSync(SSL_KEY_PATH)) {
-    console.error("❌ Ошибка: SSL сертификаты не найдены! Сервер не запущен.");
+    console.error("❌ Ошибка: SSL сертификаты не найдены!");
     process.exit(1);
 }
 
@@ -24,15 +24,13 @@ const server = https.createServer({
 function loadOrders() {
     if (fs.existsSync(FILE_PATH)) {
         try {
-            const fileData = fs.readFileSync(FILE_PATH, "utf8");
-            return JSON.parse(fileData);
+            return JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
         } catch (err) {
             console.error("❌ Ошибка загрузки orders.json:", err);
             return [];
         }
-    } else {
-        return [];
     }
+    return [];
 }
 
 // **Функция сохранения заказов в JSON-файл**
@@ -73,7 +71,9 @@ wss.on("connection", (ws) => {
                 orders = [];
                 saveOrders([]);
 
-                // Рассылаем всем клиентам, что заказы очищены
+                console.log("✅ Отправляем orders_cleared клиентам");
+                
+                // Рассылаем всем клиентам
                 broadcastMessage({ type: "orders_cleared" });
 
                 console.log("✅ Все заказы успешно удалены!");
@@ -88,12 +88,12 @@ wss.on("connection", (ws) => {
     });
 });
 
-// **Функция рассылки обновленного списка заказов всем клиентам**
+// **Функция рассылки всех заказов всем клиентам**
 function broadcastOrders() {
     broadcastMessage({ type: "init", orders });
 }
 
-// **Функция отправки сообщения всем подключенным клиентам**
+// **Функция для отправки сообщений всем клиентам**
 function broadcastMessage(message) {
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {

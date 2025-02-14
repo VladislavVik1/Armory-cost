@@ -6,15 +6,32 @@ document.addEventListener("DOMContentLoaded", function () {
     if (clearOrdersButton) {
         clearOrdersButton.addEventListener("click", function () {
             if (socket && socket.readyState === WebSocket.OPEN) {
+                console.log("📡 Отправка `clear_orders` на сервер...");
                 socket.send(JSON.stringify({ type: "clear_orders" }));
-                console.log("🗑 Запрос на очистку заказов отправлен серверу");
 
-                // Если сервер не ответит в течение 3 секунд, очистка произойдет локально
-                setTimeout(() => {
+                // Ожидаем ответ от сервера (если не приходит - очищаем локально)
+                let clearOrdersTimeout = setTimeout(() => {
                     console.warn("⏳ Сервер не ответил, очистка заказов локально.");
                     localStorage.removeItem("orders");
                     loadOrders();
-                }, 3000);
+                }, 5000); // Увеличено до 5 секунд для стабильности
+
+                // Проверяем, пришел ли ответ от сервера
+                socket.onmessage = function (event) {
+                    try {
+                        let data = JSON.parse(event.data);
+                        console.log("📩 Получены данные от сервера:", data);
+
+                        if (data.type === "orders_cleared") {
+                            console.log("🗑 Все заказы были удалены сервером");
+                            clearTimeout(clearOrdersTimeout);
+                            localStorage.removeItem("orders");
+                            loadOrders();
+                        }
+                    } catch (error) {
+                        console.error("❌ Ошибка обработки данных WebSocket:", error);
+                    }
+                };
             } else {
                 console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
                 localStorage.removeItem("orders");
@@ -73,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// **Глобальная переменная для WebSocket**
+// **Глобальная переменная WebSocket**
 let socket;
 
 function connectWebSocket() {

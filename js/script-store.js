@@ -1020,21 +1020,37 @@ function addToCart(productName, quantity) {
     alert(`${productName} добавлено в корзину`);
     updateCartDisplay();
 }
+// =======================
+// Глобальные переменные
+// =======================
+let socket;
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let priceList = {
+    // Пример цен, обновите в соответствии с вашим магазином
+    "Товар 1": { unitPrice: 10, bulkPrice: 8 },
+    "Товар 2": { unitPrice: 15, bulkPrice: 12 }
+};
 
 // =======================
-// Функция updateCartDisplay
+// Функция обновления корзины
 // =======================
 function updateCartDisplay() {
     const cartItemsList = document.getElementById("cart-items");
-    cartItemsList.innerHTML = ""; // Очищаем список товаров
+    if (!cartItemsList) {
+        console.error("❌ Ошибка: элемент #cart-items не найден!");
+        return;
+    }
 
+    cartItemsList.innerHTML = ""; // Очищаем список товаров
     let totalSum = 0;
+
     cart.forEach((item, index) => {
         // Пересчитываем стоимость товара по текущим ценам
         let bulkQuantity = Math.floor(item.quantity / 10);
         let remainingQuantity = item.quantity % 10;
-        let totalPrice = (bulkQuantity * priceList[item.name].bulkPrice * 10) +
-                         (remainingQuantity * priceList[item.name].unitPrice);
+        let totalPrice = (bulkQuantity * priceList[item.name]?.bulkPrice * 10 || 0) +
+                         (remainingQuantity * priceList[item.name]?.unitPrice || 0);
+
         item.totalPrice = totalPrice;
         totalSum += totalPrice;
 
@@ -1045,15 +1061,17 @@ function updateCartDisplay() {
             <span class="item-total">${totalPrice}</span> $
             <button class="cart-plus">+</button>
             <button class="cart-minus">–</button>
-            <button class="cart-remove">/</button>
+            <button class="cart-remove">×</button>
         `;
         cartItemsList.appendChild(li);
 
+        // Обработчики кнопок
         li.querySelector(".cart-plus").addEventListener("click", function () {
             item.quantity++;
             saveCart();
             updateCartDisplay();
         });
+
         li.querySelector(".cart-minus").addEventListener("click", function () {
             if (item.quantity > 1) {
                 item.quantity--;
@@ -1063,6 +1081,7 @@ function updateCartDisplay() {
             saveCart();
             updateCartDisplay();
         });
+
         li.querySelector(".cart-remove").addEventListener("click", function () {
             cart.splice(index, 1);
             saveCart();
@@ -1070,21 +1089,14 @@ function updateCartDisplay() {
         });
     });
 
-    // Обновляем информацию на кнопке корзины и элементе общей суммы
-    const cartButton = document.querySelector(".cart-button");
-    if (cartButton) {
-        cartButton.textContent = `Корзина (${cart.length} товаров, ${totalSum} $)`;
-    }
-    const totalPriceElement = document.getElementById("total-price");
-    if (totalPriceElement) {
-        totalPriceElement.textContent = `Общая сумма: ${totalSum} $`;
-    }
+    // Обновляем кнопку корзины и сумму
+    document.querySelector(".cart-button").textContent = `Корзина (${cart.length} товаров, ${totalSum} $)`;
+    document.getElementById("total-price").textContent = `Общая сумма: ${totalSum} $`;
 }
 
 // =======================
 // Функции открытия/закрытия корзины и модальных окон
 // =======================
-
 function openCart() {
     document.getElementById('cart-modal').style.display = 'block';
     updateCartDisplay();
@@ -1094,33 +1106,26 @@ function closeCart() {
     document.getElementById('cart-modal').style.display = 'none';
 }
 
-
-
 function closeModal() {
     document.getElementById("modal").style.display = 'none';
 }
 
-// Закрытие модального окна при клике вне его содержимого
+// Закрытие модального окна при клике вне него
 document.addEventListener("click", function (event) {
-    var modal = document.getElementById("modal");
-    if (event.target === modal) {
+    if (event.target === document.getElementById("modal")) {
         closeModal();
     }
 });
 
-
-
-
-// Глобальная переменная для WebSocket
-let socket;
-
+// =======================
 // Функция подключения к WebSocket
+// =======================
 function connectWebSocket() {
     socket = new WebSocket("wss://pmk-eagles.shop:8080");
 
     socket.onopen = function () {
         console.log("✅ Подключено к WebSocket серверу");
-        socket.send(JSON.stringify({ type: "get_orders" })); // Запрашиваем заказы у сервера
+        socket.send(JSON.stringify({ type: "get_orders" }));
     };
 
     socket.onmessage = function (event) {
@@ -1135,7 +1140,11 @@ function connectWebSocket() {
                 let orders = JSON.parse(localStorage.getItem("orders")) || [];
                 orders.push(data.order);
                 localStorage.setItem("orders", JSON.stringify(orders));
-                loadOrders(); // Обновляем заказы на странице
+                loadOrders();
+            } else if (data.type === "orders_cleared") {
+                console.log("🗑 Все заказы удалены сервером");
+                localStorage.removeItem("orders");
+                loadOrders();
             }
         } catch (error) {
             console.error("❌ Ошибка обработки данных WebSocket:", error);
@@ -1148,37 +1157,28 @@ function connectWebSocket() {
 
     socket.onclose = function () {
         console.log("❌ Соединение с WebSocket сервером закрыто. Переподключение...");
-        setTimeout(connectWebSocket, 5000); // Переподключение через 5 секунд
+        setTimeout(connectWebSocket, 5000);
     };
 }
 
+// =======================
 // Функция отправки заказа
+// =======================
 function sendOrder() {
     let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
     if (cartItems.length === 0) {
         alert("❌ Корзина пуста! Добавьте товары перед отправкой заказа.");
         return;
     }
 
-    let now = new Date();
-    let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+    let formattedDate = new Date().toLocaleString();
 
-    // Пересчитываем итоговую сумму заказа
     let totalPrice = cartItems.reduce((sum, item) => {
-        let itemPrice = priceList[item.name] ? priceList[item.name].unitPrice : 0;
+        let itemPrice = priceList[item.name]?.unitPrice || 0;
         return sum + (itemPrice * item.quantity);
     }, 0);
 
-    // Обновляем отображение общей суммы
-    let totalPriceElement = document.getElementById("total-price");
-    if (totalPriceElement) {
-        totalPriceElement.textContent = `Общая сумма: ${totalPrice.toFixed(2)} $`;
-    }
-
-    // Получаем комментарий к заказу
-    let commentInput = document.getElementById("order-comment");
-    let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
+    let commentText = document.getElementById("order-comment")?.value.trim() || "Без комментария";
 
     let newOrder = {
         type: "new_order",
@@ -1190,7 +1190,6 @@ function sendOrder() {
         }
     };
 
-    // Проверяем, подключен ли WebSocket
     if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify(newOrder));
         console.log("📡 Заказ отправлен через WebSocket:", newOrder);
@@ -1207,91 +1206,37 @@ function sendOrder() {
     updateCartDisplay();
     window.location.href = "orders.html";
 }
-// Функция очистки всех заказов
+
+// =======================
+// Функция очистки заказов
+// =======================
 function clearOrders() {
     localStorage.removeItem("orders");
-    let ordersList = document.getElementById("orders-list");
-    if (ordersList) {
-        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
-    }
+    loadOrders();
     alert("✅ Все заказы удалены!");
 }
-// Подключение кнопки очистки заказов
-document.addEventListener("DOMContentLoaded", function () {
-    let clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", clearOrders);
-    }
-});
+
+// =======================
 // Функция загрузки заказов
+// =======================
 function loadOrders() {
     let orders = JSON.parse(localStorage.getItem("orders")) || [];
     let ordersList = document.getElementById("orders-list");
+    if (!ordersList) return console.error("❌ Ошибка: элемент #orders-list не найден!");
 
-    if (!ordersList) {
-        console.error("❌ Ошибка: элемент #orders-list не найден!");
-        return;
-    }
-
-    ordersList.innerHTML = "";
-    if (orders.length === 0) {
-        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
-        return;
-    }
-
-    orders.forEach((order, index) => {
-        let orderDiv = document.createElement("div");
-        orderDiv.classList.add("order");
-
-        let itemsHTML = order.items.map(item =>
-            `<p>${item.name} – ${item.quantity} шт.</p>`
-        ).join("");
-
-        let totalPrice = order.total ? `${order.total} $` : "Сумма не указана";
-
-        orderDiv.innerHTML = `
+    ordersList.innerHTML = orders.length ? orders.map((order, index) => `
+        <div class="order">
             <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-            ${itemsHTML}
-            <p><strong>Общая сумма заказа:</strong> ${totalPrice}</p>
-        `;
-
-        ordersList.appendChild(orderDiv);
-    });
+            ${order.items.map(item => `<p>${item.name} – ${item.quantity} шт.</p>`).join("")}
+            <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
+        </div>
+    `).join("") : "<p style='color: white;'>Заказов пока нет...</p>";
 }
 
-// Функция обновления суммы в корзине
-function updateTotalPrice() {
-    let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-    let totalPrice = cartItems.reduce((sum, item) => {
-        let itemPrice = priceList[item.name] ? priceList[item.name].unitPrice : 0;
-        return sum + (itemPrice * item.quantity);
-    }, 0);
-
-    localStorage.setItem("totalPrice", totalPrice.toFixed(2));
-
-    let totalPriceElement = document.getElementById("total-price");
-    if (totalPriceElement) {
-        totalPriceElement.textContent = `Общая сумма: ${totalPrice.toFixed(2)} $`;
-    }
-}
-
+// =======================
 // Подключаем WebSocket при загрузке страницы
+// =======================
 document.addEventListener("DOMContentLoaded", function () {
     connectWebSocket();
     loadOrders();
-
-    let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
-    if (sendScreenshotButton) {
-        sendScreenshotButton.addEventListener("click", sendOrder);
-    } else {
-        console.warn("❗ Кнопка отправки заказа `.snapshot` не найдена. Код не выполняется.");
-    }
-
-    let clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", function () {
-            localStorage.removeItem("orders");
-            loadOrders();
-        });
-    }
 });
