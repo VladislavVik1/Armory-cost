@@ -54,30 +54,18 @@ wss.on("connection", (ws) => {
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
-            console.log("📩 Получено сообщение от клиента:", data);
+            console.log("📩 Получено сообщение от клиента:", JSON.stringify(data, null, 2));
 
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
 
-                // ✅ Проверяем, есть ли товары в заказе
-                if (!data.order.items || !Array.isArray(data.order.items) || data.order.items.length === 0) {
-                    console.warn("⚠ Ошибка: Заказ не содержит товаров!");
-                    return;
-                }
+                // ✅ Используем `total`, переданный с клиента
+                let totalSum = parseFloat(data.order.total) || 0;
 
-                // ✅ Пересчитываем сумму только один раз, без удвоений
-                let totalSum = 0;
-                data.order.items.forEach(item => {
-                    let itemTotal = item.totalPrice || 0;  // Используем `totalPrice`, если он есть
-                    console.log(`ℹ️ Товар: ${item.name}, Кол-во: ${item.quantity}, Цена: ${itemTotal}`);
-                    totalSum += itemTotal;
-                });
+                console.log("✅ Итоговая сумма заказа (получена с клиента):", totalSum.toFixed(2));
 
-                data.order.total = totalSum.toFixed(2); // Форматируем сумму в 2 знака после запятой
                 orders.push(data.order);
                 saveOrders(orders);
-
-                console.log("✅ Итоговая сумма заказа (исправлена):", data.order.total);
 
                 // 📡 Рассылка обновленного списка заказов
                 broadcastOrders();
@@ -87,7 +75,6 @@ wss.on("connection", (ws) => {
         }
     });
 });
-
 
 
 
