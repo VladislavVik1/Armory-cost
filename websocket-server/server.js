@@ -8,9 +8,9 @@ const SSL_CERT_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem";
 const SSL_KEY_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem";
 const PORT = 8080;
 
-// **Проверяем, существуют ли SSL сертификаты**
+// **Проверяем наличие SSL-сертификатов**
 if (!fs.existsSync(SSL_CERT_PATH) || !fs.existsSync(SSL_KEY_PATH)) {
-    console.error("❌ Ошибка: SSL сертификаты не найдены!");
+    console.error("❌ Ошибка: SSL сертификаты не найдены! Сервер не запущен.");
     process.exit(1);
 }
 
@@ -24,13 +24,15 @@ const server = https.createServer({
 function loadOrders() {
     if (fs.existsSync(FILE_PATH)) {
         try {
-            return JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
+            const fileData = fs.readFileSync(FILE_PATH, "utf8");
+            return JSON.parse(fileData);
         } catch (err) {
             console.error("❌ Ошибка загрузки orders.json:", err);
             return [];
         }
+    } else {
+        return [];
     }
-    return [];
 }
 
 // **Функция сохранения заказов в JSON-файл**
@@ -57,23 +59,24 @@ wss.on("connection", (ws) => {
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
+            console.log("📩 Получено сообщение от клиента:", data);
 
             if (data.type === "new_order") {
-                console.log("📩 Получен новый заказ:", data.order);
+                console.log("📦 Новый заказ:", data.order);
                 orders.push(data.order);
                 saveOrders(orders);
                 broadcastOrders();
             } else if (data.type === "clear_orders") {
                 console.log("🗑 Запрос на очистку заказов получен!");
 
-                // Очищаем заказы в памяти и файле
+                // Очищаем заказы
                 orders = [];
                 saveOrders([]);
 
                 // Рассылаем всем клиентам, что заказы очищены
                 broadcastMessage({ type: "orders_cleared" });
 
-                console.log("✅ Все заказы удалены на сервере!");
+                console.log("✅ Все заказы успешно удалены!");
             }
         } catch (error) {
             console.error("❌ Ошибка обработки сообщения:", error);
@@ -85,12 +88,12 @@ wss.on("connection", (ws) => {
     });
 });
 
-// **Функция рассылки всех заказов всем клиентам**
+// **Функция рассылки обновленного списка заказов всем клиентам**
 function broadcastOrders() {
     broadcastMessage({ type: "init", orders });
 }
 
-// **Функция для отправки сообщений всем клиентам**
+// **Функция отправки сообщения всем подключенным клиентам**
 function broadcastMessage(message) {
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
