@@ -4,45 +4,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let clearOrdersButton = document.querySelector(".clear-orders");
     if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", function () {
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                console.log("📡 Отправка `clear_orders` на сервер...");
-                socket.send(JSON.stringify({ type: "clear_orders" }));
-
-                // Ожидание ответа от сервера (если не приходит — очищаем локально)
-                let clearOrdersTimeout = setTimeout(() => {
-                    console.warn("⏳ Сервер не ответил, очистка заказов локально.");
-                    localStorage.removeItem("orders");
-                    loadOrders();
-                }, 5000); // Ждём 5 секунд
-
-                // Обработка ответа сервера
-                socket.onmessage = function (event) {
-                    try {
-                        let data = JSON.parse(event.data);
-                        console.log("📩 Получены данные от сервера:", data);
-
-                        if (data.type === "orders_cleared") {
-                            console.log("🗑 Все заказы были удалены сервером");
-                            clearTimeout(clearOrdersTimeout);
-                            localStorage.removeItem("orders");
-                            loadOrders();
-                        }
-                    } catch (error) {
-                        console.error("❌ Ошибка обработки данных WebSocket:", error);
-                    }
-                };
-            } else {
-                console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
-                localStorage.removeItem("orders");
-                loadOrders();
-                alert("✅ Все заказы удалены локально.");
-            }
-        });
+        clearOrdersButton.addEventListener("click", clearOrders);
+    } else {
+        console.warn("❗ Кнопка очистки заказов `.clear-orders` не найдена.");
     }
 });
 
-// **Глобальная переменная WebSocket**
+// **Глобальная переменная для WebSocket**
 let socket;
 
 function connectWebSocket() {
@@ -50,23 +18,26 @@ function connectWebSocket() {
 
     socket.onopen = function () {
         console.log("✅ Подключено к WebSocket серверу");
-        socket.send(JSON.stringify({ type: "get_orders" })); // Запрос заказов у сервера
+        socket.send(JSON.stringify({ type: "get_orders" }));
     };
 
     socket.onmessage = function (event) {
-    try {
-        let data = JSON.parse(event.data);
-        console.log("📩 Получены данные от сервера:", data);
+        try {
+            let data = JSON.parse(event.data);
+            console.log("📩 Получены данные от сервера:", data);
 
-        if (data.type === "orders_cleared") {
-            console.log("🗑 Все заказы были удалены сервером");
-            localStorage.removeItem("orders");
-            loadOrders();
+            if (data.type === "init") {
+                localStorage.setItem("orders", JSON.stringify(data.orders || []));
+                loadOrders();
+            } else if (data.type === "orders_cleared") {
+                console.log("🗑 Все заказы были удалены сервером");
+                localStorage.removeItem("orders");
+                loadOrders();
+            }
+        } catch (error) {
+            console.error("❌ Ошибка обработки данных WebSocket:", error);
         }
-    } catch (error) {
-        console.error("❌ Ошибка обработки данных WebSocket:", error);
-    }
-};
+    };
 
     socket.onerror = function (error) {
         console.error("⚠️ Ошибка WebSocket:", error);
@@ -76,6 +47,42 @@ function connectWebSocket() {
         console.log("❌ Соединение с WebSocket закрыто. Переподключение...");
         setTimeout(connectWebSocket, 5000);
     };
+}
+
+// **Функция очистки всех заказов**
+function clearOrders() {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log("📡 Отправка `clear_orders` на сервер...");
+        socket.send(JSON.stringify({ type: "clear_orders" }));
+
+        let clearOrdersTimeout = setTimeout(() => {
+            console.warn("⏳ Сервер не ответил, очистка заказов локально.");
+            localStorage.removeItem("orders");
+            loadOrders();
+        }, 5000);
+
+        socket.addEventListener("message", function handleClearOrdersResponse(event) {
+            try {
+                let data = JSON.parse(event.data);
+                console.log("📩 Ответ сервера на очистку заказов:", data);
+
+                if (data.type === "orders_cleared") {
+                    console.log("🗑 Все заказы были удалены сервером");
+                    clearTimeout(clearOrdersTimeout);
+                    localStorage.removeItem("orders");
+                    loadOrders();
+                    socket.removeEventListener("message", handleClearOrdersResponse);
+                }
+            } catch (error) {
+                console.error("❌ Ошибка обработки данных WebSocket:", error);
+            }
+        });
+    } else {
+        console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
+        localStorage.removeItem("orders");
+        loadOrders();
+        alert("✅ Все заказы удалены локально.");
+    }
 }
 
 // **Функция загрузки заказов**
