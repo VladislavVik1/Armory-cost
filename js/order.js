@@ -5,13 +5,20 @@ document.addEventListener("DOMContentLoaded", function () {
     let clearOrdersButton = document.querySelector(".clear-orders");
     if (clearOrdersButton) {
         clearOrdersButton.addEventListener("click", function () {
+            // Проверяем состояние WebSocket
             if (socket && socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: "clear_orders" }));
                 console.log("🗑 Запрос на очистку заказов отправлен серверу");
             } else {
                 console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
+                // Локальная очистка заказов
+                localStorage.removeItem("orders");
+                loadOrders(); // Обновляем список заказов
+                alert("✅ Все заказы удалены локально.");
             }
         });
+    } else {
+        console.warn("❗ Кнопка очистки заказов `.clear-orders` не найдена.");
     }
 
     let sendScreenshotButton = document.querySelector("#cart-modal button.snapshot");
