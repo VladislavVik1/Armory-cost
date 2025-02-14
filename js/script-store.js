@@ -1120,10 +1120,19 @@ document.addEventListener("click", function (event) {
 // =======================
 // Глобальная переменная для WebSocket
 // =======================
-let socket;
+// Проверяем, объявлена ли переменная `socket` ранее
+// Проверяем, не объявлена ли переменная `socket` ранее
+if (typeof socket === "undefined" || socket === null) {
+    var socket;
+}
 
 // Функция подключения к WebSocket
 function connectWebSocket() {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log("🔄 WebSocket уже подключен.");
+        return;
+    }
+
     socket = new WebSocket("wss://pmk-eagles.shop:8080");
 
     socket.onopen = function () {
@@ -1158,6 +1167,12 @@ function connectWebSocket() {
         setTimeout(connectWebSocket, 5000);
     };
 }
+
+// Вызываем подключение WebSocket при загрузке страницы
+document.addEventListener("DOMContentLoaded", function () {
+    connectWebSocket();
+    loadOrders();
+});
 
 // =======================
 // Функция отправки заказа
