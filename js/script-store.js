@@ -1204,7 +1204,7 @@ function sendOrder() {
             date: formattedDate,
             items: cartItems,
             total: totalPrice.toFixed(2),
-            comment: commentText,
+            comment: commentText,  // <-- Добавляем комментарий
         },
     };
 
@@ -1222,8 +1222,9 @@ function sendOrder() {
     localStorage.removeItem("cart");
     saveCart();
     updateCartDisplay();
-    window.location.href = "orders.html";
+    window.location.href = "orders.html";  // Перенаправление на страницу заказов
 }
+
 
 // =======================
 // Функция очистки всех заказов

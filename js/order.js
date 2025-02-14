@@ -91,22 +91,29 @@ function clearOrders() {
 
 // **Функция загрузки заказов**
 function loadOrders() {
-    document.addEventListener("DOMContentLoaded", () => {
-        let ordersList = document.getElementById("orders-list");
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+    let ordersList = document.getElementById("orders-list");
 
-        if (!ordersList) {
-            console.error("❌ Ошибка: элемент #orders-list не найден! Проверь HTML и порядок загрузки скриптов.");
-            return;
-        }
+    if (!ordersList) {
+        console.error("❌ Ошибка: элемент #orders-list не найден!");
+        return;
+    }
 
-        let orders = JSON.parse(localStorage.getItem("orders")) || [];
-        ordersList.innerHTML = orders.length ? orders.map((order, index) => `
-            <div class="order">
-                <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-                ${order.items.map(item => `<p>${item.name} – ${item.quantity} шт.</p>`).join("")}
-                <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
-                <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-            </div>
-        `).join("") : "<p style='color: white;'>Заказов пока нет...</p>";
-    });
+    ordersList.innerHTML = orders.length
+        ? orders
+              .map(
+                  (order, index) => `
+        <div class="order">
+            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+            ${order.items
+                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
+                .join("")}
+            <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
+            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+        </div>
+    `
+              )
+              .join("")
+        : "<p style='color: white;'>Заказов пока нет...</p>";
 }
+
