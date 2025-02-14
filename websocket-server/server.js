@@ -1,7 +1,11 @@
 const fs = require('fs');
 const https = require('https');
 const WebSocket = require('ws');
+const FILE_PATH = "orders.json";
 
+// Очистка заказов при перезапуске сервера
+fs.writeFileSync(FILE_PATH, JSON.stringify([], null, 2));
+console.log("🗑️ Все заказы очищены!");
 // SSL-сертификаты
 const SSL_CERT_PATH = '/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem';
 const SSL_KEY_PATH = '/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem';
