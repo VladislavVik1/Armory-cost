@@ -1,13 +1,14 @@
-const fs = require('fs');
-const https = require('https');
-const WebSocket = require('ws');
+const fs = require("fs");
+const https = require("https");
+const WebSocket = require("ws");
 
+// **Настройки сервера**
 const FILE_PATH = "orders.json";
 const SSL_CERT_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem";
 const SSL_KEY_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem";
 const PORT = 8080;
 
-// **Проверяем сертификаты**
+// **Проверяем, существуют ли SSL сертификаты**
 if (!fs.existsSync(SSL_CERT_PATH) || !fs.existsSync(SSL_KEY_PATH)) {
     console.error("❌ Ошибка: SSL сертификаты не найдены!");
     process.exit(1);
@@ -19,7 +20,7 @@ const server = https.createServer({
     key: fs.readFileSync(SSL_KEY_PATH),
 });
 
-// **Функция загрузки заказов**
+// **Функция загрузки заказов из JSON-файла**
 function loadOrders() {
     if (fs.existsSync(FILE_PATH)) {
         try {
@@ -32,7 +33,7 @@ function loadOrders() {
     return [];
 }
 
-// **Функция сохранения заказов**
+// **Функция сохранения заказов в JSON-файл**
 function saveOrders(newOrders) {
     try {
         fs.writeFileSync(FILE_PATH, JSON.stringify(newOrders, null, 2));
@@ -41,10 +42,10 @@ function saveOrders(newOrders) {
     }
 }
 
-// **Загружаем заказы из файла**
+// **Загружаем заказы при запуске сервера**
 let orders = loadOrders();
 
-// **Создаём WebSocket сервер**
+// **Создаём WebSocket сервер (через HTTPS)**
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
@@ -56,28 +57,26 @@ wss.on("connection", (ws) => {
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
-            
+
             if (data.type === "new_order") {
                 console.log("📩 Получен новый заказ:", data.order);
                 orders.push(data.order);
                 saveOrders(orders);
                 broadcastOrders();
             } else if (data.type === "clear_orders") {
-                console.log("🗑 Очистка заказов запрошена!");
-                orders = []; // Очищаем локальный массив заказов
-                saveOrders([]); // Удаляем заказы из файла
+                console.log("🗑 Запрос на очистку заказов получен!");
 
-                // Рассылаем всем клиентам сообщение, что заказы очищены
-                wss.clients.forEach(client => {
-                    if (client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify({ type: "orders_cleared" }));
-                    }
-                });
+                // Очищаем заказы в памяти и файле
+                orders = [];
+                saveOrders([]);
+
+                // Рассылаем всем клиентам, что заказы очищены
+                broadcastMessage({ type: "orders_cleared" });
 
                 console.log("✅ Все заказы удалены на сервере!");
             }
         } catch (error) {
-            console.error("❌ Ошибка обработки заказа:", error);
+            console.error("❌ Ошибка обработки сообщения:", error);
         }
     });
 
@@ -86,72 +85,21 @@ wss.on("connection", (ws) => {
     });
 });
 
-// **Функция рассылки заказов всем клиентам**
+// **Функция рассылки всех заказов всем клиентам**
 function broadcastOrders() {
+    broadcastMessage({ type: "init", orders });
+}
+
+// **Функция для отправки сообщений всем клиентам**
+function broadcastMessage(message) {
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ type: "init", orders }));
+            client.send(JSON.stringify(message));
         }
     });
 }
 
-// **Запуск сервера**
+// **Запуск HTTPS WebSocket сервера**
 server.listen(PORT, () => {
     console.log(`✅ WebSocket сервер работает на wss://pmk-eagles.shop:${PORT}`);
-});
-
-
-
-
-const WebSocket = require("ws");
-
-const wss = new WebSocket.Server({ port: 8080 });
-
-// Храним заказы в памяти (если нет базы данных)
-let orders = [];
-
-wss.on("connection", (ws) => {
-    console.log("✅ Клиент подключился");
-
-    ws.on("message", (message) => {
-        try {
-            const data = JSON.parse(message);
-            console.log("📩 Сообщение от клиента:", data);
-
-            if (data.type === "get_orders") {
-                ws.send(JSON.stringify({ type: "init", orders }));
-            }
-
-            if (data.type === "new_order") {
-                orders.push(data.order);
-                wss.clients.forEach(client => {
-                    if (client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify({ type: "new_order", order: data.order }));
-                    }
-                });
-            }
-
-            // Обработчик очистки заказов
-            if (data.type === "clear_orders") {
-                console.log("🗑 Получен запрос на очистку заказов");
-                orders = []; // Очищаем список заказов
-
-                // Рассылаем всем клиентам, что заказы удалены
-                wss.clients.forEach(client => {
-                    if (client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify({ type: "orders_cleared" }));
-                    }
-                });
-
-                console.log("✅ Заказы успешно удалены и отправлены клиентам");
-            }
-
-        } catch (error) {
-            console.error("❌ Ошибка обработки сообщения:", error);
-        }
-    });
-
-    ws.on("close", () => {
-        console.log("❌ Клиент отключился");
-    });
 });
