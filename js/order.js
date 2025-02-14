@@ -11,8 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // **Глобальная переменная WebSocket**
-let socket;
-
 function connectWebSocket() {
     socket = new WebSocket("wss://pmk-eagles.shop:8080");
 
@@ -67,7 +65,7 @@ function clearOrders() {
         console.warn("⏳ Сервер не ответил, очистка заказов локально.");
         localStorage.removeItem("orders");
         loadOrders();
-    }, 10000);
+    }, 1000);
 
     function handleClearOrdersResponse(event) {
         try {
