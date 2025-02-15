@@ -1,6 +1,6 @@
 const fs = require("fs");
 const https = require("https");
-const WebSocket = require("wss");
+const WebSocket = require("ws");
 
 // **Настройки сервера**
 const FILE_PATH = "orders.json";
@@ -21,6 +21,7 @@ function loadOrders() {
             fs.writeFileSync(FILE_PATH, "[]");
             return [];
         }
+
         let data = fs.readFileSync(FILE_PATH, "utf8").trim();
         return data ? JSON.parse(data) : [];
     } catch (err) {
@@ -38,22 +39,22 @@ function saveOrders(newOrders) {
     }
 }
 
-// **Очистка хранилища заказов**
+// **Функция очистки заказов**
 function clearOrdersOnServer() {
-    console.log("🗑 Очистка заказов на сервере...");
+    console.log("🗑 Очистка хранилища заказов на сервере...");
     try {
-        fs.writeFileSync(FILE_PATH, "[]"); // Полная перезапись
-        orders = []; // Очистка переменной
-        console.log("✅ Заказы успешно очищены!");
+        fs.writeFileSync(FILE_PATH, "[]", { encoding: "utf8", flag: "w" });
+        orders = [];
+        console.log("✅ Все заказы очищены!");
 
-        // Отправляем подтверждение клиентам
+        // 📢 Рассылка клиентам информации о том, что заказы удалены
         broadcastMessage({ type: "orders_cleared" });
     } catch (err) {
         console.error("❌ Ошибка очистки orders.json:", err);
     }
 }
 
-// **Загружаем заказы при запуске**
+// **Загружаем заказы при запуске сервера**
 let orders = loadOrders();
 
 // **Создаём WebSocket сервер**
@@ -65,7 +66,6 @@ wss.on("connection", (ws) => {
     // Отправляем клиенту текущие заказы
     ws.send(JSON.stringify({ type: "init", orders }));
 
-    // Обработка сообщений от клиента
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
@@ -89,7 +89,7 @@ wss.on("connection", (ws) => {
                 // Подтверждение клиенту
                 ws.send(JSON.stringify({ type: "order_received", total: data.order.total }));
 
-                // Рассылаем обновленный список заказов
+                // 📢 Рассылаем обновленный список заказов
                 broadcastOrders();
             }
 
@@ -109,7 +109,7 @@ wss.on("connection", (ws) => {
     });
 });
 
-// **Функция рассылки заказов**
+// **Функция рассылки всех заказов**
 function broadcastOrders() {
     let message = JSON.stringify({ type: "init", orders });
     wss.clients.forEach((client) => {
@@ -119,12 +119,11 @@ function broadcastOrders() {
     });
 }
 
-// **Функция рассылки сообщений клиентам**
+// **Функция для отправки сообщений всем клиентам**
 function broadcastMessage(message) {
-    let jsonMessage = JSON.stringify(message);
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(jsonMessage);
+            client.send(JSON.stringify(message));
         }
     });
 }

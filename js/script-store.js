@@ -1253,7 +1253,7 @@ function clearOrders() {
                 console.log("📩 Ответ сервера на очистку заказов:", data);
 
                 if (data.type === "orders_cleared") {
-                    console.log("🗑 Все заказы удалены на сервере!");
+                    console.log("🗑 Все заказы успешно удалены на сервере!");
                     clearTimeout(clearOrdersTimeout);
                     localStorage.removeItem("orders");
                     loadOrders();
@@ -1263,6 +1263,7 @@ function clearOrders() {
             }
         }
 
+        // ✅ Добавляем обработчик 1 раз
         socket.addEventListener("message", handleClearOrdersResponse, { once: true });
     } else {
         console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
@@ -1271,6 +1272,7 @@ function clearOrders() {
         alert("✅ Все заказы удалены локально.");
     }
 }
+
 
 
 
