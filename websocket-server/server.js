@@ -16,16 +16,18 @@ const server = https.createServer({
 
 // **Функция загрузки заказов из JSON-файла**
 function loadOrders() {
-    if (fs.existsSync(FILE_PATH)) {
-        try {
-            let fileContent = fs.readFileSync(FILE_PATH, "utf8").trim();
-            return fileContent ? JSON.parse(fileContent) : [];
-        } catch (err) {
-            console.error("❌ Ошибка загрузки orders.json:", err);
+    try {
+        if (!fs.existsSync(FILE_PATH)) {
+            fs.writeFileSync(FILE_PATH, "[]");
             return [];
         }
+
+        let data = fs.readFileSync(FILE_PATH, "utf8").trim();
+        return data ? JSON.parse(data) : [];
+    } catch (err) {
+        console.error("❌ Ошибка загрузки orders.json:", err);
+        return [];
     }
-    return [];
 }
 
 // **Функция сохранения заказов**
@@ -42,7 +44,7 @@ function clearOrdersOnServer() {
     console.log("🗑 Очистка хранилища заказов на сервере...");
     try {
         fs.writeFileSync(FILE_PATH, "[]");
-        console.log("✅ Хранилище заказов очищено!");
+        console.log("✅ Все заказы очищены!");
     } catch (err) {
         console.error("❌ Ошибка очистки orders.json:", err);
     }
@@ -57,45 +59,38 @@ const wss = new WebSocket.Server({ server });
 wss.on("connection", (ws) => {
     console.log("🔗 Новый клиент подключился!");
 
-    // Отправляем клиенту текущие заказы
     ws.send(JSON.stringify({ type: "init", orders }));
 
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
-            console.log("📩 Получено сообщение от клиента:", JSON.stringify(data, null, 2));
+            console.log("📩 Получено сообщение:", JSON.stringify(data, null, 2));
 
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
 
-                // ✅ Проверяем, есть ли товары в заказе
                 if (!data.order.items || !Array.isArray(data.order.items) || data.order.items.length === 0) {
                     console.warn("⚠ Ошибка: Заказ не содержит товаров!");
                     return;
                 }
 
-                // ✅ Пересчитываем сумму заказа
                 let totalSum = data.order.items.reduce((sum, item) => sum + (parseFloat(item.totalPrice) || 0), 0);
                 data.order.total = totalSum.toFixed(2);
 
                 orders.push(data.order);
                 saveOrders(orders);
-
                 console.log("✅ Итоговая сумма заказа:", data.order.total);
+
                 broadcastOrders();
             } 
             else if (data.type === "clear_orders") {
-                console.log("🗑 Получен запрос на очистку заказов!");
+                console.log("🗑 Запрос на очистку заказов получен!");
                 
                 clearOrdersOnServer();
                 orders = [];
 
-                console.log("✅ Все заказы успешно удалены!");
-
-                // Отправляем подтверждение клиенту
+                console.log("✅ Все заказы удалены!");
                 ws.send(JSON.stringify({ type: "orders_cleared" }));
-
-                // Рассылаем обновленный список заказов
                 broadcastOrders();
             }
         } catch (error) {
@@ -114,7 +109,7 @@ function broadcastOrders() {
     });
 }
 
-// **Запуск WebSocket сервера**
+// **Запуск сервера**
 server.listen(PORT, () => {
     console.log(`✅ WebSocket сервер работает на wss://pmk-eagles.shop:${PORT}`);
 });
