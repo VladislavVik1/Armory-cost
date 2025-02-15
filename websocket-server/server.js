@@ -14,14 +14,13 @@ const server = https.createServer({
     key: fs.readFileSync(SSL_KEY_PATH),
 });
 
-// **Функция загрузки заказов из JSON-файла**
+// **Функция загрузки заказов**
 function loadOrders() {
     try {
         if (!fs.existsSync(FILE_PATH)) {
             fs.writeFileSync(FILE_PATH, "[]");
             return [];
         }
-
         let data = fs.readFileSync(FILE_PATH, "utf8").trim();
         return data ? JSON.parse(data) : [];
     } catch (err) {
@@ -39,18 +38,20 @@ function saveOrders(newOrders) {
     }
 }
 
-// **Функция очистки хранилища заказов**
+// **Очистка хранилища заказов**
 function clearOrdersOnServer() {
-    console.log("🗑 Очистка хранилища заказов на сервере...");
+    console.log("🗑 Очистка заказов на сервере...");
     try {
         fs.writeFileSync(FILE_PATH, "[]");
-        console.log("✅ Все заказы очищены!");
+        orders = [];
+        console.log("✅ Заказы успешно очищены!");
+        broadcastMessage({ type: "orders_cleared" });
     } catch (err) {
         console.error("❌ Ошибка очистки orders.json:", err);
     }
 }
 
-// **Загружаем заказы при запуске сервера**
+// **Загружаем заказы при запуске**
 let orders = loadOrders();
 
 // **Создаём WebSocket сервер**
@@ -62,56 +63,67 @@ wss.on("connection", (ws) => {
     // Отправляем клиенту текущие заказы
     ws.send(JSON.stringify({ type: "init", orders }));
 
+    // Обработка сообщений от клиента
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
             console.log("📩 Получено сообщение от клиента:", JSON.stringify(data, null, 2));
 
             if (data.type === "new_order") {
-                console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
+                console.log("📦 Новый заказ:", JSON.stringify(data.order, null, 2));
 
-                let totalSum = parseFloat(data.order.total) || 0;
+                // **Пересчитываем итоговую сумму**
+                let totalSum = 0;
+                data.order.items.forEach((item) => {
+                    let itemTotal = item.totalPrice || 0;
+                    totalSum += itemTotal;
+                });
+
                 data.order.total = totalSum.toFixed(2);
-
                 orders.push(data.order);
                 saveOrders(orders);
 
                 console.log("✅ Итоговая сумма заказа:", data.order.total);
 
-                // Рассылка обновленного списка заказов
+                // **Отправляем клиенту подтверждение**
+                ws.send(JSON.stringify({ type: "order_received", total: data.order.total }));
+
+                // **Рассылаем обновленный список заказов**
                 broadcastOrders();
             }
 
-            // 🔥 Если пришла команда очистки заказов
             if (data.type === "clear_orders") {
-        console.log("🗑 Запрос на удаление всех заказов!");
-
-        try {
-        fs.writeFileSync(FILE_PATH, "[]", { encoding: "utf8", flag: "w" }); // Перезапись файла
-        orders = [];
-
-        console.log("✅ Все заказы удалены на сервере!");
-
-        // Рассылаем клиентам сообщение, что заказы очищены
-         broadcastMessage({ type: "orders_cleared" });
-    } catch (error) {
-        console.error("❌ Ошибка при очистке orders.json:", error);
-    }
-}
+                console.log("🗑 Запрос на очистку всех заказов!");
+                clearOrdersOnServer();
+            }
 
         } catch (error) {
             console.error("❌ Ошибка обработки сообщения:", error);
         }
     });
+
+    // **Обработка ошибок WebSocket**
+    ws.on("error", (err) => {
+        console.error("⚠️ Ошибка WebSocket:", err);
+    });
 });
 
-
-// **Функция рассылки всех заказов**
+// **Функция рассылки заказов**
 function broadcastOrders() {
     let message = JSON.stringify({ type: "init", orders });
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(message);
+        }
+    });
+}
+
+// **Функция рассылки сообщений клиентам**
+function broadcastMessage(message) {
+    let jsonMessage = JSON.stringify(message);
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(jsonMessage);
         }
     });
 }
