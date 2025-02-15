@@ -1189,11 +1189,8 @@ function sendOrder() {
     let now = new Date();
     let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    // ✅ Проверяем наличие totalPrice у каждого товара
-    let totalSum = cartItems.reduce((sum, item) => {
-        let itemTotal = parseFloat(item.totalPrice) || 0; // Явно приводим к числу
-        return sum + itemTotal;
-    }, 0);
+    // ✅ Используем `totalPrice` у товаров, НЕ пересчитываем снова
+    let totalSum = cartItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
 
     let commentInput = document.getElementById("order-comment");
     let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
@@ -1202,12 +1199,8 @@ function sendOrder() {
         type: "new_order",
         order: {
             date: formattedDate,
-            items: cartItems.map(item => ({
-                name: item.name,
-                quantity: item.quantity,
-                totalPrice: parseFloat(item.totalPrice) || 0 // Убедимся, что это число
-            })),
-            total: totalSum.toFixed(2), // Форматируем сумму
+            items: cartItems,
+            total: totalSum.toFixed(2), // ✅ Передаем уже рассчитанную сумму
             comment: commentText,
         },
     };
@@ -1226,9 +1219,8 @@ function sendOrder() {
     localStorage.removeItem("cart");
     saveCart();
     updateCartDisplay();
-    window.location.href = "orders.html"; // Перенаправление на страницу заказов
+    window.location.href = "orders.html";
 }
-
 
 
 
