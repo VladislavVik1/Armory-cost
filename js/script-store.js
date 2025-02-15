@@ -1237,43 +1237,41 @@ function sendOrder() {
 // Функция очистки всех заказов
 // =======================
 function clearOrders() {
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log("📡 Отправка `clear_orders` на сервер...");
+        socket.send(JSON.stringify({ type: "clear_orders" }));
+
+        let clearOrdersTimeout = setTimeout(() => {
+            console.warn("⏳ Сервер не ответил, очистка заказов локально.");
+            localStorage.removeItem("orders");
+            loadOrders();
+        }, 5000);
+
+        function handleClearOrdersResponse(event) {
+            try {
+                let data = JSON.parse(event.data);
+                console.log("📩 Ответ сервера на очистку заказов:", data);
+
+                if (data.type === "orders_cleared") {
+                    console.log("🗑 Все заказы удалены на сервере!");
+                    clearTimeout(clearOrdersTimeout);
+                    localStorage.removeItem("orders");
+                    loadOrders();
+                }
+            } catch (error) {
+                console.error("❌ Ошибка обработки данных WebSocket:", error);
+            }
+        }
+
+        socket.addEventListener("message", handleClearOrdersResponse, { once: true });
+    } else {
         console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
         localStorage.removeItem("orders");
         loadOrders();
         alert("✅ Все заказы удалены локально.");
-        return;
     }
-
-    console.log("📡 Отправка `clear_orders` на сервер...");
-    socket.send(JSON.stringify({ type: "clear_orders" }));
-
-    let clearOrdersTimeout = setTimeout(() => {
-        console.warn("⏳ Сервер не ответил, очистка заказов локально.");
-        localStorage.removeItem("orders");
-        loadOrders();
-    }, 5000);
-
-    function handleClearOrdersResponse(event) {
-        try {
-            let data = JSON.parse(event.data);
-            console.log("📩 Ответ сервера на очистку заказов:", data);
-
-            if (data.type === "orders_cleared") {
-                console.log("🗑 Все заказы были удалены сервером");
-                clearTimeout(clearOrdersTimeout);
-                localStorage.removeItem("orders");
-                loadOrders();
-                socket.removeEventListener("message", handleClearOrdersResponse);
-            }
-        } catch (error) {
-            console.error("❌ Ошибка обработки данных WebSocket:", error);
-        }
-    }
-
-    // ✅ Добавляем обработчик ответа от сервера
-    socket.addEventListener("message", handleClearOrdersResponse, { once: true });
 }
+
 
 
 // =======================

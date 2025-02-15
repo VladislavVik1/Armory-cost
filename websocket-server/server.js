@@ -59,45 +59,48 @@ const wss = new WebSocket.Server({ server });
 wss.on("connection", (ws) => {
     console.log("🔗 Новый клиент подключился!");
 
+    // Отправляем клиенту текущие заказы
     ws.send(JSON.stringify({ type: "init", orders }));
 
     ws.on("message", (message) => {
         try {
             let data = JSON.parse(message);
-            console.log("📩 Получено сообщение:", JSON.stringify(data, null, 2));
+            console.log("📩 Получено сообщение от клиента:", JSON.stringify(data, null, 2));
 
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
 
-                if (!data.order.items || !Array.isArray(data.order.items) || data.order.items.length === 0) {
-                    console.warn("⚠ Ошибка: Заказ не содержит товаров!");
-                    return;
-                }
-
-                let totalSum = data.order.items.reduce((sum, item) => sum + (parseFloat(item.totalPrice) || 0), 0);
+                let totalSum = parseFloat(data.order.total) || 0;
                 data.order.total = totalSum.toFixed(2);
 
                 orders.push(data.order);
                 saveOrders(orders);
+
                 console.log("✅ Итоговая сумма заказа:", data.order.total);
 
+                // Рассылка обновленного списка заказов
                 broadcastOrders();
-            } 
-            else if (data.type === "clear_orders") {
-                console.log("🗑 Запрос на очистку заказов получен!");
-                
-                clearOrdersOnServer();
+            }
+
+            // 🔥 Если пришла команда очистки заказов
+            if (data.type === "clear_orders") {
+                console.log("🗑 Запрос на удаление всех заказов!");
+
+                // Очищаем orders.json
+                fs.writeFileSync(FILE_PATH, "[]", "utf8");
                 orders = [];
 
-                console.log("✅ Все заказы удалены!");
-                ws.send(JSON.stringify({ type: "orders_cleared" }));
-                broadcastOrders();
+                console.log("✅ Все заказы удалены на сервере!");
+
+                // Отправляем клиентам подтверждение очистки
+                broadcastMessage({ type: "orders_cleared" });
             }
         } catch (error) {
             console.error("❌ Ошибка обработки сообщения:", error);
         }
     });
 });
+
 
 // **Функция рассылки всех заказов**
 function broadcastOrders() {
