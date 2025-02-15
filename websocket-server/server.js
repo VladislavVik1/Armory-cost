@@ -14,11 +14,11 @@ const server = https.createServer({
     key: fs.readFileSync(SSL_KEY_PATH),
 });
 
-// **Функция загрузки заказов**
+// **Функция загрузки заказов из JSON-файла**
 function loadOrders() {
     try {
         if (!fs.existsSync(FILE_PATH)) {
-            fs.writeFileSync(FILE_PATH, "[]");
+            fs.writeFileSync(FILE_PATH, "[]", "utf8");
             return [];
         }
 
@@ -33,21 +33,23 @@ function loadOrders() {
 // **Функция сохранения заказов**
 function saveOrders(newOrders) {
     try {
-        fs.writeFileSync(FILE_PATH, JSON.stringify(newOrders, null, 2));
+        fs.writeFileSync(FILE_PATH, JSON.stringify(newOrders, null, 2), "utf8");
+        console.log("✅ Заказы успешно сохранены.");
     } catch (err) {
         console.error("❌ Ошибка сохранения orders.json:", err);
     }
 }
 
-// **Функция очистки заказов**
+// **Функция очистки хранилища заказов**
 function clearOrdersOnServer() {
-    console.log("🗑 Очистка хранилища заказов на сервере...");
+    console.log("🗑 Очистка заказов на сервере...");
     try {
-        fs.writeFileSync(FILE_PATH, "[]", { encoding: "utf8", flag: "w" });
+        fs.writeFileSync(FILE_PATH, "[]", "utf8");
         orders = [];
-        console.log("✅ Все заказы очищены!");
 
-        // 📢 Рассылка клиентам информации о том, что заказы удалены
+        console.log("✅ Все заказы удалены!");
+        
+        // 📢 Рассылка клиентам сообщения об удалении заказов
         broadcastMessage({ type: "orders_cleared" });
     } catch (err) {
         console.error("❌ Ошибка очистки orders.json:", err);
@@ -61,7 +63,7 @@ let orders = loadOrders();
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
-    console.log("🔗 Новый клиент подключился!");
+    console.log("🔗 Новый клиент подключен!");
 
     // Отправляем клиенту текущие заказы
     ws.send(JSON.stringify({ type: "init", orders }));
@@ -89,7 +91,7 @@ wss.on("connection", (ws) => {
                 // Подтверждение клиенту
                 ws.send(JSON.stringify({ type: "order_received", total: data.order.total }));
 
-                // 📢 Рассылаем обновленный список заказов
+                // Рассылаем обновленный список заказов
                 broadcastOrders();
             }
 
@@ -103,7 +105,6 @@ wss.on("connection", (ws) => {
         }
     });
 
-    // **Обработка ошибок WebSocket**
     ws.on("error", (err) => {
         console.error("⚠️ Ошибка WebSocket:", err);
     });
@@ -119,7 +120,7 @@ function broadcastOrders() {
     });
 }
 
-// **Функция для отправки сообщений всем клиентам**
+// **Функция отправки сообщений всем клиентам**
 function broadcastMessage(message) {
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
