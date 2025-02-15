@@ -1238,7 +1238,7 @@ function sendOrder() {
 // =======================
 function clearOrders() {
     if (socket && socket.readyState === WebSocket.OPEN) {
-        console.log("📡 Отправка `clear_orders` на сервер...");
+        console.log("📡 ОТПРАВКА НА СЕРВЕР: clear_orders");
         socket.send(JSON.stringify({ type: "clear_orders" }));
 
         let clearOrdersTimeout = setTimeout(() => {
@@ -1250,10 +1250,10 @@ function clearOrders() {
         function handleClearOrdersResponse(event) {
             try {
                 let data = JSON.parse(event.data);
-                console.log("📩 Ответ сервера на очистку заказов:", data);
+                console.log("📩 Ответ сервера:", data);
 
                 if (data.type === "orders_cleared") {
-                    console.log("🗑 Все заказы успешно удалены на сервере!");
+                    console.log("🗑 Все заказы удалены на сервере!");
                     clearTimeout(clearOrdersTimeout);
                     localStorage.removeItem("orders");
                     loadOrders();
@@ -1263,7 +1263,6 @@ function clearOrders() {
             }
         }
 
-        // ✅ Добавляем обработчик 1 раз
         socket.addEventListener("message", handleClearOrdersResponse, { once: true });
     } else {
         console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
