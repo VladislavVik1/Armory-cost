@@ -99,20 +99,19 @@ function loadOrders() {
     }
 
     ordersList.innerHTML = orders.length
-        ? orders
-              .map((order, index) => {
-                  let formattedTotal = parseFloat(order.total || 0).toFixed(2);
-                  return `
-    <div class="order">
-        <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-        ${order.items.map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`).join("")}
-        <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
-        <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-    </div>
-`;
-              })
-              .join("")
+        ? orders.map((order, index) => {
+              let formattedTotal = parseFloat(order.total || 0).toFixed(2);
+              return `
+                <div class="order">
+                    <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+                    ${order.items.map((item) => `<p>${item.name} – ${item.quantity} шт. (${parseFloat(item.totalPrice || 0).toFixed(2)} $)</p>`).join("")}
+                    <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
+                    <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+                </div>
+            `;
+          }).join("")
         : "<p style='color: white;'>Заказов пока нет...</p>";
 }
+
 
 
