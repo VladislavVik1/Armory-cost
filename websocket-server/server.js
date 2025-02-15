@@ -62,15 +62,20 @@ wss.on("connection", (ws) => {
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
 
-                // ✅ Используем `total`, который пришел от клиента (НЕ пересчитываем!)
-                let totalSum = parseFloat(data.order.total) || 0;
+                // ✅ Проверяем наличие totalPrice у всех товаров
+                let totalSum = data.order.items.reduce((sum, item) => {
+                    let itemTotal = parseFloat(item.totalPrice) || 0; // Убедимся, что это число
+                    return sum + itemTotal;
+                }, 0);
 
-                console.log("✅ Итоговая сумма заказа (получена с клиента):", totalSum.toFixed(2));
+                data.order.total = totalSum.toFixed(2); // Сохранение итоговой суммы
+
+                console.log("✅ Итоговая сумма заказа (исправлена):", data.order.total);
 
                 orders.push(data.order);
                 saveOrders(orders);
 
-                // 📡 Рассылка обновленного списка заказов всем клиентам
+                // 📡 Рассылка обновленного списка заказов
                 broadcastOrders();
             }
         } catch (error) {
@@ -78,6 +83,7 @@ wss.on("connection", (ws) => {
         }
     });
 });
+
 
 // ✅ Теперь `broadcastOrders` отправляет заказы ВСЕМ клиентам!
 function broadcastOrders() {
