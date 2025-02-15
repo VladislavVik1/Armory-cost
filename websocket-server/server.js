@@ -1,6 +1,6 @@
 const fs = require("fs");
 const https = require("https");
-const WebSocket = require("ws");
+const WebSocket = require("wss");
 
 // **Настройки сервера**
 const FILE_PATH = "orders.json";
@@ -42,9 +42,11 @@ function saveOrders(newOrders) {
 function clearOrdersOnServer() {
     console.log("🗑 Очистка заказов на сервере...");
     try {
-        fs.writeFileSync(FILE_PATH, "[]");
-        orders = [];
+        fs.writeFileSync(FILE_PATH, "[]"); // Полная перезапись
+        orders = []; // Очистка переменной
         console.log("✅ Заказы успешно очищены!");
+
+        // Отправляем подтверждение клиентам
         broadcastMessage({ type: "orders_cleared" });
     } catch (err) {
         console.error("❌ Ошибка очистки orders.json:", err);
@@ -72,7 +74,6 @@ wss.on("connection", (ws) => {
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ:", JSON.stringify(data.order, null, 2));
 
-                // **Пересчитываем итоговую сумму**
                 let totalSum = 0;
                 data.order.items.forEach((item) => {
                     let itemTotal = item.totalPrice || 0;
@@ -85,15 +86,15 @@ wss.on("connection", (ws) => {
 
                 console.log("✅ Итоговая сумма заказа:", data.order.total);
 
-                // **Отправляем клиенту подтверждение**
+                // Подтверждение клиенту
                 ws.send(JSON.stringify({ type: "order_received", total: data.order.total }));
 
-                // **Рассылаем обновленный список заказов**
+                // Рассылаем обновленный список заказов
                 broadcastOrders();
             }
 
             if (data.type === "clear_orders") {
-                console.log("🗑 Запрос на очистку всех заказов!");
+                console.log("🗑 Запрос на очистку всех заказов получен!");
                 clearOrdersOnServer();
             }
 
