@@ -14,11 +14,12 @@ const server = https.createServer({
     key: fs.readFileSync(SSL_KEY_PATH),
 });
 
-// **Функция загрузки заказов**
+// **Функция загрузки заказов из JSON-файла**
 function loadOrders() {
     if (fs.existsSync(FILE_PATH)) {
         try {
-            return JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
+            let fileContent = fs.readFileSync(FILE_PATH, "utf8").trim();
+            return fileContent ? JSON.parse(fileContent) : [];
         } catch (err) {
             console.error("❌ Ошибка загрузки orders.json:", err);
             return [];
@@ -36,14 +37,18 @@ function saveOrders(newOrders) {
     }
 }
 
-// **Очистка хранилища заказов**
+// **Функция очистки хранилища заказов**
 function clearOrdersOnServer() {
     console.log("🗑 Очистка хранилища заказов на сервере...");
-    fs.writeFileSync(FILE_PATH, "[]"); // Перезаписываем файл пустым массивом
-    console.log("✅ Хранилище заказов очищено!");
+    try {
+        fs.writeFileSync(FILE_PATH, "[]");
+        console.log("✅ Хранилище заказов очищено!");
+    } catch (err) {
+        console.error("❌ Ошибка очистки orders.json:", err);
+    }
 }
 
-// **Загружаем заказы при запуске**
+// **Загружаем заказы при запуске сервера**
 let orders = loadOrders();
 
 // **Создаём WebSocket сервер**
@@ -53,7 +58,7 @@ wss.on("connection", (ws) => {
     console.log("🔗 Новый клиент подключился!");
 
     // Отправляем клиенту текущие заказы
-    ws.send(JSON.stringify({ type: "init", orders: orders }));
+    ws.send(JSON.stringify({ type: "init", orders }));
 
     ws.on("message", (message) => {
         try {
@@ -63,7 +68,14 @@ wss.on("connection", (ws) => {
             if (data.type === "new_order") {
                 console.log("📦 Новый заказ получен:", JSON.stringify(data.order, null, 2));
 
-                let totalSum = data.order.items.reduce((sum, item) => sum + parseFloat(item.totalPrice || 0), 0);
+                // ✅ Проверяем, есть ли товары в заказе
+                if (!data.order.items || !Array.isArray(data.order.items) || data.order.items.length === 0) {
+                    console.warn("⚠ Ошибка: Заказ не содержит товаров!");
+                    return;
+                }
+
+                // ✅ Пересчитываем сумму заказа
+                let totalSum = data.order.items.reduce((sum, item) => sum + (parseFloat(item.totalPrice) || 0), 0);
                 data.order.total = totalSum.toFixed(2);
 
                 orders.push(data.order);
@@ -74,8 +86,7 @@ wss.on("connection", (ws) => {
             } 
             else if (data.type === "clear_orders") {
                 console.log("🗑 Получен запрос на очистку заказов!");
-
-                // **Очищаем хранилище заказов**
+                
                 clearOrdersOnServer();
                 orders = [];
 
@@ -95,7 +106,7 @@ wss.on("connection", (ws) => {
 
 // **Функция рассылки всех заказов**
 function broadcastOrders() {
-    let message = JSON.stringify({ type: "init", orders: orders });
+    let message = JSON.stringify({ type: "init", orders });
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(message);
