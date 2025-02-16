@@ -10,7 +10,7 @@ const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
 // Функция проверки доступности SSH-соединения (неинтерактивный режим, таймаут 5 сек)
 function checkSSHConnection(callback) {
-  const checkCmd = `ssh -o BatchMode=yes -o ConnectTimeout=5 ${REMOTE_USER}@${REMOTE_SERVER} exit`;
+  const checkCmd = `ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} exit`;
   exec(checkCmd, (error) => {
     if (error) {
       console.error("❌ Ошибка SSH-соединения. Проверьте доступ по SSH:");
@@ -29,11 +29,10 @@ app.get("/clear-orders-remote", (req, res) => {
     if (!isConnected) {
       return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
     }
-    // Формируем команду для очистки файла orders.json на удалённом сервере
     const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
-    // Опции: BatchMode для неинтерактивного режима, ConnectTimeout=10 для таймаута
-    const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
-
+    // Добавляем опции BatchMode, ConnectTimeout и StrictHostKeyChecking
+    const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
+    
     exec(sshCommand, (error, stdout, stderr) => {
       if (error) {
         console.error("❌ Ошибка при удалении заказов на сервере:", error);
