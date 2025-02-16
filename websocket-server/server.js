@@ -21,6 +21,7 @@ function loadOrders() {
             fs.writeFileSync(FILE_PATH, "[]", "utf8");
             return [];
         }
+
         let data = fs.readFileSync(FILE_PATH, "utf8").trim();
         return data ? JSON.parse(data) : [];
     } catch (err) {
@@ -42,14 +43,17 @@ function saveOrders(newOrders) {
 // **Функция очистки заказов**
 function clearOrdersOnServer() {
     console.log("🗑 Очистка заказов на сервере...");
+
     try {
         fs.writeFileSync(FILE_PATH, "[]", "utf8");
-        orders = [];
+        orders.length = 0;
 
-        console.log("✅ Все заказы очищены!");
-        
-        // 📢 Отправляем клиентам уведомление
+        console.log("✅ Все заказы удалены!");
+        console.log("📂 Новое содержимое orders.json:", fs.readFileSync(FILE_PATH, "utf8"));
+
+        // 📢 Отправка клиентам информации об очистке
         broadcastMessage({ type: "orders_cleared" });
+
     } catch (err) {
         console.error("❌ Ошибка очистки orders.json:", err);
     }
@@ -62,9 +66,9 @@ let orders = loadOrders();
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
-    console.log("🔗 Новый клиент подключен!");
+    console.log("🔗 Новый клиент подключён!");
 
-    // Отправляем клиенту текущие заказы
+    // **Отправляем клиенту текущие заказы**
     ws.send(JSON.stringify({ type: "init", orders }));
 
     ws.on("message", (message) => {
@@ -94,12 +98,13 @@ wss.on("connection", (ws) => {
                 broadcastOrders();
             }
 
-           if (data.type === "clear_orders") {
-    console.log("🗑 Запрос на очистку всех заказов получен!");
-    console.log("📂 Текущее содержимое orders.json:", fs.readFileSync(FILE_PATH, "utf8"));
-    console.log("🛠 Вызываем clearOrdersOnServer()");
-    clearOrdersOnServer();
-}
+            // **Обработка очистки заказов**
+            if (data.type === "clear_orders") {
+                console.log("🗑 Запрос на очистку всех заказов получен!");
+                console.log("📂 Текущее содержимое orders.json:", fs.readFileSync(FILE_PATH, "utf8"));
+                console.log("🛠 Вызываем clearOrdersOnServer()");
+                clearOrdersOnServer();
+            }
 
         } catch (error) {
             console.error("❌ Ошибка обработки сообщения:", error);
@@ -117,9 +122,7 @@ wss.on("connection", (ws) => {
 
 // **Функция рассылки всех заказов**
 function broadcastOrders() {
-    console.log("📡 Рассылаем обновленный список заказов...");
     let message = JSON.stringify({ type: "init", orders });
-
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(message);
