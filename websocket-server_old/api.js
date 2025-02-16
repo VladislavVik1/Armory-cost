@@ -8,7 +8,7 @@ const REMOTE_SERVER = "pmk-eagles.shop";
 const REMOTE_USER = "dakraman1232";
 const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
-// Загружаем SSL-сертификаты для HTTPS сервера API
+// Опции для HTTPS-сервера
 const options = {
   cert: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem"),
   key: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem")
@@ -36,7 +36,6 @@ app.get("/clear-orders-remote", (req, res) => {
       return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
     }
     const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
-    // Используем опции для неинтерактивного режима и игнорирования known_hosts
     const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
     
     exec(sshCommand, (error, stdout, stderr) => {

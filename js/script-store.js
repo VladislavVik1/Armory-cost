@@ -1286,15 +1286,14 @@ document.addEventListener("DOMContentLoaded", function () {
 // Функция очистки всех заказов
 // =======================
 
-
 function clearOrdersRemote() {
   fetch("https://pmk-eagles.shop:3000/clear-orders-remote")
     .then(response => response.json())
     .then(data => {
       if (data.success) {
         alert("✅ Все заказы успешно удалены на сервере!");
-        localStorage.removeItem("orders"); // Удаляем локальные заказы
-        loadOrders(); // Обновляем отображение заказов
+        localStorage.removeItem("orders");
+        loadOrders();
       } else {
         alert("❌ Ошибка очистки заказов: " + data.message);
       }
@@ -1313,4 +1312,3 @@ document.addEventListener("DOMContentLoaded", function () {
     console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
   }
 });
-
