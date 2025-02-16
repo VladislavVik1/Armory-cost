@@ -1,6 +1,8 @@
 const express = require("express");
+const cors = require("cors");
 const { exec } = require("child_process");
 const fs = require("fs");
+const https = require("https");
 const app = express();
 
 const PORT_API = 3000;
@@ -8,13 +10,14 @@ const REMOTE_SERVER = "pmk-eagles.shop";
 const REMOTE_USER = "dakraman1232";
 const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
+// Подключаем CORS – разрешаем все источники
+app.use(cors());
+
 // Опции для HTTPS-сервера
 const options = {
   cert: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem"),
   key: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem")
 };
-
-
 
 // Функция проверки доступности SSH-соединения (неинтерактивный режим, таймаут 5 сек)
 function checkSSHConnection(callback) {
@@ -38,6 +41,7 @@ app.get("/clear-orders-remote", (req, res) => {
       return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
     }
     const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
+    // Добавлены опции для неинтерактивного режима
     const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
     
     exec(sshCommand, (error, stdout, stderr) => {
@@ -55,6 +59,7 @@ app.get("/clear-orders-remote", (req, res) => {
 https.createServer(options, app).listen(PORT_API, "0.0.0.0", () => {
   console.log(`✅ Express API сервер запущен на https://${REMOTE_SERVER}:${PORT_API}`);
 });
+
 // Очистка заказов при старте API
 exec(`echo '[]' > ${ORDERS_PATH}`, (error) => {
   if (error) {
