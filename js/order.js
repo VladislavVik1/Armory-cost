@@ -49,6 +49,34 @@ function connectWebSocket() {
 }
 
 // **Функция очистки всех заказов**
+
+// **Функция загрузки заказов**
+function loadOrders() {
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+    let ordersList = document.getElementById("orders-list");
+
+    if (!ordersList) {
+        console.error("❌ Ошибка: элемент #orders-list не найден!");
+        return;
+    }
+
+    ordersList.innerHTML = orders.length
+        ? orders.map((order, index) => {
+              let formattedTotal = parseFloat(order.total || 0).toFixed(2);
+              return `
+                <div class="order">
+                    <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+                    ${order.items.map((item) => `<p>${item.name} – ${item.quantity} шт. (${parseFloat(item.totalPrice || 0).toFixed(2)} $)</p>`).join("")}
+                    <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
+                    <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+                </div>
+            `;
+          }).join("")
+        : "<p style='color: white;'>Заказов пока нет...</p>";
+}
+
+
+
 function clearOrders() {
     if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
@@ -87,31 +115,3 @@ function clearOrders() {
     // ✅ Используем `once`, чтобы избежать дублирования обработчиков
     socket.addEventListener("message", handleClearOrdersResponse, { once: true });
 }
-
-// **Функция загрузки заказов**
-function loadOrders() {
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
-    let ordersList = document.getElementById("orders-list");
-
-    if (!ordersList) {
-        console.error("❌ Ошибка: элемент #orders-list не найден!");
-        return;
-    }
-
-    ordersList.innerHTML = orders.length
-        ? orders.map((order, index) => {
-              let formattedTotal = parseFloat(order.total || 0).toFixed(2);
-              return `
-                <div class="order">
-                    <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-                    ${order.items.map((item) => `<p>${item.name} – ${item.quantity} шт. (${parseFloat(item.totalPrice || 0).toFixed(2)} $)</p>`).join("")}
-                    <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
-                    <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-                </div>
-            `;
-          }).join("")
-        : "<p style='color: white;'>Заказов пока нет...</p>";
-}
-
-
-
