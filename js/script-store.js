@@ -1307,10 +1307,10 @@ function clearOrdersRemote() {
 
 // Добавляем обработчик на кнопку очистки
 document.addEventListener("DOMContentLoaded", function () {
-    const clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", clearOrdersRemote);
-    } else {
-        console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
-    }
+  const clearOrdersButton = document.querySelector(".clear-orders");
+  if (clearOrdersButton) {
+    clearOrdersButton.addEventListener("click", clearOrders);
+  } else {
+    console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
+  }
 });
