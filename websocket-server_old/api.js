@@ -27,7 +27,7 @@ app.use(cors(corsOptions));
 
 // Middleware для CORS
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");  // Или конкретный домен
+    res.header("Access-Control-Allow-Origin", "https://vladislavvik1.github.io");  // Или конкретный домен
     res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     
