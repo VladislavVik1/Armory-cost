@@ -1,5 +1,6 @@
 const express = require("express");
 const { exec } = require("child_process");
+const path = require("path");
 const app = express();
 const PORT_API = 3000; // Порт для API
 
@@ -9,7 +10,7 @@ const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
 // Функция проверки доступности SSH-соединения (неинтерактивный режим, таймаут 5 сек)
 function checkSSHConnection(callback) {
-  const checkCmd = `ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} exit`;
+  const checkCmd = `ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} exit`;
   exec(checkCmd, (error) => {
     if (error) {
       console.error("❌ Ошибка SSH-соединения. Проверьте доступ по SSH:");
@@ -29,8 +30,8 @@ app.get("/clear-orders-remote", (req, res) => {
       return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
     }
     const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
-    // Опции: BatchMode, ConnectTimeout и StrictHostKeyChecking для неинтерактивного режима
-    const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
+    // Добавлены опции BatchMode, ConnectTimeout, StrictHostKeyChecking и UserKnownHostsFile для игнорирования known_hosts
+    const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
     
     exec(sshCommand, (error, stdout, stderr) => {
       if (error) {
