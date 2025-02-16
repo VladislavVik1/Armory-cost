@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин вооружения</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/script-store.js" defer></script>
+</head>
+
+<body>
+    <a href="index.html" class="back-arrow">◀ Назад</a>
+    <header>Магазин вооружения</header>
+    <div class="grid">
+        <div class="item" onclick="openModal('automats')">Автоматы</div>
+        <div class="item" onclick="openModal('sniper')">Снайперские винтовки</div>
+        <div class="item" onclick="openModal('machineguns')">Пулеметы</div>
+        <div class="item" onclick="openModal('pp')">Пистолеты-Пулеметы</div>
+        <div class="item" onclick="openModal('pistols')">Пистолеты</div>
+        <div class="item" onclick="openModal('heavy')">Гранатометы</div>
+        <div class="item" onclick="openModal('heavyammo')">Гранатометные снаряды</div>
+        <div class="item" onclick="openModal('ammo')">Патроны и магазины</div>
+        <div class="item" onclick="openModal('grass')">Пачки патронов и ленты</div>
+        <div class="item" onclick="openModal('medicine')">Медицина</div>
+        <div class="item" onclick="openModal('scopescal')">Прицелы Калиматорные</div>
+        <div class="item" onclick="openModal('scopesholo')">Прицелы Голографические</div>
+        <div class="item" onclick="openModal('scopesxfour')">Прицелы 1Х-4Х</div>
+        <div class="item" onclick="openModal('scopesxinf')">Прицелы 3X > X28</div>
+        <div class="item" onclick="openModal('misc')">Обвесы, Ночники, Тепловизоры</div>
+        <div class="item" onclick="openModal('repair_cars')">Ремонт транспортных средств</div>
+        <div class="item" onclick="openModal('how_to_pay')">Способ оплаты</div>
+        <div class="item" onclick="openModal('akcija_kurwa')">Временные товары</div>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+    <script src="./js/sale.js"></script>
+<!-- Кнопка для открытия модального окна "Продажа" -->
+<button class="sale-button">Продажа</button>
+<button class="order-button" onclick="location.href='orders.html'">Созданный заказ</button>
+<!-- Модальное окно -->
+<div id="modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modal-body">
+        </div>
+    </div>
+</div>
+    <div class="cart">
+        <button class="cart-button" onclick="openCart()">
+            Корзина (0 товаров)
+        </button>
+        <div id="cart-modal" class="cart-modal">
+            <div class="cart-modal-content">
+                <span class="close" onclick="closeCart()">&times;</span>
+                <h2>Ваша корзина</h2>
+                <ul id="cart-items">
+                    <!-- Здесь будут отображаться товары -->
+                </ul>
+                <div class="comment-section">
+                    <label for="order-comment">Комментарий к заказу:</label>
+                    <textarea id="order-comment" placeholder="Введите комментарий..."></textarea>
+                </div>
+                <p id="total-price">Общая сумма: 0 $</p> <!-- Общая сумма -->
+                <button class="snapshot">Оформить заказ</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
