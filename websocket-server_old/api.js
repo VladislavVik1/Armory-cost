@@ -14,6 +14,8 @@ const options = {
   key: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem")
 };
 
+
+
 // Функция проверки доступности SSH-соединения (неинтерактивный режим, таймаут 5 сек)
 function checkSSHConnection(callback) {
   const checkCmd = `ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} exit`;
@@ -53,7 +55,6 @@ app.get("/clear-orders-remote", (req, res) => {
 https.createServer(options, app).listen(PORT_API, "0.0.0.0", () => {
   console.log(`✅ Express API сервер запущен на https://${REMOTE_SERVER}:${PORT_API}`);
 });
-
 // Очистка заказов при старте API
 exec(`echo '[]' > ${ORDERS_PATH}`, (error) => {
   if (error) {
