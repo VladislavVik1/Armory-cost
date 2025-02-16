@@ -33,7 +33,19 @@ function checkSSHConnection(callback) {
     }
   });
 }
+// Запуск HTTPS API сервера
+https.createServer(options, app).listen(PORT_API, "0.0.0.0", () => {
+  console.log(`✅ Express API сервер запущен на https://${REMOTE_SERVER}:${PORT_API}`);
+});
 
+// Очистка заказов при старте API
+exec(`echo '[]' > ${ORDERS_PATH}`, (error) => {
+  if (error) {
+    console.error("❌ Ошибка при очистке orders.json:", error);
+  } else {
+    console.log("✅ orders.json очищен при запуске API!");
+  }
+});
 // Эндпоинт для удаления заказов на удалённом сервере через SSH
 app.get("/clear-orders-remote", (req, res) => {
   checkSSHConnection((isConnected) => {
@@ -55,16 +67,4 @@ app.get("/clear-orders-remote", (req, res) => {
   });
 });
 
-// Запуск HTTPS API сервера
-https.createServer(options, app).listen(PORT_API, "0.0.0.0", () => {
-  console.log(`✅ Express API сервер запущен на https://${REMOTE_SERVER}:${PORT_API}`);
-});
 
-// Очистка заказов при старте API
-exec(`echo '[]' > ${ORDERS_PATH}`, (error) => {
-  if (error) {
-    console.error("❌ Ошибка при очистке orders.json:", error);
-  } else {
-    console.log("✅ orders.json очищен при запуске API!");
-  }
-});
