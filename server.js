@@ -21,42 +21,61 @@ if (fs.existsSync(FILE_PATH)) {
     orders = JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
 }
 
-// Обрабатываем подключения клиентов
-wss.on("connection", (ws) => {
-    console.log("🔗 Новый клиент подключён!");
+ws.on("message", (message) => {
+      console.log("📩 Получено сообщение от клиента:", message);
+    try {
+        let order = JSON.parse(message);
+        
+        if (order.type === "new_order") {
+            // Добавляем заказ в массив
+            orders.push(order.order);
 
-    // Отправляем текущие заказы новому клиенту
-    ws.send(JSON.stringify({ type: "init", orders }));
+            // Сохраняем в файл
+            fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
 
-    // Обрабатываем входящие сообщения
-    ws.on("message", (message) => {
-        try {
-            let order = JSON.parse(message);
-            if (order.type === "new_order") {
-                // Добавляем заказ в массив
-                orders.push(order.order);
+            // Рассылаем новый заказ всем клиентам
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({ type: "new_order", order: order.order }));
+                }
+            });
 
-                // Сохраняем в файл
-                fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
+            console.log("📦 Новый заказ получен и сохранён!");
+        } 
+        
+        // ✨ Добавляем обработку команды "clear_orders"
+        else if (order.type === "clear_orders") {
+            console.log("🗑 Получена команда очистки заказов!");
 
-                // Рассылаем новый заказ всем клиентам
-                wss.clients.forEach((client) => {
-                    if (client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify({ type: "new_order", order: order.order }));
-                    }
-                });
+            // Очищаем массив заказов
+            
+            orders = [];
 
-                console.log("📦 Новый заказ получен и сохранён!");
-            }
-        } catch (error) {
-            console.error("❌ Ошибка обработки заказа:", error);
+            // Очищаем файл
+            console.log("📂 Проверяем путь к файлу:", FILE_PATH);
+            if (!fs.existsSync(FILE_PATH)) {
+             console.error("❌ Файл orders.json НЕ найден!");
+                } else {
+                    console.log("✅ Файл найден. Записываем данные...");
+                 fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
+                }
+
+
+
+            // Уведомляем всех клиентов, что заказы очищены
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({ type: "orders_cleared" }));
+                }
+            });
+
+            console.log("✅ Заказы очищены и сохранены.");
         }
-    });
-
-    ws.on("close", () => {
-        console.log("❌ Клиент отключился.");
-    });
+    } catch (error) {
+        console.error("❌ Ошибка обработки заказа:", error);
+    }
 });
+
 
 // Запускаем сервер
 server.listen(PORT, () => {
