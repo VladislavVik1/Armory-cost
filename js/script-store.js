@@ -1287,47 +1287,30 @@ document.addEventListener("DOMContentLoaded", function () {
 // =======================
 
 
-
-function clearOrders() {
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-        console.warn("⚠ WebSocket не подключен! Очистка невозможна.");
-        localStorage.removeItem("orders");
-        loadOrders();
-        alert("✅ Все заказы удалены локально.");
-        return;
-    }
-
-    console.log("📡 Попытка отправки `clear_orders` на сервер...");
-
-    let message = JSON.stringify({ type: "clear_orders" });
-    console.log("📨 Отправляем сообщение WebSocket:", message);
-
-    socket.send(message);
-    
-    console.log("📨 Команда `clear_orders` отправлена. Ожидание ответа от сервера...");
-
-    let clearOrdersTimeout = setTimeout(() => {
-        console.warn("⏳ Сервер не ответил, очистка заказов локально.");
-        localStorage.removeItem("orders");
-        loadOrders();
-    }, 5000);
-
-    function handleClearOrdersResponse(event) {
-        try {
-            let data = JSON.parse(event.data);
-            console.log("📩 Ответ сервера на очистку заказов:", data);
-
-            if (data.type === "orders_cleared") {
-                console.log("🗑 Все заказы успешно удалены сервером");
-                clearTimeout(clearOrdersTimeout);
-                localStorage.removeItem("orders");
-                loadOrders();
-                socket.removeEventListener("message", handleClearOrdersResponse);
+function clearOrdersRemote() {
+    fetch("http://pmk-eagles.shop:3000/clear-orders-remote")
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Все заказы успешно удалены на сервере!");
+                localStorage.removeItem("orders"); // Удаляем локальные заказы
+                loadOrders(); // Обновляем отображение заказов
+            } else {
+                alert("❌ Ошибка очистки заказов: " + data.message);
             }
-        } catch (error) {
-            console.error("❌ Ошибка обработки данных WebSocket:", error);
-        }
-    }
-
-    socket.addEventListener("message", handleClearOrdersResponse, { once: true });
+        })
+        .catch(error => {
+            console.error("❌ Ошибка запроса к серверу:", error);
+            alert("⚠ Не удалось очистить заказы на сервере!");
+        });
 }
+
+// Добавляем обработчик на кнопку очистки
+document.addEventListener("DOMContentLoaded", function () {
+    const clearOrdersButton = document.querySelector(".clear-orders");
+    if (clearOrdersButton) {
+        clearOrdersButton.addEventListener("click", clearOrdersRemote);
+    } else {
+        console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
+    }
+});
