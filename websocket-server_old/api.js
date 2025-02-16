@@ -1,13 +1,18 @@
-const fs = require("fs");
-const https = require("https");
 const express = require("express");
 const { exec } = require("child_process");
+const fs = require("fs");
 const app = express();
 
-const PORT_API = 3000; // Порт для API
+const PORT_API = 3000;
 const REMOTE_SERVER = "pmk-eagles.shop";
 const REMOTE_USER = "dakraman1232";
 const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
+
+// Загружаем SSL-сертификаты для HTTPS сервера API
+const options = {
+  cert: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem"),
+  key: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem")
+};
 
 // Функция проверки доступности SSH-соединения (неинтерактивный режим, таймаут 5 сек)
 function checkSSHConnection(callback) {
@@ -31,7 +36,7 @@ app.get("/clear-orders-remote", (req, res) => {
       return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
     }
     const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
-    // Опции: BatchMode, ConnectTimeout, StrictHostKeyChecking и UserKnownHostsFile для неинтерактивного режима
+    // Используем опции для неинтерактивного режима и игнорирования known_hosts
     const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
     
     exec(sshCommand, (error, stdout, stderr) => {
@@ -45,15 +50,8 @@ app.get("/clear-orders-remote", (req, res) => {
   });
 });
 
-// Настройка HTTPS-сервера для Express API
-const options = {
-  cert: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem"),
-  key: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem")
-};
-
-const httpsServer = https.createServer(options, app);
-
-httpsServer.listen(PORT_API, "0.0.0.0", () => {
+// Запуск HTTPS API сервера
+https.createServer(options, app).listen(PORT_API, "0.0.0.0", () => {
   console.log(`✅ Express API сервер запущен на https://${REMOTE_SERVER}:${PORT_API}`);
 });
 
