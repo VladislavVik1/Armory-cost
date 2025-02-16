@@ -16,78 +16,38 @@ const REMOTE_SERVER = "pmk-eagles.shop";
 const REMOTE_USER = "dakraman1232";
 const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
-// ✅ Включаем CORS для всех доменов
-const corsOptions = {
-    origin: "https://vladislavvik1.github.io",  // Или укажите конкретные сайты: ["https://vladislavvik1.github.io", "http://127.0.0.1:5500"]
-    methods: "GET, POST, OPTIONS, DELETE",
-    allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-    credentials: false
-};
-app.use(cors(corsOptions));
-
-// Middleware для CORS
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://vladislavvik1.github.io");  // Или конкретный домен
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    
-    if (req.method === "OPTIONS") {
-        return res.status(204).send();  // Отвечаем на preflight-запросы
-    }
-    next();
-});
-
-
-// ✅ Middleware для CORS + Preflight-запросы
+// ✅ Включаем CORS
+app.use(cors());
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
     if (req.method === "OPTIONS") {
-        return res.sendStatus(204); // **Исправлено: правильный ответ для preflight-запросов**
+        return res.sendStatus(204);
     }
     next();
 });
 
-// ✅ Логирование всех запросов
+// ✅ Логирование запросов
 app.use((req, res, next) => {
     console.log(`📡 ${req.method} → ${req.url}`);
     next();
 });
 
-// ✅ Проверка SSH-доступа
-function checkSSHConnection(callback) {
-    const checkCmd = `ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} exit`;
-    exec(checkCmd, (error) => {
-        if (error) {
-            console.error("❌ Ошибка SSH-соединения:", error.message);
-            callback(false);
-        } else {
-            console.log("✅ SSH-соединение установлено!");
-            callback(true);
-        }
-    });
-}
-
 // ✅ Очистка заказов через SSH
 app.get("/clear-orders-remote", (req, res) => {
-    checkSSHConnection((isConnected) => {
-        if (!isConnected) {
-            return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
+    console.log("🔄 Запрос на очистку заказов через SSH...");
+
+    const sshCommand = `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} "echo '[]' > ${ORDERS_PATH}"`;
+
+    exec(sshCommand, (error, stdout, stderr) => {
+        if (error) {
+            console.error("❌ Ошибка при удалении заказов:", error.message);
+            return res.status(500).json({ success: false, message: "Ошибка очистки заказов" });
         }
-
-        const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
-        const sshCommand = `ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
-
-        exec(sshCommand, (error, stdout, stderr) => {
-            if (error) {
-                console.error("❌ Ошибка при удалении заказов:", error.message);
-                return res.status(500).json({ success: false, message: "Ошибка очистки заказов" });
-            }
-            console.log(`✅ Заказы успешно удалены. Вывод: ${stdout}`);
-            res.json({ success: true, message: "Заказы удалены на сервере" });
-        });
+        console.log(`✅ Заказы успешно удалены. Вывод: ${stdout}`);
+        res.json({ success: true, message: "Заказы удалены на сервере" });
     });
 });
 
@@ -117,11 +77,11 @@ try {
 // ✅ Запуск HTTPS API сервера
 if (serverOptions) {
     const httpsServer = https.createServer(serverOptions, app);
-    httpsServer.listen(PORT_API, "0.0.0.0", () => {
+    httpsServer.listen(PORT_API, () => {
         console.log(`✅ HTTPS API сервер запущен на https://${REMOTE_SERVER}:${PORT_API}`);
     });
 } else {
-    app.listen(PORT_API, "0.0.0.0", () => {
+    app.listen(PORT_API, () => {
         console.log(`✅ HTTP API сервер запущен на http://${REMOTE_SERVER}:${PORT_API}`);
     });
 }
