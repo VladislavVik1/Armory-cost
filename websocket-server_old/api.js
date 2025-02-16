@@ -30,7 +30,7 @@ app.get("/clear-orders-remote", (req, res) => {
       return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
     }
     const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
-    // Добавляем опции BatchMode, ConnectTimeout и StrictHostKeyChecking
+    // Опции: BatchMode, ConnectTimeout и StrictHostKeyChecking для неинтерактивного режима
     const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
     
     exec(sshCommand, (error, stdout, stderr) => {
@@ -44,7 +44,7 @@ app.get("/clear-orders-remote", (req, res) => {
   });
 });
 
-// Запуск API сервера
+// Запуск API сервера на всех интерфейсах
 app.listen(PORT_API, "0.0.0.0", () => {
   console.log(`✅ Express API сервер запущен на http://${REMOTE_SERVER}:${PORT_API}`);
 });

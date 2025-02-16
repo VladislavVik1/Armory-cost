@@ -1288,28 +1288,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function clearOrdersRemote() {
-    fetch("http://pmk-eagles.shop:3000/clear-orders-remote")
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("✅ Все заказы успешно удалены на сервере!");
-                localStorage.removeItem("orders"); // Удаляем локальные заказы
-                loadOrders(); // Обновляем отображение заказов
-            } else {
-                alert("❌ Ошибка очистки заказов: " + data.message);
-            }
-        })
-        .catch(error => {
-            console.error("❌ Ошибка запроса к серверу:", error);
-            alert("⚠ Не удалось очистить заказы на сервере!");
-        });
+  fetch("http://pmk-eagles.shop:3000/clear-orders-remote")
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("✅ Все заказы успешно удалены на сервере!");
+        localStorage.removeItem("orders"); // Удаляем локальные заказы
+        loadOrders(); // Обновляем отображение заказов
+      } else {
+        alert("❌ Ошибка очистки заказов: " + data.message);
+      }
+    })
+    .catch(error => {
+      console.error("❌ Ошибка запроса к серверу:", error);
+      alert("⚠ Не удалось очистить заказы на сервере!");
+    });
 }
 
-// Добавляем обработчик на кнопку очистки
 document.addEventListener("DOMContentLoaded", function () {
   const clearOrdersButton = document.querySelector(".clear-orders");
   if (clearOrdersButton) {
-    clearOrdersButton.addEventListener("click", clearOrders);
+    clearOrdersButton.addEventListener("click", clearOrdersRemote);
   } else {
     console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
   }
