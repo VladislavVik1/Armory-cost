@@ -88,12 +88,14 @@ function clearOrders() {
 
     console.log("📡 Отправка `clear_orders` на сервер...");
     socket.send(JSON.stringify({ type: "clear_orders" }));
+    
+    console.log("📨 Команда `clear_orders` отправлена. Ожидание ответа от сервера...");
 
     let clearOrdersTimeout = setTimeout(() => {
         console.warn("⏳ Сервер не ответил, очистка заказов локально.");
         localStorage.removeItem("orders");
         loadOrders();
-    }, 1000);
+    }, 5000); // Ждем 5 секунд
 
     function handleClearOrdersResponse(event) {
         try {
