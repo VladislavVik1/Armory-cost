@@ -1287,20 +1287,31 @@ document.addEventListener("DOMContentLoaded", function () {
 // =======================
 
 function clearOrdersRemote() {
-  fetch("https://pmk-eagles.shop:3000/clear-orders-remote")
-    .then(response => response.json())
+    fetch("https://pmk-eagles.shop:3000/clear-orders-remote", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-      if (data.success) {
-        alert("✅ Все заказы успешно удалены на сервере!");
-        localStorage.removeItem("orders");
-        loadOrders();
-      } else {
-        alert("❌ Ошибка очистки заказов: " + data.message);
-      }
+        console.log("📡 Ответ API:", data);
+        if (data.success) {
+            alert("✅ Заказы успешно удалены на сервере!");
+            localStorage.removeItem("orders");
+            loadOrders();
+        } else {
+            alert("❌ Ошибка очистки заказов: " + data.message);
+        }
     })
     .catch(error => {
-      console.error("❌ Ошибка запроса к серверу:", error);
-      alert("⚠ Не удалось очистить заказы на сервере!");
+        console.error("❌ Ошибка запроса к серверу:", error);
+        alert("⚠ Ошибка очистки заказов: " + error.message);
     });
 }
 
