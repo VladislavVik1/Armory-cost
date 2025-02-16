@@ -18,7 +18,7 @@ const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
 // ✅ Включаем CORS для всех доменов
 const corsOptions = {
-    origin: "*",  // Или укажите конкретные сайты: ["https://vladislavvik1.github.io", "http://127.0.0.1:5500"]
+    origin: "https://vladislavvik1.github.io",  // Или укажите конкретные сайты: ["https://vladislavvik1.github.io", "http://127.0.0.1:5500"]
     methods: "GET, POST, OPTIONS, DELETE",
     allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
     credentials: false
