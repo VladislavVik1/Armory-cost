@@ -17,7 +17,26 @@ const REMOTE_USER = "dakraman1232";
 const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
 // ✅ Включаем CORS для всех доменов
-app.use(cors());
+const corsOptions = {
+    origin: "*",  // Или укажите конкретные сайты: ["https://vladislavvik1.github.io", "http://127.0.0.1:5500"]
+    methods: "GET, POST, OPTIONS, DELETE",
+    allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    credentials: false
+};
+app.use(cors(corsOptions));
+
+// Middleware для CORS
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");  // Или конкретный домен
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    
+    if (req.method === "OPTIONS") {
+        return res.status(204).send();  // Отвечаем на preflight-запросы
+    }
+    next();
+});
+
 
 // ✅ Middleware для CORS + Preflight-запросы
 app.use((req, res, next) => {
