@@ -1,9 +1,10 @@
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
 const { exec } = require("child_process");
-const path = require("path");
 const app = express();
-const PORT_API = 3000; // Порт для API
 
+const PORT_API = 3000; // Порт для API
 const REMOTE_SERVER = "pmk-eagles.shop";
 const REMOTE_USER = "dakraman1232";
 const ORDERS_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
@@ -30,7 +31,7 @@ app.get("/clear-orders-remote", (req, res) => {
       return res.status(500).json({ success: false, message: "Ошибка SSH-соединения" });
     }
     const remoteCommand = `echo '[]' > ${ORDERS_PATH}`;
-    // Добавлены опции BatchMode, ConnectTimeout, StrictHostKeyChecking и UserKnownHostsFile для игнорирования known_hosts
+    // Опции: BatchMode, ConnectTimeout, StrictHostKeyChecking и UserKnownHostsFile для неинтерактивного режима
     const sshCommand = `ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_SERVER} "${remoteCommand}"`;
     
     exec(sshCommand, (error, stdout, stderr) => {
@@ -44,9 +45,16 @@ app.get("/clear-orders-remote", (req, res) => {
   });
 });
 
-// Запуск API сервера на всех интерфейсах
-app.listen(PORT_API, "0.0.0.0", () => {
-  console.log(`✅ Express API сервер запущен на http://${REMOTE_SERVER}:${PORT_API}`);
+// Настройка HTTPS-сервера для Express API
+const options = {
+  cert: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem"),
+  key: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem")
+};
+
+const httpsServer = https.createServer(options, app);
+
+httpsServer.listen(PORT_API, "0.0.0.0", () => {
+  console.log(`✅ Express API сервер запущен на https://${REMOTE_SERVER}:${PORT_API}`);
 });
 
 // Очистка заказов при старте API
