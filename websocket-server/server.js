@@ -94,10 +94,12 @@ wss.on("connection", (ws) => {
                 broadcastOrders();
             }
 
-            if (data.type === "clear_orders") {
-                console.log("🗑 Получен запрос на очистку всех заказов!");
-                clearOrdersOnServer();
-            }
+           if (data.type === "clear_orders") {
+    console.log("🗑 Запрос на очистку всех заказов получен!");
+    console.log("📂 Текущее содержимое orders.json:", fs.readFileSync(FILE_PATH, "utf8"));
+    console.log("🛠 Вызываем clearOrdersOnServer()");
+    clearOrdersOnServer();
+}
 
         } catch (error) {
             console.error("❌ Ошибка обработки сообщения:", error);
