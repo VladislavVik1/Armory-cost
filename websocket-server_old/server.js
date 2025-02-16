@@ -94,11 +94,11 @@ function processClientMessage(ws, message) {
       break;
 
     case "clear_orders":
-      console.log("🗑 Received clear_orders command");
+      console.log("🗑 Received clear_orders command via WS");
       orders = [];
       fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
       ws.send(JSON.stringify({ type: "orders_cleared" }));
-      console.log("✅ orders_cleared confirmation sent");
+      console.log("✅ orders_cleared confirmation sent via WS");
       break;
 
     case "get_orders":

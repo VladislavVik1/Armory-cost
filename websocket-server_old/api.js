@@ -1,6 +1,5 @@
 const express = require("express");
 const { exec } = require("child_process");
-const path = require("path");
 const app = express();
 const PORT_API = 3000; // Порт для API
 

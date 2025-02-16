@@ -1288,6 +1288,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function clearOrdersRemote() {
+  // Используем fetch для вызова API-эндпоинта, который очищает заказы на удалённом сервере
   fetch("http://pmk-eagles.shop:3000/clear-orders-remote")
     .then(response => response.json())
     .then(data => {
@@ -1305,6 +1306,7 @@ function clearOrdersRemote() {
     });
 }
 
+// Добавляем обработчик на кнопку очистки заказов
 document.addEventListener("DOMContentLoaded", function () {
   const clearOrdersButton = document.querySelector(".clear-orders");
   if (clearOrdersButton) {
