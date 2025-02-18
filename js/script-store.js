@@ -1117,15 +1117,11 @@ document.addEventListener("click", function (event) {
         closeModal();
     }
 });
-
+// =======================
 // =======================
 // Глобальная переменная для WebSocket
 // =======================
-// Проверяем, объявлена ли переменная `socket` ранее
-// Проверяем, не объявлена ли переменная `socket` ранее
-if (typeof socket === "undefined" || socket === null) {
-    var socket;
-}
+let socket = null; // Оставляем только одно объявление
 
 // Функция подключения к WebSocket
 function connectWebSocket() {
@@ -1146,8 +1142,8 @@ function connectWebSocket() {
             let data = JSON.parse(event.data);
             console.log("📩 Получены данные с сервера:", data);
 
-            if (data.type === "init") {
-                localStorage.setItem("orders", JSON.stringify(data.orders || []));
+            if (data.type === "init" && Array.isArray(data.orders)) {
+                localStorage.setItem("orders", JSON.stringify(data.orders));
                 loadOrders();
             } else if (data.type === "orders_cleared") {
                 console.log("🗑 Все заказы удалены сервером");
@@ -1167,70 +1163,114 @@ function connectWebSocket() {
         console.log("❌ Соединение с WebSocket сервером закрыто. Переподключение...");
         setTimeout(connectWebSocket, 5000);
     };
-}
-
-// Вызываем подключение WebSocket при загрузке страницы
-document.addEventListener("DOMContentLoaded", function () {
-    connectWebSocket();
-    loadOrders();
-});
-
-// =======================
+}// =======================
 // Функция отправки заказа
 // =======================
 function sendOrder() {
-    let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-
-    if (cartItems.length === 0) {
+    if (!cart || cart.length === 0) {
         alert("❌ Корзина пуста! Добавьте товары перед отправкой заказа.");
         return;
     }
 
-    let now = new Date();
-    let formattedDate = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+    console.log("📦 Содержимое корзины перед обработкой:", cart);
 
-    // ✅ Проверяем и пересчитываем totalPrice у каждого товара
-    let totalSum = cartItems.reduce((sum, item) => {
-        let itemTotal = parseFloat(item.totalPrice) || (parseFloat(priceList[item.name]?.unitPrice || 0) * item.quantity);
-        return sum + itemTotal;
-    }, 0);
-
-    let commentInput = document.getElementById("order-comment");
-    let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
-
-    let newOrder = {
-        type: "new_order",
-        order: {
-            date: formattedDate,
-            items: cartItems.map(item => ({
-                name: item.name,
-                quantity: item.quantity,
-                totalPrice: parseFloat(item.totalPrice) || (parseFloat(priceList[item.name]?.unitPrice || 0) * item.quantity),
-            })),
-            total: totalSum.toFixed(2),
-            comment: commentText,
-        },
-    };
-
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(newOrder));
-        console.log("📡 Заказ отправлен через WebSocket:", newOrder);
-    } else {
-        console.warn("⚠ WebSocket не подключен! Заказ сохранён локально.");
-        let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
-        storedOrders.push(newOrder.order);
-        localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+    if (!priceList || typeof priceList !== "object") {
+        console.error("❌ Ошибка: priceList не загружен.");
+        alert("⚠ Ошибка при получении цен. Обновите страницу.");
+        return;
     }
 
-    alert("📦 Заказ успешно отправлен!");
+    try {
+        let processedItems = cart.map(item => {
+            let unitPrice = priceList[item.name]?.unitPrice || 0;
+            let bulkPrice = priceList[item.name]?.bulkPrice || unitPrice;
+            let bulkQuantity = Math.floor(item.quantity / 10);
+            let remainingQuantity = item.quantity % 10;
+            let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
+
+            return {
+                name: item.name,
+                quantity: item.quantity,
+                totalPrice: totalPrice.toFixed(2),
+            };
+        });
+
+        let totalSum = processedItems.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
+        let commentInput = document.getElementById("order-comment");
+        let commentText = commentInput ? commentInput.value.trim() : "Без комментария";
+
+        let newOrder = {
+            type: "new_order",
+            order: {
+                date: new Date().toLocaleString(),
+                items: processedItems,
+                total: totalSum.toFixed(2),
+                comment: commentText,
+            },
+        };
+
+        console.log("📨 Новый заказ, который будет отправлен:", JSON.stringify(newOrder, null, 2));
+
+        // **🔹 Отправка заказа через API перед WebSocket (для диагностики)**
+        fetch("https://pmk-eagles.shop:3000/get-orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newOrder),
+        })
+        .then(response => response.json())
+        .then(data => console.log("📡 API-ответ:", data))
+        .catch(error => console.error("❌ Ошибка API-запроса:", error));
+
+        // **🔹 Отправка заказа через WebSocket**
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(newOrder));
+            console.log("✅ Заказ отправлен через WebSocket:", newOrder);
+            alert("📦 Заказ успешно отправлен!");
+        } else {
+            console.warn("⚠ WebSocket не подключен! Заказ сохранён локально.");
+            saveOrderLocally(newOrder.order);
+        }
+
+        clearCart();
+        window.location.href = "orders.html";
+    } catch (error) {
+        console.error("❌ Ошибка при обработке заказа:", error);
+        alert("❌ Произошла ошибка при оформлении заказа. Попробуйте ещё раз.");
+    }
+}
+
+
+function saveOrderLocally(order) {
+    let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
+    storedOrders.push(order);
+    localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+    alert("⚠ Заказ сохранён локально. Он будет отправлен при восстановлении соединения.");
+}
+
+function clearCart() {
+    cart = [];
     localStorage.removeItem("cart");
-    saveCart();
     updateCartDisplay();
-    window.location.href = "orders.html";
 }
 
 
 // =======================
+// Функция сохранения заказа локально
+// =======================
+function saveOrderLocally(order) {
+    let storedOrders = JSON.parse(localStorage.getItem("sentOrders")) || [];
+    storedOrders.push(order);
+    localStorage.setItem("sentOrders", JSON.stringify(storedOrders));
+    alert("⚠ Заказ сохранён локально. Он будет отправлен при восстановлении соединения.");
+}
+
+// =======================
+// Функция очистки корзины
+// =======================
+function clearCart() {
+    localStorage.removeItem("cart");
+    updateCartDisplay();
+}// =======================
 // Функция загрузки заказов
 // =======================
 function loadOrders() {
@@ -1243,49 +1283,19 @@ function loadOrders() {
     }
 
     ordersList.innerHTML = orders.length
-        ? orders
-              .map(
-                  (order, index) => `
-        <div class="order">
-            <strong>Заказ №${index + 1}</strong> (${order.date})<br>
-            ${order.items
-                .map((item) => `<p>${item.name} – ${item.quantity} шт.</p>`)
-                .join("")}
-            <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
-            <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-        </div>
-    `
-              )
-              .join("")
+        ? orders.map((order, index) => `
+            <div class="order">
+                <strong>Заказ №${index + 1}</strong> (${order.date})<br>
+                ${order.items.map(item => `<p>${item.name} – ${item.quantity} шт.</p>`).join("")}
+                <p><strong>Общая сумма заказа:</strong> ${order.total} $</p>
+                <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+            </div>
+        `).join("")
         : "<p style='color: white;'>Заказов пока нет...</p>";
 }
 
 // =======================
-// Подключаем WebSocket при загрузке страницы
-// =======================
-document.addEventListener("DOMContentLoaded", function () {
-    connectWebSocket();
-    loadOrders();
-
-    let sendOrderButton = document.querySelector("#cart-modal button.snapshot");
-    if (sendOrderButton) {
-        sendOrderButton.addEventListener("click", sendOrder);
-    } else {
-        console.warn("❗ Кнопка отправки заказа `.snapshot` не найдена.");
-    }
-
-    let clearOrdersButton = document.querySelector(".clear-orders");
-    if (clearOrdersButton) {
-        clearOrdersButton.addEventListener("click", clearOrders);
-    } else {
-        console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
-    }
-});
-
-// =======================
-// Функция очистки всех заказов
-// =======================
-
+// Функция очистки всех заказов на сервере// =======================
 function clearOrdersRemote() {
     fetch("https://pmk-eagles.shop:3000/clear-orders-remote", {
         method: "GET",
@@ -1315,11 +1325,24 @@ function clearOrdersRemote() {
     });
 }
 
+// =======================
+// Подключение WebSocket и обработчики событий
+// =======================
 document.addEventListener("DOMContentLoaded", function () {
-  const clearOrdersButton = document.querySelector(".clear-orders");
-  if (clearOrdersButton) {
-    clearOrdersButton.addEventListener("click", clearOrdersRemote);
-  } else {
-    console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
-  }
+    connectWebSocket();
+    loadOrders();
+
+    let sendOrderButton = document.querySelector("#cart-modal button.snapshot");
+    if (sendOrderButton) {
+        sendOrderButton.addEventListener("click", sendOrder);
+    } else {
+        console.warn("❗ Кнопка отправки заказа `.snapshot` не найдена.");
+    }
+
+    let clearOrdersButton = document.querySelector(".clear-orders");
+    if (clearOrdersButton) {
+        clearOrdersButton.addEventListener("click", clearOrdersRemote);
+    } else {
+        console.warn("❗ Кнопка очистки заказов (.clear-orders) не найдена.");
+    }
 });

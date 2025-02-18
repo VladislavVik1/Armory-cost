@@ -2,131 +2,153 @@ const fs = require("fs");
 const https = require("https");
 const WebSocket = require("ws");
 
+// 🔹 Настройки сервера
 const PORT = 8080;
-const FILE_PATH = "./orders.json";
+const CERT_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem";
+const KEY_PATH = "/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem";
+const FILE_PATH = "/home/dakraman1232/websocket-server_old/orders.json";
 
-// Создаем HTTPS-сервер с SSL-сертификатами
-const server = https.createServer({
-  cert: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/fullchain.pem"),
-  key: fs.readFileSync("/etc/letsencrypt/live/pmk-eagles.shop/privkey.pem"),
-});
-
-const wss = new WebSocket.Server({ server });
-
-// Загружаем заказы из файла при запуске
-let orders = [];
-if (fs.existsSync(FILE_PATH)) {
-  try {
-    const fileData = fs.readFileSync(FILE_PATH, "utf8").trim();
-    orders = fileData ? JSON.parse(fileData) : [];
-  } catch (error) {
-    console.error("❌ Ошибка чтения orders.json:", error);
-    orders = [];
-  }
+// 🔹 Проверяем наличие SSL-сертификатов перед запуском
+if (!fs.existsSync(CERT_PATH) || !fs.existsSync(KEY_PATH)) {
+  console.error("❌ Ошибка: SSL-сертификаты не найдены!");
+  process.exit(1);
 }
 
-/**
- * Функция безопасного парсинга JSON.
- * Если данные пустые или некорректные, возвращает null.
- */
+// 🔹 Создаём HTTPS-сервер
+const server = https.createServer({
+  cert: fs.readFileSync(CERT_PATH),
+  key: fs.readFileSync(KEY_PATH),
+});
+
+// 🔹 Создаём WebSocket-сервер
+const wss = new WebSocket.Server({ server });
+
+// 🔹 Загружаем заказы из файла (безопасно)
+app.post("/get-orders", (req, res) => {
+    let newOrder = req.body;
+    console.log("📩 Получен новый заказ:", newOrder);
+
+    if (!newOrder || !newOrder.order || !Array.isArray(newOrder.order.items)) {
+        return res.status(400).json({ success: false, message: "Некорректные данные" });
+    }
+
+    // Загружаем текущие заказы
+    let orders = [];
+    if (fs.existsSync(ORDERS_PATH)) {
+        orders = JSON.parse(fs.readFileSync(ORDERS_PATH, "utf8")) || [];
+    }
+
+    // Добавляем новый заказ
+    orders.push(newOrder.order);
+    fs.writeFileSync(ORDERS_PATH, JSON.stringify(orders, null, 2), "utf8");
+
+    console.log("✅ Заказ сохранён!");
+    res.json({ success: true, message: "Заказ принят!" });
+});
+
+
+// 🔹 Функция безопасного парсинга JSON
 function safeJSONParse(data) {
   try {
-    if (data == null) {
-      throw new Error("Data is null or undefined");
-    }
-    if (Buffer.isBuffer(data)) {
-      data = data.toString("utf8");
-    }
-    if (typeof data !== "string") {
-      data = String(data);
-    }
-    if (!data.trim()) {
-      throw new Error("Data is empty or whitespace");
-    }
     return JSON.parse(data);
   } catch (error) {
-    console.error("safeJSONParse error:", error.message);
+    console.error("❌ Ошибка парсинга JSON:", error.message);
     return null;
   }
 }
 
-/**
- * Функция отправки ошибки клиенту.
- */
-function sendError(ws, errorMessage) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: "error", message: errorMessage }));
-  }
+// 🔹 Функция сохранения заказов в файл
+function saveOrdersToFile() {
+  fs.writeFile(FILE_PATH, JSON.stringify(orders, null, 2), "utf8", (err) => {
+    if (err) {
+      console.error("❌ Ошибка записи в orders.json:", err);
+    } else {
+      console.log("✅ Заказы сохранены в orders.json.");
+    }
+  });
 }
 
-/**
- * Функция обработки входящих сообщений от клиента.
- */
+// 🔹 Обработка сообщений от клиентов
 function processClientMessage(ws, message) {
-  if (Buffer.isBuffer(message)) {
-    message = message.toString("utf8");
-  }
-  
-  console.log(`📩 Received message (length ${message.length}): "${message}"`);
-  
-  if (!message || message.trim() === "") {
-    console.warn("⚠ Received an empty message, ignoring.");
-    return;
-  }
-  
-  const parsedMessage = safeJSONParse(message);
-  if (parsedMessage === null) {
-    sendError(ws, "Invalid JSON data");
-    return;
-  }
-  console.log("✅ Parsed message:", parsedMessage);
+  try {
+    if (!message || typeof message !== "string" || message.trim() === "") {
+      console.warn("⚠ Получено пустое сообщение, игнорируем.");
+      return;
+    }
 
-  switch (parsedMessage.type) {
-    case "new_order":
-      orders.push(parsedMessage.order);
-      fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ type: "new_order", order: parsedMessage.order }));
+    console.log(`📩 Получено сообщение: "${message}"`);
+    const parsedMessage = safeJSONParse(message);
+    if (!parsedMessage || typeof parsedMessage !== "object") {
+      ws.send(JSON.stringify({ type: "error", message: "Invalid JSON" }));
+      return;
+    }
+
+    switch (parsedMessage.type) {
+      case "new_order":
+        if (!parsedMessage.order || typeof parsedMessage.order !== "object" || !Array.isArray(parsedMessage.order.items)) {
+          ws.send(JSON.stringify({ type: "error", message: "Invalid order data" }));
+          console.error("❌ Ошибка: некорректный заказ!", parsedMessage);
+          return;
         }
-      });
-      console.log("📦 New order processed and saved");
-      break;
 
-    case "clear_orders":
-      console.log("🗑 Received clear_orders command via WS");
-      orders = [];
-      fs.writeFileSync(FILE_PATH, JSON.stringify(orders, null, 2));
-      ws.send(JSON.stringify({ type: "orders_cleared" }));
-      console.log("✅ orders_cleared confirmation sent via WS");
-      break;
+        console.log("📦 Новый заказ получен.");
+        orders.push(parsedMessage.order);
+        saveOrdersToFile();
+
+        // 🔹 Оповещаем всех подключённых клиентов о новом заказе
+        broadcastToClients({ type: "init", orders });
+        break;
 
     case "get_orders":
-      ws.send(JSON.stringify({ type: "init", orders }));
-      break;
+    console.log("📋 Запрос заказов от клиента...");
+    console.log("📦 Текущий список заказов на сервере:", JSON.stringify(orders, null, 2)); // 🔍 Лог для проверки
+    ws.send(JSON.stringify({ type: "init", orders }));
+    break;
 
-    default:
-      sendError(ws, "Unknown message type");
-      break;
+
+      case "clear_orders":
+        console.log("🗑 Очистка всех заказов...");
+        orders = [];
+        saveOrdersToFile();
+
+        // 🔹 Оповещаем всех клиентов об очистке
+        broadcastToClients({ type: "orders_cleared" });
+        break;
+
+      default:
+        ws.send(JSON.stringify({ type: "error", message: "Unknown message type" }));
+    }
+  } catch (error) {
+    console.error("❌ Ошибка обработки сообщения:", error.message);
   }
 }
 
-// Обработка соединений
-wss.on("connection", (ws) => {
+// 🔹 Функция рассылки сообщений всем подключённым клиентам
+function broadcastToClients(data) {
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
+}
+
+// 🔹 Обработка подключений WebSocket
+wss.on("connection", (ws, req) => {
   console.log("🔗 Новый клиент подключён!");
-  
+
+  // Опционально проверяем Origin
+  const origin = req.headers.origin || "неизвестный";
+  console.log(`🌐 Origin клиента: ${origin}`);
+
+  // Отправляем клиенту текущие заказы
   ws.send(JSON.stringify({ type: "init", orders }));
-  
-  ws.on("message", (message) => {
-    processClientMessage(ws, message);
-  });
-  
-  ws.on("close", () => {
-    console.log("❌ Клиент отключился.");
-  });
+
+  ws.on("message", (message) => processClientMessage(ws, message));
+  ws.on("close", () => console.log("❌ Клиент отключился."));
+  ws.on("error", (error) => console.error("❌ Ошибка WebSocket:", error));
 });
 
-// Запуск сервера
+// 🔹 Запуск сервера
 server.listen(PORT, () => {
   console.log(`✅ WebSocket сервер работает на wss://pmk-eagles.shop:${PORT}`);
 });
