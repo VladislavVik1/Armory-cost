@@ -22,48 +22,79 @@ function loadOrders() {
         return;
     }
 
-    ordersList.innerHTML = orders.length
-        ? orders.map((order, index) => {
-              let formattedTotal = parseFloat(order.total || 0).toFixed(2);
-              return `
-                <div class="order">
-                    <strong>Заказ №${index + 1}</strong> (${order.date || "Неизвестная дата"})<br>
-                    ${order.items?.map((item) => 
-                        `<p>${item.name || "Неизвестный товар"} – ${item.quantity || 0} шт. 
-                        (${parseFloat(item.totalPrice || 0).toFixed(2)} $)</p>`
-                    ).join("") || "<p>Товары отсутствуют</p>"}
-                    <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
-                    <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
-                </div>
-            `;
-          }).join("")
-        : "<p style='color: white;'>Заказов пока нет...</p>";
+    if (orders.length === 0) {
+        ordersList.innerHTML = "<p style='color: white;'>Заказов пока нет...</p>";
+        return;
+    }
+
+    ordersList.innerHTML = orders.map((order, index) => {
+        let formattedTotal = parseFloat(order.total || 0).toFixed(2);
+        return `
+            <div class="order">
+                <strong>Заказ №${index + 1}</strong> (${order.date || "Неизвестная дата"})<br>
+                ${order.items?.map((item) => 
+                    `<p>${item.name || "Неизвестный товар"} – ${item.quantity || 0} шт. 
+                    (${parseFloat(item.totalPrice || 0).toFixed(2)} $)</p>`
+                ).join("") || "<p>Товары отсутствуют</p>"}
+                <p><strong>Общая сумма заказа:</strong> ${formattedTotal} $</p>
+                <p><strong>Комментарий:</strong> ${order.comment || "Без комментария"}</p>
+            </div>
+        `;
+    }).join("");
 }
+
 
 function connectWebSocket() {
     socket = new WebSocket("wss://pmk-eagles.shop:8080");
 
     socket.onopen = function () {
         console.log("✅ Подключено к WebSocket серверу");
-        socket.send(JSON.stringify({ type: "get_orders" })); // Запрос заказов у сервера
+        socket.send(JSON.stringify({ type: "get_orders" })); // 🔹 Запрашиваем заказы у сервера
     };
 
     socket.onmessage = function (event) {
-        try {
-            let data = JSON.parse(event.data);
-            console.log("📩 Получены данные от сервера:", data);
+        if (!event.data) {
+            console.warn("⚠ Пустое сообщение от сервера, игнорируем.");
+            return;
+        }
 
-            if (data.type === "init" && Array.isArray(data.orders)) {
-                console.log("📥 Заказы успешно загружены с сервера");
-                localStorage.setItem("orders", JSON.stringify(data.orders));
-                loadOrders();
-            } else if (data.type === "orders_cleared") {
-                console.log("🗑 Все заказы были удалены сервером");
-                localStorage.removeItem("orders");
-                loadOrders();
-            }
+        let data;
+        try {
+            data = JSON.parse(event.data);
         } catch (error) {
-            console.error("❌ Ошибка обработки данных WebSocket:", error);
+            console.error("❌ Ошибка парсинга JSON от сервера:", error, "📩 Данные:", event.data);
+            return;
+        }
+
+        console.log("📩 Получены данные от сервера:", data);
+
+        if (!data || typeof data !== "object") {
+            console.warn("⚠ Некорректный формат данных от сервера:", data);
+            return;
+        }
+
+        if (data.type === "init") {
+            if (!Array.isArray(data.orders)) {
+                console.error("❌ Ошибка: `orders` не массив!", data.orders);
+                return;
+            }
+
+            console.log(`📥 Загружено ${data.orders.length} заказ(ов) с сервера.`);
+
+            // **Дополнительная проверка на пустой массив**
+            if (data.orders.length === 0) {
+                console.warn("⚠ Сервер отправил пустой список заказов.");
+            }
+
+            // **Сохраняем заказы**
+            localStorage.setItem("orders", JSON.stringify(data.orders));
+            loadOrders();
+        } else if (data.type === "orders_cleared") {
+            console.log("🗑 Все заказы были удалены сервером");
+            localStorage.removeItem("orders");
+            loadOrders();
+        } else {
+            console.warn("⚠ Неизвестный тип сообщения от сервера:", data);
         }
     };
 
@@ -72,10 +103,12 @@ function connectWebSocket() {
     };
 
     socket.onclose = function () {
-        console.log("❌ Соединение с WebSocket закрыто. Переподключение...");
+        console.warn("❌ Соединение с WebSocket закрыто. Переподключение через 5 сек...");
         setTimeout(connectWebSocket, 5000);
     };
 }
+
+
 
 
 // **Функция очистки всех заказов**

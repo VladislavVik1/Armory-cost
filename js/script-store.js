@@ -1034,11 +1034,21 @@ function updateCartDisplay() {
     cartItemsList.innerHTML = "";
     let totalSum = 0;
 
+    if (!cart || cart.length === 0) {
+        cartItemsList.innerHTML = "<p>🛒 Корзина пуста...</p>";
+    }
+
     cart.forEach((item, index) => {
+        if (!priceList || !priceList[item.name]) {
+            console.warn(`⚠ Цена для "${item.name}" не найдена!`);
+            return;
+        }
+
+        let bulkPrice = priceList[item.name]?.bulkPrice || 0;
+        let unitPrice = priceList[item.name]?.unitPrice || 0;
         let bulkQuantity = Math.floor(item.quantity / 10);
         let remainingQuantity = item.quantity % 10;
-        let totalPrice = (bulkQuantity * priceList[item.name]?.bulkPrice * 10 || 0) +
-                         (remainingQuantity * priceList[item.name]?.unitPrice || 0);
+        let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
 
         item.totalPrice = totalPrice;
         totalSum += totalPrice;
@@ -1047,13 +1057,14 @@ function updateCartDisplay() {
         li.setAttribute("data-index", index);
         li.innerHTML = `
             ${item.name} (<span class="item-quantity">${item.quantity}</span> шт) – 
-            <span class="item-total">${totalPrice}</span> $
+            <span class="item-total">${totalPrice.toFixed(2)}</span> $
             <button class="cart-plus">+</button>
             <button class="cart-minus">–</button>
             <button class="cart-remove">×</button>
         `;
         cartItemsList.appendChild(li);
 
+        // 🔹 Обработчики событий для изменения количества
         li.querySelector(".cart-plus").addEventListener("click", function () {
             item.quantity++;
             saveCart();
@@ -1077,15 +1088,21 @@ function updateCartDisplay() {
         });
     });
 
+    // 🔹 Обновление кнопки "Корзина"
     const cartButton = document.querySelector(".cart-button");
     if (cartButton) {
-        cartButton.textContent = `Корзина (${cart.length} товаров, ${totalSum} $)`;
+        cartButton.textContent = cart.length > 0 
+            ? `Корзина (${cart.length} товаров, ${totalSum.toFixed(2)} $)`
+            : "Корзина";
     }
+
+    // 🔹 Обновление итоговой суммы
     const totalPriceElement = document.getElementById("total-price");
     if (totalPriceElement) {
-        totalPriceElement.textContent = `Общая сумма: ${totalSum} $`;
+        totalPriceElement.textContent = `Общая сумма: ${totalSum.toFixed(2)} $`;
     }
-}// =======================
+}
+// =======================
 // Функции открытия/закрытия корзины и модальных окон
 // =======================
 function openCart() {

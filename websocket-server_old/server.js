@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 const https = require("https");
 const WebSocket = require("ws");
 
@@ -58,18 +58,49 @@ function safeJSONParse(data) {
 }
 
 // 🔹 Функция сохранения заказов в файл
-function saveOrdersToFile() {
-  fs.writeFile(FILE_PATH, JSON.stringify(orders, null, 2), "utf8", (err) => {
-    if (err) {
-      console.error("❌ Ошибка записи в orders.json:", err);
-    } else {
-      console.log("✅ Заказы сохранены в orders.json.");
-    }
-  });
+// Функция сохранения заказов в файл
+function saveOrdersToFile(orders) {
+    console.log("📝 Сохранение заказов в файл:", orders);
+
+    fs.readFile(FILE_PATH, "utf8", (err, data) => {
+        let existingOrders = [];
+
+        if (!err && data) {
+            try {
+                existingOrders = JSON.parse(data);
+                if (!Array.isArray(existingOrders)) {
+                    existingOrders = [];
+                }
+            } catch (parseError) {
+                console.error("⚠ Ошибка парсинга orders.json, создаём новый файл:", parseError);
+                existingOrders = [];
+            }
+        } else if (err && err.code !== "ENOENT") {
+            console.error("❌ Ошибка чтения файла orders.json:", err);
+            return;
+        }
+
+        // Добавляем новый заказ
+        existingOrders.push(...orders);
+
+        console.log("📦 Итоговый массив заказов перед записью:", JSON.stringify(existingOrders, null, 2));
+
+        // Записываем данные обратно в файл
+        fs.writeFile(FILE_PATH, JSON.stringify(existingOrders, null, 2), "utf8", (writeErr) => {
+            if (writeErr) {
+                console.error("❌ Ошибка записи в orders.json:", writeErr);
+            } else {
+                console.log("✅ Заказы успешно сохранены в orders.json.");
+            }
+        });
+    });
 }
 
+
+
+
 // 🔹 Обработка сообщений от клиентов
-function processClientMessage(ws, message) {
+async function processClientMessage(ws, message) {
   try {
     if (!message || typeof message !== "string" || message.trim() === "") {
       console.warn("⚠ Получено пустое сообщение, игнорируем.");
@@ -91,25 +122,46 @@ function processClientMessage(ws, message) {
           return;
         }
 
-        console.log("📦 Новый заказ получен.");
-        orders.push(parsedMessage.order);
-        saveOrdersToFile();
+        console.log("📦 Новый заказ получен:", parsedMessage.order);
 
-        // 🔹 Оповещаем всех подключённых клиентов о новом заказе
+        // ✅ Добавляем заказ в массив
+        orders.push(parsedMessage.order);
+        await saveOrdersToFile(orders); // ✅ Теперь ждём, пока заказы сохранятся
+
+        // 🔹 Оповещаем всех клиентов о новом заказе
         broadcastToClients({ type: "init", orders });
         break;
 
-    case "get_orders":
+      case "get_orders":
     console.log("📋 Запрос заказов от клиента...");
-    console.log("📦 Текущий список заказов на сервере:", JSON.stringify(orders, null, 2)); // 🔍 Лог для проверки
-    ws.send(JSON.stringify({ type: "init", orders }));
+
+    fs.readFile(FILE_PATH, "utf8", (err, data) => {
+        if (err) {
+            console.error("❌ Ошибка чтения orders.json:", err);
+            ws.send(JSON.stringify({ type: "error", message: "Ошибка загрузки заказов" }));
+            return;
+        }
+
+        let loadedOrders = [];
+        try {
+            loadedOrders = JSON.parse(data);
+            if (!Array.isArray(loadedOrders)) {
+                loadedOrders = [];
+            }
+        } catch (parseError) {
+            console.error("⚠ Ошибка парсинга orders.json:", parseError);
+        }
+
+        console.log("📦 Отправляем заказы клиенту:", JSON.stringify(loadedOrders, null, 2));
+        ws.send(JSON.stringify({ type: "init", orders: loadedOrders }));
+    });
     break;
 
 
       case "clear_orders":
         console.log("🗑 Очистка всех заказов...");
         orders = [];
-        saveOrdersToFile();
+        await saveOrdersToFile(orders);
 
         // 🔹 Оповещаем всех клиентов об очистке
         broadcastToClients({ type: "orders_cleared" });
@@ -122,6 +174,8 @@ function processClientMessage(ws, message) {
     console.error("❌ Ошибка обработки сообщения:", error.message);
   }
 }
+
+
 
 // 🔹 Функция рассылки сообщений всем подключённым клиентам
 function broadcastToClients(data) {
@@ -141,7 +195,8 @@ wss.on("connection", (ws, req) => {
   console.log(`🌐 Origin клиента: ${origin}`);
 
   // Отправляем клиенту текущие заказы
-  ws.send(JSON.stringify({ type: "init", orders }));
+  console.log("📤 Отправка заказов клиенту:", orders);
+ws.send(JSON.stringify({ type: "init", orders }));
 
   ws.on("message", (message) => processClientMessage(ws, message));
   ws.on("close", () => console.log("❌ Клиент отключился."));
