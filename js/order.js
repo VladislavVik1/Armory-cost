@@ -77,12 +77,7 @@ function connectWebSocket() {
     try {
       data = JSON.parse(event.data);
     } catch (error) {
-      console.error(
-        "❌ Ошибка парсинга JSON от сервера:",
-        error,
-        "📩 Данные:",
-        event.data
-      );
+      console.error("❌ Ошибка парсинга JSON от сервера:", error, "📩 Данные:", event.data);
       return;
     }
 
@@ -93,29 +88,23 @@ function connectWebSocket() {
       return;
     }
 
-    // Обрабатываем тип сообщения
-    switch (data.type) {
-      case "init":
-        if (!Array.isArray(data.orders)) {
-          console.error("❌ Ошибка: `orders` не массив!", data.orders);
-          return;
-        }
-        console.log(`📥 Загружено ${data.orders.length} заказ(ов) с сервера.`);
-        if (data.orders.length === 0) {
-          console.warn("⚠ Сервер отправил пустой список заказов.");
-        }
-        localStorage.setItem("orders", JSON.stringify(data.orders));
-        loadOrders();
-        break;
-
-      case "orders_cleared":
-        console.log("🗑 Все заказы были удалены сервером");
-        localStorage.removeItem("orders");
-        loadOrders();
-        break;
-
-      default:
-        console.warn("⚠ Неизвестный тип сообщения от сервера:", data);
+    if (data.type === "init") {
+      if (!Array.isArray(data.orders)) {
+        console.error("❌ Ошибка: `orders` не массив!", data.orders);
+        return;
+      }
+      console.log(`📥 Загружено ${data.orders.length} заказ(ов) с сервера.`);
+      if (data.orders.length === 0) {
+        console.warn("⚠ Сервер отправил пустой список заказов.");
+      }
+      localStorage.setItem("orders", JSON.stringify(data.orders));
+      loadOrders();
+    } else if (data.type === "orders_cleared") {
+      console.log("🗑 Все заказы были удалены сервером");
+      localStorage.removeItem("orders");
+      loadOrders();
+    } else {
+      console.warn("⚠ Неизвестный тип сообщения от сервера:", data);
     }
   };
 
@@ -146,7 +135,6 @@ function clearOrders() {
   socket.send(JSON.stringify({ type: "clear_orders" }));
   console.log("📨 Команда `clear_orders` отправлена. Ожидание ответа от сервера...");
 
-  // Устанавливаем таймаут – если сервер не ответит за 5 секунд, очищаем локально
   const clearOrdersTimeout = setTimeout(() => {
     console.warn("⏳ Сервер не ответил, очистка заказов локально.");
     localStorage.removeItem("orders");
@@ -154,12 +142,10 @@ function clearOrders() {
     socket.removeEventListener("message", handleClearOrdersResponse);
   }, 5000);
 
-  // Обработчик ответа сервера на команду очистки
   function handleClearOrdersResponse(event) {
     try {
       const data = JSON.parse(event.data);
       console.log("📩 Ответ сервера на очистку заказов:", data);
-
       if (data.type === "orders_cleared") {
         console.log("🗑 Все заказы успешно удалены сервером");
         clearTimeout(clearOrdersTimeout);
@@ -173,6 +159,5 @@ function clearOrders() {
     }
   }
 
-  // Добавляем одноразовый слушатель для получения ответа
   socket.addEventListener("message", handleClearOrdersResponse);
 }
