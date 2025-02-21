@@ -4,26 +4,30 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
-const apiPort = 3000;  // API
-const wsPort = 8080;   // WebSocket
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: ["https://vladislavvik1.github.io", "https://pmk-eagles.shop"],
+        methods: ["GET", "POST"]
+    }
+});
+
+const PORT = 3000;
+const WS_PORT = 8080;
+
+// 📌 Храним заказы в памяти (если надо – добавим БД)
+let orders = [];
 
 app.use(cors({
-    origin: [
-        "https://vladislavvik1.github.io",
-        "https://vladislavvik1.github.io/Armory-cost",
-        "https://pmk-eagles.shop"
-    ],
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    origin: ["https://vladislavvik1.github.io", "https://pmk-eagles.shop"],
+    methods: "GET, POST",
+    allowedHeaders: "Content-Type, Authorization"
 }));
-
 app.use(express.json());
-
-// 📌 Храним заказы в памяти (если надо — добавим БД)
-let orders = [];
 
 // 📌 API для получения заказов
 app.get("/api/orders", (req, res) => {
+    console.log("📌 Отправляем заказы:", orders);
     res.json({ message: "API работает!", orders });
 });
 
@@ -46,26 +50,22 @@ app.post("/api/orders", (req, res) => {
     res.status(201).json({ message: "Заказ успешно создан", order: newOrder });
 });
 
-// 📌 Запускаем API сервер на порту 3000
-app.listen(apiPort, () => {
-    console.log(`✅ API запущен на http://localhost:${apiPort}`);
+// 📌 Запускаем API сервер
+server.listen(PORT, () => {
+    console.log(`✅ API запущен на http://localhost:${PORT}`);
 });
 
 // 📌 WebSocket сервер
 const wsServer = http.createServer();
-const io = new Server(wsServer, {
+const ioWs = new Server(wsServer, {
     cors: {
-        origin: [
-            "https://vladislavvik1.github.io",
-            "https://vladislavvik1.github.io/Armory-cost",
-            "https://pmk-eagles.shop"
-        ],
+        origin: ["https://vladislavvik1.github.io", "https://pmk-eagles.shop"],
         methods: ["GET", "POST"]
     }
 });
 
-io.on("connection", (socket) => {
-    console.log("🔌 Клиент подключился");
+ioWs.on("connection", (socket) => {
+    console.log("🔌 WebSocket клиент подключился");
 
     // Отправляем все заказы при подключении
     socket.emit("allOrders", orders);
@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
     socket.on("clearOrders", () => {
         console.log("⚠ Все заказы удалены!");
         orders = [];
-        io.emit("allOrders", orders);
+        ioWs.emit("allOrders", orders);
     });
 
     socket.on("disconnect", () => {
@@ -82,6 +82,6 @@ io.on("connection", (socket) => {
 });
 
 // 📌 Запускаем WebSocket сервер
-wsServer.listen(wsPort, () => {
-    console.log(`✅ WebSocket сервер запущен на ws://localhost:${wsPort}`);
+wsServer.listen(WS_PORT, () => {
+    console.log(`✅ WebSocket сервер запущен на ws://localhost:${WS_PORT}`);
 });
