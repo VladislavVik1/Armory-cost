@@ -37,7 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 📌 Подключаем WebSocket к серверу
-    const socket = io("wss://pmk-eagles.shop:8080");
+    const socket = io("https://pmk-eagles.shop:8080");
+
 
     // 🔹 Получаем все заказы при подключении
     socket.on("allOrders", (orders) => {
