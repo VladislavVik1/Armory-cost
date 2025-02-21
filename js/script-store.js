@@ -240,3 +240,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+fetch("https://pmk-eagles.shop/api/orders", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(order)
+})
+.then(response => response.json())
+.then(data => {
+    console.log("Заказ отправлен", data);
+    clearCart();
+    window.location.href = "orders.html";
+});
+

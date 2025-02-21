@@ -42,3 +42,19 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+fetch("https://pmk-eagles.shop/api/orders")
+    .then(response => response.json())
+    .then(data => {
+        if (data && Array.isArray(data.orders)) {
+            console.log("📌 Загружены заказы из API:", data.orders);
+            renderOrders(data.orders);
+        } else {
+            console.error("❌ Ошибка: Сервер вернул неправильный формат!", data);
+            ordersContainer.innerHTML = "<p>❌ Ошибка загрузки заказов</p>";
+        }
+    })
+    .catch(error => {
+        console.error("❌ Ошибка запроса к API:", error);
+        ordersContainer.innerHTML = "<p>❌ Не удалось загрузить заказы</p>";
+    });
