@@ -7,54 +7,58 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    let orders = localStorage.getItem("orders") ? JSON.parse(localStorage.getItem("orders")) : [];
+    // 📌 Функция для отображения заказов
+    function renderOrders(orders) {
+        ordersContainer.innerHTML = ""; // Очищаем контейнер перед рендерингом
 
-    if (orders.length === 0) {
-        ordersContainer.innerHTML = "<p>📭 Заказов пока нет...</p>";
-        return;
+        if (!Array.isArray(orders) || orders.length === 0) {
+            ordersContainer.innerHTML = "<p>📭 Заказов пока нет...</p>";
+            return;
+        }
+
+        orders.forEach((order, index) => {
+            let orderElement = document.createElement("div");
+            orderElement.classList.add("order");
+
+            let itemsList = order.items && Array.isArray(order.items) 
+                ? order.items.map(item => `<li>${item.name} - ${item.quantity} шт</li>`).join("")
+                : "<li>❌ Ошибка в данных заказа</li>";
+
+            orderElement.innerHTML = `
+                <h3>📝 Заказ #${index + 1}</h3>
+                <ul>${itemsList}</ul>
+                <p><strong>💰 Общая сумма:</strong> ${order.totalPrice ? order.totalPrice.toFixed(2) : "Неизвестно"} $</p>
+                <p><strong>💬 Комментарий:</strong> ${order.comment || "Нет комментария"}</p>
+                <hr>
+            `;
+
+            ordersContainer.appendChild(orderElement);
+        });
     }
 
-    orders.forEach((order, index) => {
-        let orderElement = document.createElement("div");
-        orderElement.classList.add("order");
+    // 📌 Подключаем WebSocket к серверу
+    const socket = io("wss://pmk-eagles.shop:8080");
 
-        let itemsList = order.items.map(item => 
-            `<li>${item.name} - ${item.quantity} шт</li>`
-        ).join("");
-
-        orderElement.innerHTML = `
-            <h3>📝 Заказ #${index + 1}</h3>
-            <ul>${itemsList}</ul>
-            <p><strong>💰 Общая сумма:</strong> ${order.totalPrice.toFixed(2)} $</p>
-            <p><strong>💬 Комментарий:</strong> ${order.comment}</p>
-            <hr>
-        `;
-
-        ordersContainer.appendChild(orderElement);
+    // 🔹 Получаем все заказы при подключении
+    socket.on("allOrders", (orders) => {
+        console.log("📌 Получены все заказы:", orders);
+        renderOrders(orders);
     });
 
+    // 🔹 Получаем новые заказы в реальном времени
+    socket.on("newOrder", (order) => {
+        console.log("📌 Новый заказ:", order);
+        let currentOrders = document.querySelectorAll(".order").length;
+        renderOrders([...orders, order]); // Добавляем новый заказ в список
+    });
+
+    // 📌 Обработчик очистки заказов
     if (clearOrdersBtn) {
         clearOrdersBtn.addEventListener("click", function () {
             if (confirm("Вы уверены, что хотите удалить все заказы? 🚨")) {
-                localStorage.removeItem("orders");
+                socket.emit("clearOrders"); // Отправляем команду на сервер
                 ordersContainer.innerHTML = "<p>📭 Заказов пока нет...</p>";
             }
         });
     }
 });
-
-fetch("https://pmk-eagles.shop/api/orders")
-    .then(response => response.json())
-    .then(data => {
-        if (data && Array.isArray(data.orders)) {
-            console.log("📌 Загружены заказы из API:", data.orders);
-            renderOrders(data.orders);
-        } else {
-            console.error("❌ Ошибка: Сервер вернул неправильный формат!", data);
-            ordersContainer.innerHTML = "<p>❌ Ошибка загрузки заказов</p>";
-        }
-    })
-    .catch(error => {
-        console.error("❌ Ошибка запроса к API:", error);
-        ordersContainer.innerHTML = "<p>❌ Не удалось загрузить заказы</p>";
-    });
