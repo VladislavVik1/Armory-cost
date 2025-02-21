@@ -285,7 +285,9 @@ const priceList = {
         "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000  },
         "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
         "VAZ": { "unitPrice": 2000, "bulkPrice": 200  },
-    };
+};
+    
+
 // Корзина (изначально пустая)
 let cart = localStorage.getItem("cart")
   ? JSON.parse(localStorage.getItem("cart"))
