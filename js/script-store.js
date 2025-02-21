@@ -178,35 +178,47 @@ function sendOrder() {
         return;
     }
 
-    // Генерация номера заказа
     let orderNumber = `ORD-${Date.now()}`;
+    let comment = document.getElementById("order-comment").value || "Без комментария";
 
-    // Ввод комментария
-    let comment = prompt("Введите комментарий к заказу (необязательно):", "");
-
-    // Формирование объекта заказа
     let order = {
         orderNumber: orderNumber,
-        items: cart,
-        totalPrice: cart.reduce((sum, item) => sum + item.totalPrice, 0),
-        comment: comment || "Без комментария",
+        items: cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            totalPrice: item.quantity * (priceList[item.name]?.unitPrice || 0)
+        })),
+        totalPrice: cart.reduce((sum, item) => sum + (item.quantity * (priceList[item.name]?.unitPrice || 0)), 0),
+        comment: comment
     };
 
-    // Получаем все заказы из localStorage
-    let orders = localStorage.getItem("orders") ? JSON.parse(localStorage.getItem("orders")) : [];
+    console.log("📌 Отправляем заказ:", order);
 
-    // Добавляем новый заказ
-    orders.push(order);
-
-    // Сохраняем в localStorage
-    localStorage.setItem("orders", JSON.stringify(orders));
-
-    // Очищаем корзину
-    clearCart();
-
-    // Перенаправляем на страницу orders.html
-    window.location.href = "orders.html";
+    fetch("https://pmk-eagles.shop/api/orders", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(order)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("✅ Заказ успешно отправлен:", data);
+        alert("✅ Заказ отправлен!");
+        clearCart();
+        window.location.href = "orders.html";
+    })
+    .catch(error => {
+        console.error("❌ Ошибка при отправке заказа:", error);
+        alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
+    });
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
 
