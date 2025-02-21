@@ -7,6 +7,8 @@
     <title>Магазин вооружения</title>
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/script-store.js" defer></script>
+    <script src="./js/order.js"></script>
+    <script src="./js/sale.js"></script>
 </head>
 
 <body>
@@ -38,10 +40,9 @@
             <div id="modal-body"></div>
         </div>
     </div>
-    <script src="./js/sale.js"></script>
+    
 <!-- Кнопка для открытия модального окна "Продажа" -->
 <button class="sale-button">Продажа</button>
-<button class="order-button" onclick="location.href='orders.html'">Созданный заказ</button>
 <!-- Модальное окно -->
 <div id="modal" class="modal" style="display: none;">
     <div class="modal-content">
@@ -51,24 +52,22 @@
     </div>
 </div>
     <div class="cart">
-        <button class="cart-button" onclick="openCart()">
-            Корзина (0 товаров)
-        </button>
+        <button class="cart-button" onclick="openCart()">Корзина</button>
         <div id="cart-modal" class="cart-modal">
             <div class="cart-modal-content">
                 <span class="close" onclick="closeCart()">&times;</span>
                 <h2>Ваша корзина</h2>
-                <ul id="cart-items">
-                    <!-- Здесь будут отображаться товары -->
-                </ul>
+                <ul id="cart-items"></ul>
                 <div class="comment-section">
                     <label for="order-comment">Комментарий к заказу:</label>
                     <textarea id="order-comment" placeholder="Введите комментарий..."></textarea>
                 </div>
-                <p id="total-price">Общая сумма: 0 $</p> <!-- Общая сумма -->
+                <p id="total-price">Общая сумма: 0 $</p>
                 <button class="snapshot">Оформить заказ</button>
             </div>
         </div>
     </div>
+    
+    <button class="order-button" onclick="location.href='orders.html'">Лента заказов</button>
 </body>
 </html>

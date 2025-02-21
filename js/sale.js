@@ -1,15 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Задаем текущую версию дефолтных данных.
   // Если вы изменяете дефолтные значения, увеличьте эту версию (например, "1.1" → "1.2")
-  const currentVersion = "1.3";
+  const currentVersion = "1.4";
 
   // Дефолтный массив товаров для продажи (если в localStorage нет данных или версия отличается)
   const defaultSaleItems = [
-    { name: "Каска 6Б27М Флора(ЕСС)", available: 2, price: 100, selected: 0 },
-    { name: "Физраствор для в/в вливания(500мл)", available: 1, price: 200, selected: 0 },
-    { name: "Физраствор для в/в вливания(250мл)", available: 11, price: 100, selected: 0 },
-    { name: "Морфин в пневмошприце", available: 56, price: 150, selected: 0 },
-    { name: "Повязка", available: 61, price: 30, selected: 0 }
+    { name: "", available: 0, price: 0, selected: 0 },
+    { name: "", available: 0, price: 0, selected: 0 },
+    { name: "", available: 0, price: 0, selected: 0 }
   ];
 
   // Функция загрузки данных из localStorage или использование дефолтных значений
