@@ -179,7 +179,8 @@ function sendOrder() {
     }
 
     let orderNumber = `ORD-${Date.now()}`;
-    let comment = document.getElementById("order-comment").value || "Без комментария";
+    let commentElement = document.getElementById("order-comment");
+    let comment = commentElement ? commentElement.value : "Без комментария";
 
     let order = {
         orderNumber: orderNumber,
@@ -192,7 +193,7 @@ function sendOrder() {
         comment: comment
     };
 
-    console.log("📌 Отправляем заказ:", order);
+    console.log("📌 Отправляем заказ на сервер:", order);
 
     fetch("https://pmk-eagles.shop/api/orders", {
         method: "POST",
@@ -210,6 +211,13 @@ function sendOrder() {
     .then(data => {
         console.log("✅ Заказ успешно отправлен:", data);
         alert("✅ Заказ отправлен!");
+        
+        // Отправляем заказ через WebSocket
+        if (socket) {
+            socket.emit("newOrder", order);
+            console.log("📡 Заказ отправлен через WebSocket");
+        }
+
         clearCart();
         window.location.href = "orders.html";
     })
@@ -218,6 +226,15 @@ function sendOrder() {
         alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
     });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    let sendOrderBtn = document.querySelector(".snapshot");
+
+    if (sendOrderBtn) {
+        sendOrderBtn.addEventListener("click", sendOrder);
+    }
+});
+
 
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
