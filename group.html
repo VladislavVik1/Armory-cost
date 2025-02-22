@@ -30,7 +30,6 @@
     </div>
 
     <button id="contract-btn">Контракты</button>
-    <button id="balance-btn">Оставшийся баланс группы</button>
 
     <div id="contract-modal" class="modal">
         <div class="modal-content">
@@ -47,16 +46,45 @@
                         class="success">Успешно</span> | <strong>Оплата:</strong> $5000</li>
                 <li><strong>Контракт:</strong> Наслаждение Миру! | <strong>Статус:</strong> <span
                         class="success">Успешно</span> | <strong>Оплата:</strong> $10 000</li>
+                <li><strong>Контракт:</strong> Гоп-стоп | <strong>Статус:</strong> <span
+                        class="success">Успешно</span> | <strong>Оплата:</strong> $15 000</li>
             </ul>
         </div>
     </div>
 
-    <div id="balance-modal" class="modal">
-        <div class="modal-content" style="width: 50%; text-align: center; background-color: black;">
-            <span id="close-balance" class="close">&times;</span>
-            <h2 style="color: crimson; font-size: 36px;">380 000$</h2>
-        </div>
+<div class="button-container">
+    <button id="member-balance-btn">Баланс каждого участника</button>
+    <button id="balance-btn">Оффшорный баланс Группы</button>
+</div>
+
+<div id="balance-modal" class="modal">
+    <div class="modal-content">
+        <span id="close-balance" class="close">&times;</span>
+        <h2>Баланс</h2>
+        <h2 style="color: crimson; font-size: 36px;">850 000$</h2>
     </div>
+</div>
+
+<div id="member-balance-modal" class="modal">
+    <div class="modal-content">
+        <span id="close-member-balance" class="close">&times;</span>
+        <h2>Баланс каждого участника</h2>
+        <ul id="member-balance-list">
+            <li>Quazar - $24 600</li>
+            <li>Dok - $47 600</li>
+            <li>Reaper - $24 600</li>
+            <li>Grif - $35 500</li>
+            <li>Sakuta - $52 600</li>
+            <li>Vaz - $52 600</li>
+            <li>Quilroy - $22 600</li>
+            <li>Artom - $24 600</li>
+            <li>Lexa - $23 100</li>
+            <li>Bandera - $39 600</li>
+            <li>Boogeyman - $23 100</li>
+        </ul>
+    </div>
+</div>
+
 
     <button id="available-contracts-btn" style="width: 70%; font-size: 200%;">Доступные контракты</button>
 

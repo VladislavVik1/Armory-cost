@@ -57,4 +57,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     balanceModal.style.display = "none";
                 }
             });
+});
+        
+        document.getElementById("balance-btn").addEventListener("click", function() {
+            document.getElementById("balance-modal").style.display = "flex";
+        });
+
+        document.getElementById("close-balance").addEventListener("click", function() {
+            document.getElementById("balance-modal").style.display = "none";
+        });
+
+        document.getElementById("member-balance-btn").addEventListener("click", function() {
+            document.getElementById("member-balance-modal").style.display = "flex";
+        });
+
+        document.getElementById("close-member-balance").addEventListener("click", function() {
+            document.getElementById("member-balance-modal").style.display = "none";
         });

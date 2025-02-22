@@ -646,3 +646,7 @@ th {
 .available-contract-column .overlay {
     height: 700px;
 }
+#member-balance-list{
+    font-size: 18px;
+    font-weight: 700;
+}
