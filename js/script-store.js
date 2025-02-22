@@ -19,8 +19,8 @@ const priceList = {
                 "HK G36KV": { "unitPrice": 2200, "bulkPrice": 2000 },
                 "KH2002 CAMA": { "unitPrice": 2300, "bulkPrice": 2200 },
                 "MK17+ ВСЕ ВАРИАЦИИ": { "unitPrice": 1900, "bulkPrice": 1800 },
+    "M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02": { "unitPrice": 36550, "bulkPrice": 3655 },
                 "MSX": { "unitPrice": 3000, "bulkPrice": 3000 },
-
                 // Пистолеты
                 "ПМ": { "unitPrice": 100, "bulkPrice": 80 },
                 "1911": { "unitPrice": 200, "bulkPrice": 150 },
@@ -78,13 +78,9 @@ const priceList = {
                 "Костыль М320": { "unitPrice": 7000, "bulkPrice": 6700 },
                 "Подствольный М208": { "unitPrice": 5000, "bulkPrice": 4500 },
                 "MGL": { "unitPrice": 7000, "bulkPrice": 6700 },
-                "M112(4x)": { "unitPrice": 900, "bulkPrice": 900 },  
-                "M112": { "unitPrice": 300, "bulkPrice": 300 },  
-                "TM-62M": { "unitPrice": 500, "bulkPrice": 500 }, 
+                "Затяжка ОЗМ": { "unitPrice": 5000, "bulkPrice": 500 }, 
                 "MИ-8(ФАБ-250)": { "unitPrice": 320000, "bulkPrice": 32000 },
-                "SECRET BOX from Mainland": { "unitPrice": 60000, "bulkPrice": 60000 },
-                "МОН-50(Д)": { "unitPrice": 3000, "bulkPrice": 300 },
-                "МОН-50(10м)": { "unitPrice": 2000, "bulkPrice": 200 },
+                "SECRET BOX from Mainland": { "unitPrice": 10000, "bulkPrice": 10000 },
 
                 // Снаряды
                 "ПГ7-ВЛ": { "unitPrice": 1400, "bulkPrice": null },
@@ -279,12 +275,9 @@ const priceList = {
                 "Ремонт НАТО вертолётов": { "unitPrice": 15000 },
                 "Ремонт самолётов СССР": { "unitPrice": 15000 },
         "Ремонт НАТО самолётов": { "unitPrice": 20000 },
-        "Hilux + M2": { "unitPrice": 50000, "bulkPrice": 5000  },
-        "T-72": { "unitPrice": 160000, "bulkPrice": 16000  },
-        "T-34": { "unitPrice": 100000, "bulkPrice": 10000  },
+        "Hammer": { "unitPrice": 40000, "bulkPrice": 4000  },
         "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000  },
         "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
-        "VAZ": { "unitPrice": 2000, "bulkPrice": 200  },
 };
     
 
@@ -942,14 +935,8 @@ function openModal(category) {
     content = '<h2>Временные товары</h2><table>' +
         '<tr><th>Предмет</th><th>Цена за 1 шт $</th><th>Добавить в корзину</th></tr>' +
 
-        '<tr><td>Hilux + M2</td><td>50 000</td>' +
-        '<td><button onclick="addToCart(\'Hilux + M2\', 1)">Добавить 1 шт</button></td></tr>' +
-
-        '<tr><td>VAZ</td><td>2 000</td>' +
-        '<td><button onclick="addToCart(\'VAZ\', 1)">Добавить 1 шт</button></td></tr>' +
-
-        '<tr><td>T-72</td><td>160 000</td>' +
-        '<td><button onclick="addToCart(\'T-72\', 1)">Добавить 1 шт</button></td></tr>' +
+        '<tr><td>Hammer</td><td>40 000</td>' +
+        '<td><button onclick="addToCart(\'Hammer\', 1)">Добавить 1 шт</button></td></tr>' +
 
         '<tr><td>3rd PACK</td><td>100 000</td>' +
         '<td><button onclick="addToCart(\'3rd Platecarrier\', 1)">Добавить 20 шт</button></td></tr>' +
@@ -957,29 +944,13 @@ function openModal(category) {
         '<tr><td>Silent 5.56(Глушитель)</td><td>60 000</td>' +
         '<td><button onclick="addToCart(\'Silent 5.56\', 1)">Добавить 10 шт</button></td></tr>' +
 
-        '<tr><td>T-34</td><td>100 000</td>' +
-        '<td><button onclick="addToCart(\'T-34\', 1)">Добавить 1 шт</button></td></tr>' +
+        '<tr><td>Затянуть территорию базы минами типа ОЗМ-72</td><td>5 000</td>' +
+        '<td><button onclick="addToCart(\'Затяжка ОЗМ\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>МОН-50 ДИСТАНЦИОННАЯ(Взрывчатка)</td><td>3000</td>' +
-        '<td><button onclick="addToCart(\'МОН-50(Д)\', 1)">Добавить 1 шт</button></td></tr>' +
+        '<tr><td>M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02</td><td>36 550</td>' +
+        '<td><button onclick="addToCart(\'M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>МОН-50 10 метров(Взрывчатка)</td><td>2000</td>' +
-        '<td><button onclick="addToCart(\'МОН-50(10м)\', 1)">Добавить 1 шт</button></td></tr>' +
-
-        '<tr><td>M112(Взрывчатка)</td><td>300</td><td>' +
-        '<button onclick="addToCart(\'M112\', 1)">Добавить 1 шт</button> ' +
-
-
-        '<tr><td>M112(4x)(Взрывчатка)</td><td>900</td><td>' +
-        '<button onclick="addToCart(\'M112(4x)\', 1)">Добавить 1 шт</button> ' +
-        
-        '<tr><td>TM-62M(Взрывчатка)</td><td>500</td>' +
-        '<td><button onclick="addToCart(\'TM-62M\', 1)">Добавить 1 шт</button></td></tr>' +
-
-        '<tr><td>MИ-8(ФАБ-250)</td><td>320 000</td>' +
-        '<td><button onclick="addToCart(\'MИ-8(ФАБ-250)\', 1)">Добавить 1 шт</button></td></tr>' +
-
-        '<tr><td>SECRET BOX from Mainland</td><td>60 000</td>' +
+        '<tr><td>SECRET BOX from Mainland</td><td>10 000</td>' +
         '<td><button onclick="addToCart(\'SECRET BOX from Mainland\', 1)">Добавить 1 шт</button></td></tr>' +
 
         '</table>';
