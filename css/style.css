@@ -476,6 +476,9 @@ th {
     .cart{
         top: 40px;
     }
+    .button-container{
+        display: flex;
+    }
     .btn,
     button {
         font-size: 14px;
@@ -627,6 +630,8 @@ th {
     .close {
         font-size: 50px;
     }
+    .cart{
+    }
     .cart-button {
         font-size: 16px;
         padding: 10px;
@@ -646,7 +651,19 @@ th {
 .available-contract-column .overlay {
     height: 700px;
 }
-#member-balance-list{
-    font-size: 18px;
-    font-weight: 700;
+@media (min-width: 768px) and (max-width: 1440px) {
+#member-balance-list {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    #contract-btn {
+        width: 20%;
+        font-size: 150%;
+    }
+
+    #member-balance-btn,
+    #balance-btn {
+        font-size: 150%;
+    }
 }
