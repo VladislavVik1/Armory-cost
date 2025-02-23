@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Общая ситуация</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <div class="map-container">
+        <a href="index.html" class="back-arrow">◀ Назад</a>
+        <img id="map" src="./images/map.jpg" alt="map-colombo" width="650px">
+    </div>
+
+    
+    <a href="#" class="info-button" id="openModal">Информация ▶</a>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Выберите содержимое:</h2>
+            <div class="buttons">
+                <button class="file-btn" data-file="file1">SCR 1</button>
+                <button class="file-btn" data-file="file2">SCR 2</button>
+                <button class="file-btn" data-file="file3">SCR 3</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="textModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeTextModal">&times;</span>
+            <h2>Содержимое документа</h2>
+            <div id="modal-text" class="modal-text">
+                <p>Выберите файл, чтобы просмотреть содержимое.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/situation.js"></script>
+</body>
+
+</html>
