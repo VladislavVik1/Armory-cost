@@ -1108,26 +1108,24 @@ function sendOrder() {
     let comment = commentElement ? commentElement.value : "Без комментария";
 
     let order = {
-        orderNumber: orderNumber,
-        items: cart.map(item => {
-            let unitPrice = priceList[item.name]?.unitPrice || 0;
-            unitPrice = fixPrice(unitPrice); // ✅ Фиксим цену
+    orderNumber: orderNumber,
+    items: cart.map(item => {
+        let unitPrice = priceList[item.name]?.unitPrice || 0;
+        let totalPrice = item.quantity * unitPrice; // ❌ НЕ ИСПОЛЬЗУЕМ fixPrice()
 
-            let totalPrice = item.quantity * unitPrice;
+        return {
+            name: item.name,
+            quantity: item.quantity,
+            totalPrice: totalPrice
+        };
+    }),
+    totalPrice: cart.reduce((sum, item) => {
+        let unitPrice = priceList[item.name]?.unitPrice || 0;
+        return sum + (item.quantity * unitPrice); // ❌ НЕ ИСПОЛЬЗУЕМ fixPrice()
+    }, 0),
+    comment: comment
+};
 
-            return {
-                name: item.name,
-                quantity: item.quantity,
-                totalPrice: totalPrice
-            };
-        }),
-        totalPrice: cart.reduce((sum, item) => {
-            let unitPrice = priceList[item.name]?.unitPrice || 0;
-            unitPrice = fixPrice(unitPrice); // ✅ Фиксим цену перед расчетом
-            return sum + (item.quantity * unitPrice);
-        }, 0),
-        comment: comment
-    };
 
     console.log("📌 Отправляем заказ на сервер:", order);
 
