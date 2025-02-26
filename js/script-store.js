@@ -965,12 +965,9 @@ function addToCart(productName, quantity) {
         return;
     }
 
-    let unitPrice = priceList[productName].unitPrice || 0;
-    let bulkPrice = priceList[productName].bulkPrice || unitPrice;
+    let unitPrice = priceList[productName].unitPrice || 0; 
 
-    // ✅ Фиксим цену перед расчетом
-    unitPrice = fixPrice(unitPrice);
-    bulkPrice = fixPrice(bulkPrice);
+    let bulkPrice = priceList[productName].bulkPrice || unitPrice;
 
     let bulkQuantity = Math.floor(quantity / 10);
     let remainingQuantity = quantity % 10;
@@ -980,7 +977,7 @@ function addToCart(productName, quantity) {
     const existingProduct = cart.find(item => item.name === productName);
     if (existingProduct) {
         existingProduct.quantity += quantity;
-        existingProduct.totalPrice += totalPrice; // ✅ Фиксим общий totalPrice
+        existingProduct.totalPrice += totalPrice; // ✅ НЕ ИСПОЛЬЗУЕМ fixPrice()
     } else {
         cart.push({ name: productName, quantity, totalPrice });
     }
@@ -989,6 +986,7 @@ function addToCart(productName, quantity) {
     alert(`${productName} добавлено в корзину`);
     updateCartDisplay();
 }
+
 function updateCartDisplay() {
     const cartItemsList = document.getElementById("cart-items");
     if (!cartItemsList) {
