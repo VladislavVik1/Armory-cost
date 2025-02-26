@@ -1111,6 +1111,8 @@ function sendOrder() {
             
             let totalPrice = item.quantity * unitPrice;
 
+            console.log(`📌 ${item.name}: ${item.quantity} шт * ${unitPrice} = ${totalPrice}`); // Проверка
+
             return {
                 name: item.name,
                 quantity: item.quantity,
@@ -1119,14 +1121,14 @@ function sendOrder() {
         }),
         totalPrice: cart.reduce((sum, item) => {
             let unitPrice = priceList[item.name]?.unitPrice || 0;
-            unitPrice = fixPrice(unitPrice); // Исправляем цену
+            unitPrice = fixPrice(unitPrice);
             
             return sum + (item.quantity * unitPrice);
         }, 0),
         comment: comment
     };
 
-    console.log("📌 Отправляем заказ на сервер:", order);
+    console.log("📌 Итоговая сумма заказа:", order.totalPrice);
 
     fetch("https://pmk-eagles.shop/api/orders", {
         method: "POST",
@@ -1158,12 +1160,14 @@ function sendOrder() {
         alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
     });
 }
+
 function fixPrice(price) {
-    if (price > 10000) {
-        return price / 10; // Если цена завышена, корректируем
+    if (price % 10000 === 0 && price > 10000) {
+        return price / 10; // Корректируем ТОЛЬКО явно ошибочные цены
     }
-    return price; // Если цена нормальная, не меняем её
+    return price; // Если цена нормальная, оставляем её
 }
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
