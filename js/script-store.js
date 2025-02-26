@@ -279,6 +279,8 @@ const priceList = {
         "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000  },
         "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
 };
+    
+
 // Корзина (изначально пустая)
 let cart = localStorage.getItem("cart")
   ? JSON.parse(localStorage.getItem("cart"))
@@ -970,19 +972,13 @@ function addToCart(productName, quantity) {
 
     let bulkQuantity = Math.floor(quantity / 10);
     let remainingQuantity = quantity % 10;
-    
-    // ❌ Ошибка: (bulkPrice * 10) удваивает цену
-    // let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
-    
-    // ✅ Исправлено: bulkPrice уже учитывает скидку за 10 шт
-    let totalPrice = (bulkQuantity * bulkPrice) + (remainingQuantity * unitPrice);
+    let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
 
     const existingProduct = cart.find(item => item.name === productName);
     if (existingProduct) {
         existingProduct.quantity += quantity;
-        existingProduct.totalPrice += totalPrice; 
     } else {
-        cart.push({ name: productName, quantity, totalPrice });
+        cart.push({ name: productName, quantity });
     }
 
     saveCart();
@@ -1109,22 +1105,12 @@ function sendOrder() {
 
     let order = {
         orderNumber: orderNumber,
-        items: cart.map(item => {
-            let unitPrice = priceList[item.name]?.unitPrice || 0;
-
-            // ❌ Ошибка: `fixPrice(unitPrice)` мог менять правильную цену
-            let totalPrice = item.quantity * unitPrice;
-
-            return {
-                name: item.name,
-                quantity: item.quantity,
-                totalPrice: totalPrice
-            };
-        }),
-        totalPrice: cart.reduce((sum, item) => {
-            let unitPrice = priceList[item.name]?.unitPrice || 0;
-            return sum + (item.quantity * unitPrice);
-        }, 0),
+        items: cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            totalPrice: item.quantity * (priceList[item.name]?.unitPrice || 0)
+        })),
+        totalPrice: cart.reduce((sum, item) => sum + (item.quantity * (priceList[item.name]?.unitPrice || 0)), 0),
         comment: comment
     };
 
@@ -1146,7 +1132,8 @@ function sendOrder() {
     .then(data => {
         console.log("✅ Заказ успешно отправлен:", data);
         alert("✅ Заказ отправлен!");
-
+        
+        // Отправляем заказ через WebSocket
         if (socket) {
             socket.emit("newOrder", order);
             console.log("📡 Заказ отправлен через WebSocket");
@@ -1160,6 +1147,7 @@ function sendOrder() {
         alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
     });
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
 
@@ -1167,6 +1155,8 @@ document.addEventListener("DOMContentLoaded", function () {
         sendOrderBtn.addEventListener("click", sendOrder);
     }
 });
+
+
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
 
