@@ -279,8 +279,6 @@ const priceList = {
         "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000  },
         "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
 };
-    
-
 // Корзина (изначально пустая)
 let cart = localStorage.getItem("cart")
   ? JSON.parse(localStorage.getItem("cart"))
@@ -970,15 +968,21 @@ function addToCart(productName, quantity) {
     let unitPrice = priceList[productName].unitPrice || 0;
     let bulkPrice = priceList[productName].bulkPrice || unitPrice;
 
+    // ✅ Фиксим цену перед расчетом
+    unitPrice = fixPrice(unitPrice);
+    bulkPrice = fixPrice(bulkPrice);
+
     let bulkQuantity = Math.floor(quantity / 10);
     let remainingQuantity = quantity % 10;
+    
     let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
 
     const existingProduct = cart.find(item => item.name === productName);
     if (existingProduct) {
         existingProduct.quantity += quantity;
+        existingProduct.totalPrice += totalPrice; // ✅ Фиксим общий totalPrice
     } else {
-        cart.push({ name: productName, quantity });
+        cart.push({ name: productName, quantity, totalPrice });
     }
 
     saveCart();
@@ -1107,11 +1111,9 @@ function sendOrder() {
         orderNumber: orderNumber,
         items: cart.map(item => {
             let unitPrice = priceList[item.name]?.unitPrice || 0;
-            unitPrice = fixPrice(unitPrice); // Исправляем цену
-            
-            let totalPrice = item.quantity * unitPrice;
+            unitPrice = fixPrice(unitPrice); // ✅ Фиксим цену
 
-            console.log(`📌 ${item.name}: ${item.quantity} шт * ${unitPrice} = ${totalPrice}`); // Проверка
+            let totalPrice = item.quantity * unitPrice;
 
             return {
                 name: item.name,
@@ -1121,14 +1123,13 @@ function sendOrder() {
         }),
         totalPrice: cart.reduce((sum, item) => {
             let unitPrice = priceList[item.name]?.unitPrice || 0;
-            unitPrice = fixPrice(unitPrice);
-            
+            unitPrice = fixPrice(unitPrice); // ✅ Фиксим цену перед расчетом
             return sum + (item.quantity * unitPrice);
         }, 0),
         comment: comment
     };
 
-    console.log("📌 Итоговая сумма заказа:", order.totalPrice);
+    console.log("📌 Отправляем заказ на сервер:", order);
 
     fetch("https://pmk-eagles.shop/api/orders", {
         method: "POST",
@@ -1160,16 +1161,12 @@ function sendOrder() {
         alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
     });
 }
-
 function fixPrice(price) {
     if (price % 10000 === 0 && price > 10000) {
         return price / 10; // Корректируем ТОЛЬКО явно ошибочные цены
     }
     return price; // Если цена нормальная, оставляем её
 }
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
 
@@ -1177,8 +1174,6 @@ document.addEventListener("DOMContentLoaded", function () {
         sendOrderBtn.addEventListener("click", sendOrder);
     }
 });
-
-
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
 
