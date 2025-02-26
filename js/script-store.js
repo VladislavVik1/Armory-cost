@@ -1105,12 +1105,24 @@ function sendOrder() {
 
     let order = {
         orderNumber: orderNumber,
-        items: cart.map(item => ({
-            name: item.name,
-            quantity: item.quantity,
-            totalPrice: item.quantity * (priceList[item.name]?.unitPrice || 0)
-        })),
-        totalPrice: cart.reduce((sum, item) => sum + (item.quantity * (priceList[item.name]?.unitPrice || 0)), 0),
+        items: cart.map(item => {
+            let unitPrice = priceList[item.name]?.unitPrice || 0;
+            unitPrice = fixPrice(unitPrice); // Исправляем цену
+            
+            let totalPrice = item.quantity * unitPrice;
+
+            return {
+                name: item.name,
+                quantity: item.quantity,
+                totalPrice: totalPrice
+            };
+        }),
+        totalPrice: cart.reduce((sum, item) => {
+            let unitPrice = priceList[item.name]?.unitPrice || 0;
+            unitPrice = fixPrice(unitPrice); // Исправляем цену
+            
+            return sum + (item.quantity * unitPrice);
+        }, 0),
         comment: comment
     };
 
@@ -1132,8 +1144,7 @@ function sendOrder() {
     .then(data => {
         console.log("✅ Заказ успешно отправлен:", data);
         alert("✅ Заказ отправлен!");
-        
-        // Отправляем заказ через WebSocket
+
         if (socket) {
             socket.emit("newOrder", order);
             console.log("📡 Заказ отправлен через WebSocket");
@@ -1147,6 +1158,13 @@ function sendOrder() {
         alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
     });
 }
+function fixPrice(price) {
+    if (price > 10000) {
+        return price / 10; // Если цена завышена, корректируем
+    }
+    return price; // Если цена нормальная, не меняем её
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
