@@ -279,8 +279,6 @@ const priceList = {
         "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000  },
         "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
 };
-    
-
 // Корзина (изначально пустая)
 let cart = localStorage.getItem("cart")
   ? JSON.parse(localStorage.getItem("cart"))
@@ -1105,14 +1103,33 @@ function sendOrder() {
     let commentElement = document.getElementById("order-comment");
     let comment = commentElement ? commentElement.value : "Без комментария";
 
-    let order = {
-        orderNumber: orderNumber,
-        items: cart.map(item => ({
+    let formattedItems = cart.map(item => {
+        if (!priceList[item.name]) {
+            console.warn(`⚠ Ошибка: Товар "${item.name}" не найден в priceList!`);
+            return null;
+        }
+
+        let bulkPrice = priceList[item.name].bulkPrice || priceList[item.name].unitPrice;
+        let unitPrice = priceList[item.name].unitPrice || 0;
+        
+        let bulkQuantity = Math.floor(item.quantity / 10);
+        let remainingQuantity = item.quantity % 10;
+        
+        let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
+        
+        return {
             name: item.name,
             quantity: item.quantity,
-            totalPrice: item.quantity * (priceList[item.name]?.unitPrice || 0)
-        })),
-        totalPrice: cart.reduce((sum, item) => sum + (item.quantity * (priceList[item.name]?.unitPrice || 0)), 0),
+            totalPrice: totalPrice
+        };
+    }).filter(item => item !== null); // Удаляем товары с ошибками
+
+    let totalOrderPrice = formattedItems.reduce((sum, item) => sum + item.totalPrice, 0);
+
+    let order = {
+        orderNumber: orderNumber,
+        items: formattedItems,
+        totalPrice: totalOrderPrice,
         comment: comment
     };
 
@@ -1134,7 +1151,7 @@ function sendOrder() {
     .then(data => {
         console.log("✅ Заказ успешно отправлен:", data);
         alert("✅ Заказ отправлен!");
-        
+
         // Отправляем заказ через WebSocket
         if (socket) {
             socket.emit("newOrder", order);
@@ -1149,6 +1166,7 @@ function sendOrder() {
         alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
     });
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
