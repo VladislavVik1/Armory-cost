@@ -274,10 +274,10 @@ const priceList = {
                 "Ремонт вертолётов СССР": { "unitPrice": 10000 },
                 "Ремонт НАТО вертолётов": { "unitPrice": 15000 },
                 "Ремонт самолётов СССР": { "unitPrice": 15000 },
-        "Ремонт НАТО самолётов": { "unitPrice": 20000 },
-        "Hammer": { "unitPrice": 40000, "bulkPrice": 4000  },
-        "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000  },
-        "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
+                "Ремонт НАТО самолётов": { "unitPrice": 20000 },
+                "Hammer": { "unitPrice": 40000, "bulkPrice": 4000 },
+                "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000 },
+                "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
 };
 // Корзина (изначально пустая)
 let cart = localStorage.getItem("cart")
@@ -984,7 +984,6 @@ function addToCart(productName, quantity) {
     alert(`${productName} добавлено в корзину`);
     updateCartDisplay();
 }
-
 function updateCartDisplay() {
     const cartItemsList = document.getElementById("cart-items");
     if (!cartItemsList) {
@@ -1115,7 +1114,7 @@ function sendOrder() {
         let bulkQuantity = Math.floor(item.quantity / 10);
         let remainingQuantity = item.quantity % 10;
         
-        let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
+        let totalPrice = (bulkQuantity * bulkPrice) + (remainingQuantity * unitPrice);
         
         return {
             name: item.name,
@@ -1166,8 +1165,6 @@ function sendOrder() {
         alert("❌ Ошибка при отправке заказа, попробуйте ещё раз.");
     });
 }
-
-
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
 
@@ -1175,8 +1172,6 @@ document.addEventListener("DOMContentLoaded", function () {
         sendOrderBtn.addEventListener("click", sendOrder);
     }
 });
-
-
 document.addEventListener("DOMContentLoaded", function () {
     let sendOrderBtn = document.querySelector(".snapshot");
 
