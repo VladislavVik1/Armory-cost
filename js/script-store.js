@@ -1109,17 +1109,18 @@ function sendOrder() {
             return null;
         }
 
-        let bulkPrice = priceList[item.name].bulkPrice !== null ? priceList[item.name].bulkPrice : priceList[item.name].unitPrice;
         let unitPrice = priceList[item.name].unitPrice || 0;
-        
+        let bulkPrice = priceList[item.name].bulkPrice !== null ? priceList[item.name].bulkPrice : unitPrice;
+
         let bulkQuantity = Math.floor(item.quantity / 10);
         let remainingQuantity = item.quantity % 10;
-        
+
         let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
-        
+
         return {
             name: item.name,
             quantity: item.quantity,
+            pricePerUnit: unitPrice,
             totalPrice: totalPrice
         };
     }).filter(item => item !== null);
