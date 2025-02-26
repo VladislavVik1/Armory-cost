@@ -46,18 +46,11 @@ const socket = io("https://pmk-eagles.shop", { path: "/socket.io/" });
     });
 
     // 🔹 Получаем новые заказы в реальном времени
-socket.on("newOrder", (order) => {
-    console.log("📌 Новый заказ:", order);
-
-    // ✅ Фиксим: создаём копию `orders`, если её нет
-    let currentOrders = document.querySelectorAll(".order").length;
-    let existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
-
-    existingOrders.push(order);
-    localStorage.setItem("orders", JSON.stringify(existingOrders));
-
-    renderOrders(existingOrders); 
-});
+    socket.on("newOrder", (order) => {
+        console.log("📌 Новый заказ:", order);
+        let currentOrders = document.querySelectorAll(".order").length;
+        renderOrders([...orders, order]); // Добавляем новый заказ в список
+    });
 
     // 📌 Обработчик очистки заказов
     if (clearOrdersBtn) {
