@@ -966,7 +966,7 @@ function addToCart(productName, quantity) {
     }
 
     let unitPrice = priceList[productName].unitPrice || 0;
-    let bulkPrice = priceList[productName].bulkPrice || unitPrice;
+    let bulkPrice = priceList[productName].bulkPrice !== null ? priceList[productName].bulkPrice : unitPrice;
 
     let bulkQuantity = Math.floor(quantity / 10);
     let remainingQuantity = quantity % 10;
@@ -1004,8 +1004,9 @@ function updateCartDisplay() {
             return;
         }
 
-        let bulkPrice = priceList[item.name]?.bulkPrice || 0;
+        let bulkPrice = priceList[item.name]?.bulkPrice !== null ? priceList[item.name].bulkPrice : priceList[item.name]?.unitPrice;
         let unitPrice = priceList[item.name]?.unitPrice || 0;
+
         let bulkQuantity = Math.floor(item.quantity / 10);
         let remainingQuantity = item.quantity % 10;
         let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
@@ -1108,20 +1109,20 @@ function sendOrder() {
             return null;
         }
 
-        let bulkPrice = priceList[item.name].bulkPrice || priceList[item.name].unitPrice;
+        let bulkPrice = priceList[item.name].bulkPrice !== null ? priceList[item.name].bulkPrice : priceList[item.name].unitPrice;
         let unitPrice = priceList[item.name].unitPrice || 0;
         
         let bulkQuantity = Math.floor(item.quantity / 10);
         let remainingQuantity = item.quantity % 10;
         
-        let totalPrice = (bulkQuantity * bulkPrice) + (remainingQuantity * unitPrice);
+        let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
         
         return {
             name: item.name,
             quantity: item.quantity,
             totalPrice: totalPrice
         };
-    }).filter(item => item !== null); // Удаляем товары с ошибками
+    }).filter(item => item !== null);
 
     let totalOrderPrice = formattedItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
@@ -1151,7 +1152,6 @@ function sendOrder() {
         console.log("✅ Заказ успешно отправлен:", data);
         alert("✅ Заказ отправлен!");
 
-        // Отправляем заказ через WebSocket
         if (socket) {
             socket.emit("newOrder", order);
             console.log("📡 Заказ отправлен через WebSocket");
