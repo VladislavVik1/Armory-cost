@@ -19,7 +19,7 @@ const priceList = {
                 "HK G36KV": { "unitPrice": 2200, "bulkPrice": 2000 },
                 "KH2002 CAMA": { "unitPrice": 2300, "bulkPrice": 2200 },
                 "MK17+ ВСЕ ВАРИАЦИИ": { "unitPrice": 1900, "bulkPrice": 1800 },
-    "M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02": { "unitPrice": 36550, "bulkPrice": 3655 },
+                "M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02": {       "unitPrice": 36550, "bulkPrice": 3655 },
                 "MSX": { "unitPrice": 3000, "bulkPrice": 3000 },
                 // Пистолеты
                 "ПМ": { "unitPrice": 100, "bulkPrice": 80 },
@@ -974,7 +974,8 @@ function addToCart(productName, quantity) {
     let remainingQuantity = quantity % 10;
     let totalPrice = (bulkQuantity * bulkPrice * 10) + (remainingQuantity * unitPrice);
 
-    const existingProduct = cart.find(item => item.name === productName);
+    let existingProduct = cart.find(item => item.name === productName);
+
     if (existingProduct) {
         existingProduct.quantity += quantity;
     } else {
@@ -985,6 +986,7 @@ function addToCart(productName, quantity) {
     alert(`${productName} добавлено в корзину`);
     updateCartDisplay();
 }
+
 function updateCartDisplay() {
     const cartItemsList = document.getElementById("cart-items");
     if (!cartItemsList) {
@@ -1000,7 +1002,7 @@ function updateCartDisplay() {
     }
 
     cart.forEach((item, index) => {
-        if (!priceList || !priceList[item.name]) {
+        if (!priceList[item.name]) {
             console.warn(`⚠ Цена для "${item.name}" не найдена!`);
             return;
         }
@@ -1025,7 +1027,7 @@ function updateCartDisplay() {
         `;
         cartItemsList.appendChild(li);
 
-        // 🔹 Обработчики событий для изменения количества
+        // Обработчики событий для изменения количества
         li.querySelector(".cart-plus").addEventListener("click", function () {
             item.quantity++;
             saveCart();
@@ -1049,7 +1051,7 @@ function updateCartDisplay() {
         });
     });
 
-    // 🔹 Обновление кнопки "Корзина"
+    // Обновление кнопки "Корзина"
     const cartButton = document.querySelector(".cart-button");
     if (cartButton) {
         cartButton.textContent = cart.length > 0 
@@ -1057,7 +1059,7 @@ function updateCartDisplay() {
             : "Корзина";
     }
 
-    // 🔹 Обновление итоговой суммы
+    // Обновление итоговой суммы
     const totalPriceElement = document.getElementById("total-price");
     if (totalPriceElement) {
         totalPriceElement.textContent = `Общая сумма: ${totalSum.toFixed(2)} $`;
