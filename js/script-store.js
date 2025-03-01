@@ -278,6 +278,11 @@ const priceList = {
                 "Bird": { "unitPrice": 40000, "bulkPrice": 4000 },
                 "Territoty": { "unitPrice": 400000, "bulkPrice": 400000 },
                 "Комплектация Обвесов": { "unitPrice": 60000, "bulkPrice": 6000 },
+                "Mavic-3": { "unitPrice": 4000, "bulkPrice": 400 },
+                "Mavic-3T": { "unitPrice": 6000, "bulkPrice": 600 },
+                "M112(4x)": { "unitPrice": 10000, "bulkPrice": 1000 },
+                "MK-19": { "unitPrice": 10000, "bulkPrice": 1000 },
+                "Friends": { "unitPrice": 200000, "bulkPrice": 20000 },
 };
 // Корзина (изначально пустая)
 let cart = localStorage.getItem("cart")
@@ -290,7 +295,7 @@ function openModal(category) {
     let content = '';
     switch (category) {
         case 'automats':
-                    content = '<h2>Автоматы</h2><table><tr><th>Автомат</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr><tr><td>АКМ весло</td><td>500</td><td>4000</td><td><button onclick="addToCart(\'АКМ весло\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКМ весло\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКМС</td><td>550</td><td>4500</td><td><button onclick="addToCart(\'АКМС\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКМС\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-74</td><td>600</td><td>5000</td><td><button onclick="addToCart(\'АК-74\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-74\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н</td><td>650</td><td>5600</td><td><button onclick="addToCart(\'АКС-74Н\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н-НПЗ-Планка</td><td>750</td><td>6000</td><td><button onclick="addToCart(\'АКС-74Н-НПЗ-Планка\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н-НПЗ-Планка\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н(Б-13 Планка)</td><td>800</td><td>6800</td><td><button onclick="addToCart(\'АКС-74Н(Б-13 Планка)\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н(Б-13 Планка)\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-74У</td><td>450</td><td>4000</td><td><button onclick="addToCart(\'АК-74У\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-74У\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-74УН</td><td>500</td><td>4500</td><td><button onclick="addToCart(\'АК-74УН\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-74УН\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК103-105</td><td>1000</td><td>9000</td><td><button onclick="addToCart(\'АК103-105\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК103-105\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-103-105 Б13-Зенитка</td><td>1100</td><td>10 000</td><td><button onclick="addToCart(\'АК-103-105 Б13-Зенитка\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-103-105 Б13-Зенитка\', 10)">Добавить 10 шт</button></td></tr><tr><td>ВАЛ</td><td>900</td><td>8000</td><td><button onclick="addToCart(\'ВАЛ\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'ВАЛ\', 10)">Добавить 10 шт</button></td></tr><tr><td>Винторез</td><td>930</td><td>8200</td><td><button onclick="addToCart(\'Винторез\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'Винторез\', 10)">Добавить 10 шт</button></td></tr><tr><td>М16А4 ручка транспортировки</td><td>1000</td><td>9000</td><td><button onclick="addToCart(\'М16А4 ручка транспортировки\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М16А4 ручка транспортировки\', 10)">Добавить 10 шт</button></td></tr><tr><td>М16А4</td><td>1050</td><td>10 000</td><td><button onclick="addToCart(\'М16А4\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М16А4\', 10)">Добавить 10 шт</button></td></tr><tr><td>М4А1</td><td>1400</td><td>13 000</td><td><button onclick="addToCart(\'М4А1\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М4А1\', 10)">Добавить 10 шт</button></td></tr><tr><td>ФН-2000</td><td>3000</td><td>24 000</td><td><button onclick="addToCart(\'ФН-2000\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'ФН-2000\', 10)">Добавить 10 шт</button></td></tr><tr><td>HK G36KV</td><td>2200</td><td>20 000</td><td><button onclick="addToCart(\'HK G36KV\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'HK G36KV\', 10)">Добавить 10 шт</button></td></tr><tr><td>KH2002 CAMA</td><td>2300</td><td>22 000</td><td><button onclick="addToCart(\'KH2002 CAMA\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'KH2002 CAMA\', 10)">Добавить 10 шт</button></td></tr><tr><td>MK17+ ВСЕ ВАРИАЦИИ</td><td>1900</td><td>18 000</td><td><button onclick="addToCart(\'MK17+ ВСЕ ВАРИАЦИИ\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'MK17+ ВСЕ ВАРИАЦИИ\', 10)">Добавить 10 шт</button></td></tr><tr><td>MSX</td><td>3000</td><td>30 000</td><td><button onclick="addToCart(\'MSX\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'MSX\', 10)">Добавить 10 шт</button></td></tr></table>';
+                    content = '<h2>Автоматы</h2><table><tr><th>Автомат</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr><tr><td>АК-74</td><td>600</td><td>5000</td><td><button onclick="addToCart(\'АК-74\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-74\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н</td><td>650</td><td>5600</td><td><button onclick="addToCart(\'АКС-74Н\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н-НПЗ-Планка</td><td>750</td><td>6000</td><td><button onclick="addToCart(\'АКС-74Н-НПЗ-Планка\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н-НПЗ-Планка\', 10)">Добавить 10 шт</button></td></tr><tr><td>АКС-74Н(Б-13 Планка)</td><td>800</td><td>6800</td><td><button onclick="addToCart(\'АКС-74Н(Б-13 Планка)\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АКС-74Н(Б-13 Планка)\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК103-105</td><td>1000</td><td>9000</td><td><button onclick="addToCart(\'АК103-105\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК103-105\', 10)">Добавить 10 шт</button></td></tr><tr><td>АК-103-105 Б13-Зенитка</td><td>1100</td><td>10 000</td><td><button onclick="addToCart(\'АК-103-105 Б13-Зенитка\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'АК-103-105 Б13-Зенитка\', 10)">Добавить 10 шт</button></td></tr><tr><td>ВАЛ</td><td>900</td><td>8000</td><td><button onclick="addToCart(\'ВАЛ\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'ВАЛ\', 10)">Добавить 10 шт</button></td></tr><tr><td>М16А4 ручка транспортировки</td><td>1000</td><td>9000</td><td><button onclick="addToCart(\'М16А4 ручка транспортировки\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М16А4 ручка транспортировки\', 10)">Добавить 10 шт</button></td></tr><tr><td>М16А4</td><td>1050</td><td>10 000</td><td><button onclick="addToCart(\'М16А4\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М16А4\', 10)">Добавить 10 шт</button></td></tr><tr><td>М4А1</td><td>1400</td><td>13 000</td><td><button onclick="addToCart(\'М4А1\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'М4А1\', 10)">Добавить 10 шт</button></td></tr><tr><td>ФН-2000</td><td>3000</td><td>24 000</td><td><button onclick="addToCart(\'ФН-2000\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'ФН-2000\', 10)">Добавить 10 шт</button></td></tr><tr><td>HK G36KV</td><td>2200</td><td>20 000</td><td><button onclick="addToCart(\'HK G36KV\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'HK G36KV\', 10)">Добавить 10 шт</button></td></tr><tr><td>KH2002 CAMA</td><td>2300</td><td>22 000</td><td><button onclick="addToCart(\'KH2002 CAMA\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'KH2002 CAMA\', 10)">Добавить 10 шт</button></td></tr><tr><td>MK17+ ВСЕ ВАРИАЦИИ</td><td>1900</td><td>18 000</td><td><button onclick="addToCart(\'MK17+ ВСЕ ВАРИАЦИИ\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'MK17+ ВСЕ ВАРИАЦИИ\', 10)">Добавить 10 шт</button></td></tr><tr><td>MSX</td><td>3000</td><td>30 000</td><td><button onclick="addToCart(\'MSX\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'MSX\', 10)">Добавить 10 шт</button></td></tr></table>';
                     break;
                 case 'pistols':
                     content = '<h2>Пистолеты</h2><table><tr><th>Пистолет</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr><tr><td>ПМ</td><td>100</td><td>800</td><td><button onclick="addToCart(\'ПМ\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'ПМ\', 10)">Добавить 10 шт</button></td></tr><tr><td>1911</td><td>200</td><td>1500</td><td><button onclick="addToCart(\'1911\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'1911\', 10)">Добавить 10 шт</button></td></tr><tr><td>6П9</td><td>150</td><td>1000</td><td><button onclick="addToCart(\'6П9\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'6П9\', 10)">Добавить 10 шт</button></td></tr><tr><td>RHINO</td><td>400</td><td>3400</td><td><button onclick="addToCart(\'RHINO\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'RHINO\', 10)">Добавить 10 шт</button></td></tr><tr><td>Glock 17</td><td>600</td><td>5400</td><td><button onclick="addToCart(\'Glock 17\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'Glock 17\', 10)">Добавить 10 шт</button></td></tr><tr><td>Glock 19</td><td>700</td><td>6500</td><td><button onclick="addToCart(\'Glock 19\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'Glock 19\', 10)">Добавить 10 шт</button></td></tr><tr><td>Glock 22</td><td>900</td><td>8000</td><td><button onclick="addToCart(\'Glock 22\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'Glock 22\', 10)">Добавить 10 шт</button></td></tr><tr><td>MP7A2</td><td>1300</td><td>10 000</td><td><button onclick="addToCart(\'MP7A2\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'MP7A2\', 10)">Добавить 10 шт</button></td></tr><tr><td>TT-33</td><td>1000</td><td>7000</td><td><button onclick="addToCart(\'TT-33\', 1)">Добавить 1 шт</button><button onclick="addToCart(\'TT-33\', 10)">Добавить 10 шт</button></td></tr></table >';
@@ -407,7 +412,6 @@ function openModal(category) {
                 case 'machineguns':
     content = '<h2>Пулеметы</h2><table>' +
         '<tr><th>Пулемет</th><th>Цена за 1 шт $</th><th>Цена за 10 шт $</th><th>Добавить в корзину</th></tr>' +
-        '<tr><td>ПКM</td><td>1300</td><td>12 000</td><td><button onclick="addToCart(\'ПКM\', 1)">Добавить 1 шт</button> <button onclick="addToCart(\'ПКM\', 10)">Добавить 10 шт</button></td></tr>' +
         '<tr><td>ПКП</td><td>1700</td><td>15 000</td><td><button onclick="addToCart(\'ПКП\', 1)">Добавить 1 шт</button> <button onclick="addToCart(\'ПКП\', 10)">Добавить 10 шт</button></td></tr>' +
         '<tr><td>M249</td><td>2200</td><td>20 000</td><td><button onclick="addToCart(\'M249\', 1)">Добавить 1 шт</button> <button onclick="addToCart(\'M249\', 10)">Добавить 10 шт</button></td></tr>' +
         '<tr><td>М240(свинья)</td><td>3000</td><td>25 000</td><td><button onclick="addToCart(\'М240(свинья)\', 1)">Добавить 1 шт</button> <button onclick="addToCart(\'М240(свинья)\', 10)">Добавить 10 шт</button></td></tr>' +
@@ -931,23 +935,37 @@ function openModal(category) {
             break;
                 case 'akcija_kurwa':
     content = '<h2>Временные товары</h2><table>' +
-        '<tr><th>Предмет</th><th>Цена за 1 шт $</th><th>Добавить в корзину</th></tr>' +
+        '<tr><th>Предмет</th><th>Цена за шт $</th><th>Добавить в корзину</th></tr>' +
 
         '<tr><td>Taureq</td><td>28 000</td>' +
         '<td><button onclick="addToCart(\'Taureq\', 1)">Добавить 1 шт</button></td></tr>' +
 
         '<tr><td>Кастомные улучшения вооружения</td><td>60 000</td>' +
-        '<td><button onclick="addToCart(\'Комплектация Обвесов\', 1)">Добавить 10 шт</button></td></tr>' +
+        '<td><button onclick="addToCart(\'Комплектация Обвесов\', 1)">Добавить 10 комплектов</button></td></tr>' +
 
         '<tr><td>Обезопасить периметр</td><td>50 000</td>' +
-        '<td><button onclick="addToCart(\'Затяжка\', 1)">Добавить 1 шт</button></td></tr>' +
+        '<td><button onclick="addToCart(\'Затяжка\', 1)">Добавить растяжки, мины</button></td></tr>' +
 
         '<tr><td>Little Bird</td><td>40 000</td>' +
         '<td><button onclick="addToCart(\'Bird\', 1)">Добавить 1 шт</button></td></tr>' +
 
-
         '<tr><td>Дополнительные укрепленные точки, турели, способы подрыва, заборы</td><td>400 000</td>' +
-        '<td><button onclick="addToCart(\'Territoty\', 1)">Добавить 1 шт</button></td></tr>' +
+        '<td><button onclick="addToCart(\'Territoty\', 1)">Добавить на территорию</button></td></tr>' +
+
+        '<tr><td>Mavic-3</td><td>4000</td>' +
+        '<td><button onclick="addToCart(\'Mavic-3\', 1)">Добавить 1 дрон</button></td></tr>' +
+
+        '<tr><td>Mavic-3T</td><td>6000</td>' +
+        '<td><button onclick="addToCart(\'Mavic-3T\', 1)">Добавить 1 дрон</button></td></tr>' +
+
+        '<tr><td>M112(4x)</td><td>10 000</td>' +
+        '<td><button onclick="addToCart(\'M112(4x)\', 1)">Добавить 10 шт</button></td></tr>' +
+
+        '<tr><td>MK-19 на Hammer</td><td>10 000</td>' +
+        '<td><button onclick="addToCart(\'MK-19\', 1)">Добавить 1 шт</button></td></tr>' +
+
+        '<tr><td>Установить нейтралитет с какой либо группировкой на острове</td><td>200 000</td>' +
+        '<td><button onclick="addToCart(\'Friends\', 1)">Договорится</button></td></tr>' +
 
         '<tr><td>Разведданые, Секретный подарок</td><td>40 000</td>' +
         '<td><button onclick="addToCart(\'SECRET BOX from Mainland\', 1)">Добавить 1 шт</button></td></tr>' +
