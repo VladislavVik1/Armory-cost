@@ -19,7 +19,7 @@ const priceList = {
                 "HK G36KV": { "unitPrice": 2200, "bulkPrice": 2000 },
                 "KH2002 CAMA": { "unitPrice": 2300, "bulkPrice": 2200 },
                 "MK17+ ВСЕ ВАРИАЦИИ": { "unitPrice": 1900, "bulkPrice": 1800 },
-                "M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02": {       "unitPrice": 36550, "bulkPrice": 3655 },
+                "M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02": {"unitPrice": 36550, "bulkPrice": 3655 },
                 "MSX": { "unitPrice": 3000, "bulkPrice": 3000 },
                 // Пистолеты
                 "ПМ": { "unitPrice": 100, "bulkPrice": 80 },
