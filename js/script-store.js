@@ -933,13 +933,13 @@ function openModal(category) {
     content = '<h2>Временные товары</h2><table>' +
         '<tr><th>Предмет</th><th>Цена за 1 шт $</th><th>Добавить в корзину</th></tr>' +
 
-        '<tr><td>Taureq</td><td>50 000</td>' +
+        '<tr><td>Taureq</td><td>28 000</td>' +
         '<td><button onclick="addToCart(\'Taureq\', 1)">Добавить 1 шт</button></td></tr>' +
 
         '<tr><td>Кастомные улучшения вооружения</td><td>60 000</td>' +
         '<td><button onclick="addToCart(\'Комплектация Обвесов\', 1)">Добавить 10 шт</button></td></tr>' +
 
-        '<tr><td>Обезопасить периметр</td><td>80 000</td>' +
+        '<tr><td>Обезопасить периметр</td><td>50 000</td>' +
         '<td><button onclick="addToCart(\'Затяжка\', 1)">Добавить 1 шт</button></td></tr>' +
 
         '<tr><td>Little Bird</td><td>40 000</td>' +
