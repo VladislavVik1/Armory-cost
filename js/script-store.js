@@ -78,9 +78,9 @@ const priceList = {
                 "Костыль М320": { "unitPrice": 7000, "bulkPrice": 6700 },
                 "Подствольный М208": { "unitPrice": 5000, "bulkPrice": 4500 },
                 "MGL": { "unitPrice": 7000, "bulkPrice": 6700 },
-                "Затяжка ОЗМ": { "unitPrice": 5000, "bulkPrice": 500 }, 
-                "MИ-8(ФАБ-250)": { "unitPrice": 320000, "bulkPrice": 32000 },
-                "SECRET BOX from Mainland": { "unitPrice": 10000, "bulkPrice": 10000 },
+                "Затяжка": { "unitPrice": 50000, "bulkPrice": 5000 }, 
+                "Taureq": { "unitPrice": 28000, "bulkPrice": 28000 },
+                "SECRET BOX from Mainland": { "unitPrice": 40000, "bulkPrice": 40000 },
 
                 // Снаряды
                 "ПГ7-ВЛ": { "unitPrice": 1400, "bulkPrice": null },
@@ -275,9 +275,9 @@ const priceList = {
                 "Ремонт НАТО вертолётов": { "unitPrice": 15000 },
                 "Ремонт самолётов СССР": { "unitPrice": 15000 },
                 "Ремонт НАТО самолётов": { "unitPrice": 20000 },
-                "Hammer": { "unitPrice": 40000, "bulkPrice": 4000 },
-                "3rd Platecarrier": { "unitPrice": 100000, "bulkPrice": 10000 },
-                "Silent 5.56": { "unitPrice": 60000, "bulkPrice": 6000 },
+                "Bird": { "unitPrice": 40000, "bulkPrice": 4000 },
+                "Territoty": { "unitPrice": 400000, "bulkPrice": 400000 },
+                "Комплектация Обвесов": { "unitPrice": 60000, "bulkPrice": 6000 },
 };
 // Корзина (изначально пустая)
 let cart = localStorage.getItem("cart")
@@ -933,22 +933,23 @@ function openModal(category) {
     content = '<h2>Временные товары</h2><table>' +
         '<tr><th>Предмет</th><th>Цена за 1 шт $</th><th>Добавить в корзину</th></tr>' +
 
-        '<tr><td>Hammer</td><td>40 000</td>' +
-        '<td><button onclick="addToCart(\'Hammer\', 1)">Добавить 1 шт</button></td></tr>' +
+        '<tr><td>Taureq</td><td>50 000</td>' +
+        '<td><button onclick="addToCart(\'Taureq\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>3rd PACK</td><td>100 000</td>' +
-        '<td><button onclick="addToCart(\'3rd Platecarrier\', 1)">Добавить 20 шт</button></td></tr>' +
+        '<tr><td>Кастомные улучшения вооружения</td><td>60 000</td>' +
+        '<td><button onclick="addToCart(\'Комплектация Обвесов\', 1)">Добавить 10 шт</button></td></tr>' +
 
-        '<tr><td>Silent 5.56(Глушитель)</td><td>60 000</td>' +
-        '<td><button onclick="addToCart(\'Silent 5.56\', 1)">Добавить 10 шт</button></td></tr>' +
+        '<tr><td>Обезопасить периметр</td><td>80 000</td>' +
+        '<td><button onclick="addToCart(\'Затяжка\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>Затянуть территорию базы минами типа ОЗМ-72</td><td>5 000</td>' +
-        '<td><button onclick="addToCart(\'Затяжка ОЗМ\', 1)">Добавить 1 шт</button></td></tr>' +
+        '<tr><td>Little Bird</td><td>60 000</td>' +
+        '<td><button onclick="addToCart(\'Bird\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02</td><td>36 550</td>' +
-        '<td><button onclick="addToCart(\'M110-k5 M-LOCK (ACS) + 20 rnd SR-25 M993 AP (5 маг) + SHMIDT BENDER PMII 02\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>SECRET BOX from Mainland</td><td>10 000</td>' +
+        '<tr><td>Дополнительные укрепленные точки, турели, способы подрыва, заборы</td><td>400 000</td>' +
+        '<td><button onclick="addToCart(\'Territoty\', 1)">Добавить 1 шт</button></td></tr>' +
+
+        '<tr><td>Разведданые, Секретный подарок</td><td>40 000</td>' +
         '<td><button onclick="addToCart(\'SECRET BOX from Mainland\', 1)">Добавить 1 шт</button></td></tr>' +
 
         '</table>';
