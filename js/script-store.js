@@ -942,7 +942,7 @@ function openModal(category) {
         '<tr><td>Обезопасить периметр</td><td>80 000</td>' +
         '<td><button onclick="addToCart(\'Затяжка\', 1)">Добавить 1 шт</button></td></tr>' +
 
-        '<tr><td>Little Bird</td><td>60 000</td>' +
+        '<tr><td>Little Bird</td><td>40 000</td>' +
         '<td><button onclick="addToCart(\'Bird\', 1)">Добавить 1 шт</button></td></tr>' +
 
 
