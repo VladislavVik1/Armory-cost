@@ -16,13 +16,33 @@
         <a href="group.html" class="btn">Состав группы и контракты</a>
         <a href="store.html" class="btn">Магазин вооружения</a>
         <a href="situation.html" class="btn">Общая ситуация в регионе</a>
+        <button class="btn" id="open-inventory">Инвентарь предметов группы</button>
+        </div>
+        
+        <div id="inventory-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeInventoryModal()">&times;</span>
+                <h2>Наличие предметов</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-list">
+                    </tbody>
+                </table>
+            </div>
     </div>
+    
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <div id="modal-body"></div>
         </div>
     </div>
+    <script src="./js/inventory.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="./js/order.js"></script>
 
