@@ -5,63 +5,84 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModal = document.querySelector(".close");
 
     const inventoryItems = [
-        { name: "Повязка", quantity: 11 },
-        { name: "Давящая повящка", quantity: 13 },
-        { name: "Тампонирующая повязка", quantity: 7 },
-        { name: "Турникет", quantity: 6 },
-        { name: "Обезболивающее", quantity: 3 },
-        { name: "Адреналин", quantity: 2},
-        { name: "Пакет с кровью (500)", quantity: 1 },
-        { name: "Пакет с кровью (1000)", quantity: 1 },
-        { name: "Шина", quantity: 4 },
+        { name: "Повязка", quantity: 0 },
+        { name: "Давящая повящка", quantity: 0 },
+        { name: "Тампонирующая повязка", quantity: 0 },
+        { name: "Турникет", quantity: 1 },
+        { name: "Обезболивающее", quantity: 1 },
+        { name: "Адреналин", quantity: 0},
+        { name: "Пакет с кровью (250)", quantity: 6 },
+        { name: "Пакет с кровью (500)", quantity: 6 },
+        { name: "Пакет с кровью (1000)", quantity: 8 },
+        { name: "Пакет с физраствором (500)", quantity: 4 },
+        { name: "Шина", quantity: 0 },
         { name: "Мешки для трупов", quantity: 14 },
+
+
+
         { name: "Магазины 5.56 М855", quantity: 40 },
-        { name: "Магазины 5.56 40 патронов М855 ВАЗ", quantity: 10 },
-        { name: "Магазины 7.62*54 7Н1", quantity: 2 },
-        { name: "40MM 6 HET ВАЗ", quantity: 10 },
-        { name: "40MM 6 HE ВАЗ", quantity: 10 },
-        { name: "Магазины 12.7", quantity: 3 },
-        { name: "Магазины .408", quantity: 1 },
-        { name: "Магазины .338", quantity: 2 },        
+        { name: "Магазины 5.56 40 патронов М855 ", quantity: 10 },
         { name: "Магазины 5.45 (45 патр)", quantity: 1 },
-        { name: "Магазины 5.45 (30 патр)", quantity: 3 },
+        { name: "Магазины 5.45 (30 патр)", quantity: 3 },        
+        { name: "Магазины 7.62*54 7Н1", quantity: 2 },
+        { name: "Магазины 12.7", quantity: 3 },
+        { name: "Магазины .338", quantity: 2 },          
+        { name: "Магазины .408", quantity: 1 },      
         { name: "РПГ-7 ОГ", quantity: 1 },
-        { name: "РПГ-7 ПГ", quantity: 2 },
-        { name: "Хаммер", quantity: 1 },
-        { name: "Логистические Грузовики", quantity: 2 },
-        { name: "Юрпи", quantity: 1 },
+        { name: "40MM 6 HET ", quantity: 10 },
+        { name: "40MM 6 HE ", quantity: 10 },
+        { name: "РГД-5 ", quantity: 10 },
+        { name: "Ф-1 ", quantity: 5 },
+
+
+
         { name: "РПГ-7", quantity: 1 },
         { name: "РШГ", quantity: 1 },
         { name: "РПГ-26", quantity: 2 },
         { name: "МПРЛ", quantity: 1 },
-        { name: "М2 Браунинг", quantity: 1 },
+        { name: "НЛАВ  ", quantity: 1 },
+        { name: "М72-А7  ", quantity: 1 },
+        { name: "АТ4 HEAT ", quantity: 1 },
+        
+
+
+        { name: "Mavic-3T ", quantity: 3 },
+        { name: "M112(4x)  ", quantity: 2 },
+
+
+
+        { name: "М16А4 ручка транспортировки ", quantity: 2 },
+        { name: "М16А4  ", quantity: 1 },
+        { name: "М240(свинья) ", quantity: 1 },
+        { name: "М249 ", quantity: 1 },
+        { name: "М4А1 ", quantity: 10 },
+
+
+
+        { name: "SU-230 + MRDS ", quantity: 10 },
+        { name: "AIMPOINT MICRO T1 ", quantity: 10 },
+        { name: "Глушитель ", quantity: 1 },
+        { name: "Ручка переноса огня ", quantity: 1 },
+        { name: "Сошки  ", quantity: 1 }, 
+
+
+
+
+        { name: "MK-19 на Хаммер ", quantity: 1 },
         { name: "Little Bird", quantity: 1 },
         { name: "Ми-8", quantity: 1 },
         { name: "Taureq ", quantity: 1 },
-        { name: "Mavic-3T ", quantity: 3 },
-        { name: "M112(4x)  ", quantity: 2 },
-        { name: "MK-19 на Хаммер ", quantity: 1 },
+        { name: "Юрпи", quantity: 1 },
+        { name: "Хаммер", quantity: 1 },
+        { name: "Логистические Грузовики", quantity: 2 },
 
-
-
-        { name: "М4А1 ВАЗ", quantity: 10 },
-        { name: "SU-230 + MRDS ВАЗ", quantity: 10 },
-        { name: "НЛАВ  ВАЗ", quantity: 1 },
-        { name: "М72-А7  ВАЗ", quantity: 1 },
-        { name: "АТ4 HEAT ВАЗ", quantity: 1 },
-        { name: "AIMPOINT MICRO T1 ВАЗ", quantity: 10 },
-        { name: "М16А4 ручка транспортировки ВАЗ", quantity: 2 },
-        { name: "М16А4  ВАЗ", quantity: 1 },
-        { name: "М240(свинья) ВАЗ", quantity: 1 },
-        { name: "М249 ВАЗ", quantity: 1 },
-        { name: "Глушитель ВАЗ", quantity: 1 },
-        { name: "Ручка переноса огня ВАЗ", quantity: 1 },
-        { name: "Сошки  ВАЗ", quantity: 1 },
 
 
         { name: "Затяжка Территории ", quantity: 1 },
         { name: "Обустройство территории ", quantity: 1 },
-        { name: "Комплекты бронежилетов, формы, касок, рюкзаков", quantity: 12 }
+        { name: "Комплекты бронежилетов, формы, касок, рюкзаков", quantity: 11 }
+
+        { name: "ПНВ 15", quantity: 2 },
     ];
 
     inventoryButton.addEventListener("click", function () {

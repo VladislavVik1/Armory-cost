@@ -937,35 +937,14 @@ function openModal(category) {
     content = '<h2>Временные товары</h2><table>' +
         '<tr><th>Предмет</th><th>Цена за шт $</th><th>Добавить в корзину</th></tr>' +
 
-        '<tr><td>Taureq</td><td>28 000</td>' +
-        '<td><button onclick="addToCart(\'Taureq\', 1)">Добавить 1 шт</button></td></tr>' +
-
         '<tr><td>Кастомные улучшения вооружения</td><td>60 000</td>' +
         '<td><button onclick="addToCart(\'Комплектация Обвесов\', 1)">Добавить 10 комплектов</button></td></tr>' +
 
-        '<tr><td>Обезопасить периметр</td><td>50 000</td>' +
-        '<td><button onclick="addToCart(\'Затяжка\', 1)">Добавить растяжки, мины</button></td></tr>' +
-
-        '<tr><td>Little Bird</td><td>40 000</td>' +
-        '<td><button onclick="addToCart(\'Bird\', 1)">Добавить 1 шт</button></td></tr>' +
-
-        '<tr><td>Дополнительные укрепленные точки, турели, способы подрыва, заборы</td><td>400 000</td>' +
-        '<td><button onclick="addToCart(\'Territoty\', 1)">Добавить на территорию</button></td></tr>' +
-
-        '<tr><td>Mavic-3</td><td>4000</td>' +
+        '<tr><td>Ящик гранат Ф-1/M-67</td><td>4000</td>' +
         '<td><button onclick="addToCart(\'Mavic-3\', 1)">Добавить 1 дрон</button></td></tr>' +
 
-        '<tr><td>Mavic-3T</td><td>6000</td>' +
+        '<tr><td>Ящик гранат дымовых</td><td>6000</td>' +
         '<td><button onclick="addToCart(\'Mavic-3T\', 1)">Добавить 1 дрон</button></td></tr>' +
-
-        '<tr><td>M112(4x)</td><td>10 000</td>' +
-        '<td><button onclick="addToCart(\'M112(4x)\', 1)">Добавить 10 шт</button></td></tr>' +
-
-        '<tr><td>MK-19 на Hammer</td><td>10 000</td>' +
-        '<td><button onclick="addToCart(\'MK-19\', 1)">Добавить 1 шт</button></td></tr>' +
-
-        '<tr><td>Установить нейтралитет с какой либо группировкой на острове</td><td>200 000</td>' +
-        '<td><button onclick="addToCart(\'Friends\', 1)">Договорится</button></td></tr>' +
 
         '<tr><td>Разведданые, Секретный подарок</td><td>40 000</td>' +
         '<td><button onclick="addToCart(\'SECRET BOX from Mainland\', 1)">Добавить 1 шт</button></td></tr>' +
