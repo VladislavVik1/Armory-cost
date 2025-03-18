@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         { name: "Затяжка Территории ", quantity: 1 },
         { name: "Обустройство территории ", quantity: 1 },
-        { name: "Комплекты бронежилетов, формы, касок, рюкзаков", quantity: 11 }
+        { name: "Комплекты бронежилетов, формы, касок, рюкзаков", quantity: 11 },
 
         { name: "ПНВ 15", quantity: 2 },
     ];
